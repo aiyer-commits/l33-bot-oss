@@ -1,0 +1,701 @@
+{
+  "generatedAt": "2026-03-01T18:10:30.861Z",
+  "benchmark": {
+    "solveCases": 31,
+    "judgeCases": 12
+  },
+  "pricingAssumptions": {
+    "gpt-4.1-mini": {
+      "input": 0.4,
+      "cachedInput": 0.1,
+      "output": 1.6
+    },
+    "gpt-4.1": {
+      "input": 2,
+      "cachedInput": 0.5,
+      "output": 8
+    }
+  },
+  "models": {
+    "gpt-4.1-mini": {
+      "solve": {
+        "details": [
+          {
+            "id": "merge_alternately",
+            "title": "Merge Strings Alternately",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "gcd_of_strings",
+            "title": "Greatest Common Divisor of Strings",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "kids_with_candies",
+            "title": "Kids With the Greatest Number of Candies",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "can_place_flowers",
+            "title": "Can Place Flowers",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "reverse_vowels",
+            "title": "Reverse Vowels of a String",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "product_except_self",
+            "title": "Product of Array Except Self",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "increasing_triplet",
+            "title": "Increasing Triplet Subsequence",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "max_k_sum_pairs",
+            "title": "Max Number of K-Sum Pairs",
+            "pass": false,
+            "error": "[{\"idx\":0,\"ok\":true,\"got\":2,\"expected\":2},{\"idx\":1,\"ok\":true,\"got\":1,\"expected\":1},{\"idx\":2,\"ok\":false,\"got\":2,\"expected\":3}]"
+          },
+          {
+            "id": "max_average_subarray",
+            "title": "Maximum Average Subarray I",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "max_vowels_substring",
+            "title": "Maximum Number of Vowels in a Substring of Given Length",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "longest_subarray_after_delete",
+            "title": "Longest Subarray of 1's After Deleting One Element",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "highest_altitude",
+            "title": "Find the Highest Altitude",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "pivot_index",
+            "title": "Find Pivot Index",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "unique_occurrences",
+            "title": "Unique Number of Occurrences",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "close_strings",
+            "title": "Determine if Two Strings Are Close",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "remove_stars",
+            "title": "Removing Stars From a String",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "decode_string",
+            "title": "Decode String",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "container_with_most_water",
+            "title": "Container With Most Water",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "keys_and_rooms",
+            "title": "Keys and Rooms",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "rotting_oranges",
+            "title": "Rotting Oranges",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "kth_largest",
+            "title": "Kth Largest Element in an Array",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "koko",
+            "title": "Koko Eating Bananas",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "letter_combinations",
+            "title": "Letter Combinations of a Phone Number",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "min_cost_climbing_stairs",
+            "title": "Min Cost Climbing Stairs",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "house_robber",
+            "title": "House Robber",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "longest_common_subsequence",
+            "title": "Longest Common Subsequence",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "counting_bits",
+            "title": "Counting Bits",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "minimum_flips",
+            "title": "Minimum Flips to Make a OR b Equal to c",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "non_overlapping_intervals",
+            "title": "Non-overlapping Intervals",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "arrows_balloons",
+            "title": "Minimum Number of Arrows to Burst Balloons",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "daily_temperatures",
+            "title": "Daily Temperatures",
+            "pass": true,
+            "error": null
+          }
+        ],
+        "passCount": 30,
+        "total": 31,
+        "passRate": 0.967741935483871,
+        "usageTotals": {
+          "inputTokens": 2402,
+          "outputTokens": 2789,
+          "cachedInputTokens": 0
+        }
+      },
+      "judge": {
+        "details": [
+          {
+            "id": "product_correct",
+            "title": "Product of Array Except Self",
+            "expectedVerdict": "correct",
+            "predictedVerdict": "correct",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": null,
+            "pass": true
+          },
+          {
+            "id": "product_wrong_division",
+            "title": "Product of Array Except Self",
+            "expectedVerdict": "incorrect",
+            "predictedVerdict": "incorrect",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": true,
+            "pass": true
+          },
+          {
+            "id": "container_tle",
+            "title": "Container With Most Water",
+            "expectedVerdict": "tle",
+            "predictedVerdict": "tle",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": true,
+            "pass": true
+          },
+          {
+            "id": "container_correct",
+            "title": "Container With Most Water",
+            "expectedVerdict": "correct",
+            "predictedVerdict": "correct",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": null,
+            "pass": true
+          },
+          {
+            "id": "pivot_wrong",
+            "title": "Find Pivot Index",
+            "expectedVerdict": "incorrect",
+            "predictedVerdict": "incorrect",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": true,
+            "pass": true
+          },
+          {
+            "id": "max_vowels_correct",
+            "title": "Maximum Number of Vowels in a Substring of Given Length",
+            "expectedVerdict": "correct",
+            "predictedVerdict": "correct",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": null,
+            "pass": true
+          },
+          {
+            "id": "lsubarray_wrong",
+            "title": "Longest Subarray of 1's After Deleting One Element",
+            "expectedVerdict": "incorrect",
+            "predictedVerdict": "incorrect",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": true,
+            "pass": true
+          },
+          {
+            "id": "rotting_wrong_minutes",
+            "title": "Rotting Oranges",
+            "expectedVerdict": "incorrect",
+            "predictedVerdict": "incorrect",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": true,
+            "pass": true
+          },
+          {
+            "id": "koko_tle",
+            "title": "Koko Eating Bananas",
+            "expectedVerdict": "tle",
+            "predictedVerdict": "correct",
+            "verdictMatch": false,
+            "edgeCaseOk": true,
+            "correctionPass": false,
+            "pass": false
+          },
+          {
+            "id": "house_robber_correct",
+            "title": "House Robber",
+            "expectedVerdict": "correct",
+            "predictedVerdict": "correct",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": null,
+            "pass": true
+          },
+          {
+            "id": "lcs_wrong",
+            "title": "Longest Common Subsequence",
+            "expectedVerdict": "incorrect",
+            "predictedVerdict": "incorrect",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": true,
+            "pass": true
+          },
+          {
+            "id": "daily_temp_wrong",
+            "title": "Daily Temperatures",
+            "expectedVerdict": "incorrect",
+            "predictedVerdict": "incorrect",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": true,
+            "pass": true
+          }
+        ],
+        "passCount": 11,
+        "total": 12,
+        "passRate": 0.9166666666666666,
+        "verdictAccuracy": 0.9166666666666666,
+        "correctionPassRate": 0.875,
+        "usageTotals": {
+          "inputTokens": 2781,
+          "outputTokens": 2160,
+          "cachedInputTokens": 0
+        }
+      },
+      "totalUsage": {
+        "inputTokens": 5183,
+        "outputTokens": 4949,
+        "cachedInputTokens": 0
+      },
+      "estimatedCostUSD": 0.009991600000000002
+    },
+    "gpt-4.1": {
+      "solve": {
+        "details": [
+          {
+            "id": "merge_alternately",
+            "title": "Merge Strings Alternately",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "gcd_of_strings",
+            "title": "Greatest Common Divisor of Strings",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "kids_with_candies",
+            "title": "Kids With the Greatest Number of Candies",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "can_place_flowers",
+            "title": "Can Place Flowers",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "reverse_vowels",
+            "title": "Reverse Vowels of a String",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "product_except_self",
+            "title": "Product of Array Except Self",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "increasing_triplet",
+            "title": "Increasing Triplet Subsequence",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "max_k_sum_pairs",
+            "title": "Max Number of K-Sum Pairs",
+            "pass": false,
+            "error": "[{\"idx\":0,\"ok\":true,\"got\":2,\"expected\":2},{\"idx\":1,\"ok\":true,\"got\":1,\"expected\":1},{\"idx\":2,\"ok\":false,\"got\":2,\"expected\":3}]"
+          },
+          {
+            "id": "max_average_subarray",
+            "title": "Maximum Average Subarray I",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "max_vowels_substring",
+            "title": "Maximum Number of Vowels in a Substring of Given Length",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "longest_subarray_after_delete",
+            "title": "Longest Subarray of 1's After Deleting One Element",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "highest_altitude",
+            "title": "Find the Highest Altitude",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "pivot_index",
+            "title": "Find Pivot Index",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "unique_occurrences",
+            "title": "Unique Number of Occurrences",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "close_strings",
+            "title": "Determine if Two Strings Are Close",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "remove_stars",
+            "title": "Removing Stars From a String",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "decode_string",
+            "title": "Decode String",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "container_with_most_water",
+            "title": "Container With Most Water",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "keys_and_rooms",
+            "title": "Keys and Rooms",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "rotting_oranges",
+            "title": "Rotting Oranges",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "kth_largest",
+            "title": "Kth Largest Element in an Array",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "koko",
+            "title": "Koko Eating Bananas",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "letter_combinations",
+            "title": "Letter Combinations of a Phone Number",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "min_cost_climbing_stairs",
+            "title": "Min Cost Climbing Stairs",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "house_robber",
+            "title": "House Robber",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "longest_common_subsequence",
+            "title": "Longest Common Subsequence",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "counting_bits",
+            "title": "Counting Bits",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "minimum_flips",
+            "title": "Minimum Flips to Make a OR b Equal to c",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "non_overlapping_intervals",
+            "title": "Non-overlapping Intervals",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "arrows_balloons",
+            "title": "Minimum Number of Arrows to Burst Balloons",
+            "pass": true,
+            "error": null
+          },
+          {
+            "id": "daily_temperatures",
+            "title": "Daily Temperatures",
+            "pass": true,
+            "error": null
+          }
+        ],
+        "passCount": 30,
+        "total": 31,
+        "passRate": 0.967741935483871,
+        "usageTotals": {
+          "inputTokens": 2402,
+          "outputTokens": 2713,
+          "cachedInputTokens": 0
+        }
+      },
+      "judge": {
+        "details": [
+          {
+            "id": "product_correct",
+            "title": "Product of Array Except Self",
+            "expectedVerdict": "correct",
+            "predictedVerdict": "correct",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": null,
+            "pass": true
+          },
+          {
+            "id": "product_wrong_division",
+            "title": "Product of Array Except Self",
+            "expectedVerdict": "incorrect",
+            "predictedVerdict": "incorrect",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": true,
+            "pass": true
+          },
+          {
+            "id": "container_tle",
+            "title": "Container With Most Water",
+            "expectedVerdict": "tle",
+            "predictedVerdict": "tle",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": true,
+            "pass": true
+          },
+          {
+            "id": "container_correct",
+            "title": "Container With Most Water",
+            "expectedVerdict": "correct",
+            "predictedVerdict": "correct",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": null,
+            "pass": true
+          },
+          {
+            "id": "pivot_wrong",
+            "title": "Find Pivot Index",
+            "expectedVerdict": "incorrect",
+            "predictedVerdict": "incorrect",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": true,
+            "pass": true
+          },
+          {
+            "id": "max_vowels_correct",
+            "title": "Maximum Number of Vowels in a Substring of Given Length",
+            "expectedVerdict": "correct",
+            "predictedVerdict": "correct",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": null,
+            "pass": true
+          },
+          {
+            "id": "lsubarray_wrong",
+            "title": "Longest Subarray of 1's After Deleting One Element",
+            "expectedVerdict": "incorrect",
+            "predictedVerdict": "incorrect",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": true,
+            "pass": true
+          },
+          {
+            "id": "rotting_wrong_minutes",
+            "title": "Rotting Oranges",
+            "expectedVerdict": "incorrect",
+            "predictedVerdict": "incorrect",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": true,
+            "pass": true
+          },
+          {
+            "id": "koko_tle",
+            "title": "Koko Eating Bananas",
+            "expectedVerdict": "tle",
+            "predictedVerdict": "tle",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": true,
+            "pass": true
+          },
+          {
+            "id": "house_robber_correct",
+            "title": "House Robber",
+            "expectedVerdict": "correct",
+            "predictedVerdict": "correct",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": null,
+            "pass": true
+          },
+          {
+            "id": "lcs_wrong",
+            "title": "Longest Common Subsequence",
+            "expectedVerdict": "incorrect",
+            "predictedVerdict": "incorrect",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": true,
+            "pass": true
+          },
+          {
+            "id": "daily_temp_wrong",
+            "title": "Daily Temperatures",
+            "expectedVerdict": "incorrect",
+            "predictedVerdict": "incorrect",
+            "verdictMatch": true,
+            "edgeCaseOk": true,
+            "correctionPass": true,
+            "pass": true
+          }
+        ],
+        "passCount": 12,
+        "total": 12,
+        "passRate": 1,
+        "verdictAccuracy": 1,
+        "correctionPassRate": 1,
+        "usageTotals": {
+          "inputTokens": 2781,
+          "outputTokens": 2683,
+          "cachedInputTokens": 0
+        }
+      },
+      "totalUsage": {
+        "inputTokens": 5183,
+        "outputTokens": 5396,
+        "cachedInputTokens": 0
+      },
+      "estimatedCostUSD": 0.053534
+    }
+  }
+}

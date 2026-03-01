@@ -1,12 +1,17 @@
 export type LC75Problem = {
   id: number;
   title: string;
-  difficulty: "Easy" | "Medium";
+  difficulty: "Easy" | "Medium" | "Hard";
   category: string;
   statement: string;
-  sourceRepo: string;
-  sourceFile: string | null;
-  leetcodeUrl: string;
+  source?: string | null;
+  sourceRepo?: string;
+  sourceFile?: string | null;
+  leetcodeUrl?: string;
+  slug?: string;
+  tags?: string[];
+  semanticKeywords?: string[];
+  retrievalMeta?: Record<string, unknown>;
 };
 
 export type ProblemLearningStatus = "unseen" | "learning" | "approaching" | "review" | "mastered";
@@ -39,13 +44,17 @@ export type ChatMessage = {
 export type ChatApiRequest = {
   message: string;
   code: string;
-  activeProblemId: number;
-  profile: LocalProfile;
-  conversation: ChatMessage[];
+  activeProblemId?: number;
+  profile?: LocalProfile;
+  conversation?: ChatMessage[];
+  anonId?: string;
+  sessionId?: string;
 };
 
 export type ChatApiResponse = {
   assistantMessage: string;
+  sessionId?: string;
+  activeProblemId?: number;
   assessment: {
     status: Exclude<ProblemLearningStatus, "unseen">;
     confidence: number;
@@ -56,4 +65,10 @@ export type ChatApiResponse = {
     nextStep: string;
   };
   quickActions: string[];
+  usage?: {
+    chargedFemtodollars: string;
+    chargedDollars: number;
+    remainingBalanceFemtodollars?: string;
+    remainingBalanceDollars?: number;
+  };
 };

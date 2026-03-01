@@ -1,0 +1,5994 @@
+[
+  {
+    "id": 1,
+    "title": "Merge Sorted Array",
+    "difficulty": "Easy",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/001-merge-sorted-array",
+    "slug": "merge-sorted-array",
+    "statement": "Practice Merge Sorted Array (Easy) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "merge",
+      "sorted",
+      "easy",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Easy",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "merge",
+        "sorted",
+        "easy",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "title": "Remove Element",
+    "difficulty": "Easy",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/002-remove-element",
+    "slug": "remove-element",
+    "statement": "Practice Remove Element (Easy) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "remove",
+      "element",
+      "easy",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Easy",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "remove",
+        "element",
+        "easy",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "title": "Remove Duplicates from Sorted Array",
+    "difficulty": "Easy",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/003-remove-duplicates-from-sorted-array",
+    "slug": "remove-duplicates-from-sorted-array",
+    "statement": "Practice Remove Duplicates from Sorted Array (Easy) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "remove",
+      "duplicates",
+      "from",
+      "sorted",
+      "easy",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Easy",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "remove",
+        "duplicates",
+        "from",
+        "sorted",
+        "easy",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "title": "Remove Duplicates from Sorted Array II",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/004-remove-duplicates-from-sorted-array-ii",
+    "slug": "remove-duplicates-from-sorted-array-ii",
+    "statement": "Practice Remove Duplicates from Sorted Array II (Medium) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "remove",
+      "duplicates",
+      "from",
+      "sorted",
+      "medium",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Medium",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "remove",
+        "duplicates",
+        "from",
+        "sorted",
+        "medium",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 5,
+    "title": "Majority Element",
+    "difficulty": "Easy",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/005-majority-element",
+    "slug": "majority-element",
+    "statement": "Practice Majority Element (Easy) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "majority",
+      "element",
+      "easy",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Easy",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "majority",
+        "element",
+        "easy",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "title": "Rotate Array",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/006-rotate-array",
+    "slug": "rotate-array",
+    "statement": "Practice Rotate Array (Medium) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "rotate",
+      "medium",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Medium",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "rotate",
+        "medium",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "title": "Best Time to Buy and Sell Stock",
+    "difficulty": "Easy",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/007-best-time-to-buy-and-sell-stock",
+    "slug": "best-time-to-buy-and-sell-stock",
+    "statement": "Practice Best Time to Buy and Sell Stock (Easy) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "best",
+      "time",
+      "buy",
+      "and",
+      "sell",
+      "stock",
+      "easy",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Easy",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "best",
+        "time",
+        "buy",
+        "and",
+        "sell",
+        "stock",
+        "easy",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 8,
+    "title": "Best Time to Buy and Sell Stock II",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/008-best-time-to-buy-and-sell-stock-ii",
+    "slug": "best-time-to-buy-and-sell-stock-ii",
+    "statement": "Practice Best Time to Buy and Sell Stock II (Medium) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "best",
+      "time",
+      "buy",
+      "and",
+      "sell",
+      "stock",
+      "medium",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Medium",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "best",
+        "time",
+        "buy",
+        "and",
+        "sell",
+        "stock",
+        "medium",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 9,
+    "title": "Jump Game",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/009-jump-game",
+    "slug": "jump-game",
+    "statement": "Practice Jump Game (Medium) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "jump",
+      "game",
+      "medium",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Medium",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "jump",
+        "game",
+        "medium",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 10,
+    "title": "Jump Game II",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/010-jump-game-ii",
+    "slug": "jump-game-ii",
+    "statement": "Practice Jump Game II (Medium) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "jump",
+      "game",
+      "medium",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Medium",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "jump",
+        "game",
+        "medium",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 11,
+    "title": "H-Index",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/011-h-index",
+    "slug": "h-index",
+    "statement": "Practice H-Index (Medium) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "index",
+      "medium",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Medium",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "index",
+        "medium",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 12,
+    "title": "Insert Delete GetRandom O(1)",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/012-insert-delete-getrandom",
+    "slug": "insert-delete-getrandom-o-1",
+    "statement": "Practice Insert Delete GetRandom O(1) (Medium) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "insert",
+      "delete",
+      "getrandom",
+      "medium",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Medium",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "insert",
+        "delete",
+        "getrandom",
+        "medium",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 13,
+    "title": "Product of Array Except Self",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/013-product-of-array-except-self",
+    "slug": "product-of-array-except-self",
+    "statement": "Practice Product of Array Except Self (Medium) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "product",
+      "except",
+      "self",
+      "medium",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Medium",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "product",
+        "except",
+        "self",
+        "medium",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 14,
+    "title": "Gas Station",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/014-gas-station",
+    "slug": "gas-station",
+    "statement": "Practice Gas Station (Medium) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "gas",
+      "station",
+      "medium",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Medium",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "gas",
+        "station",
+        "medium",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 15,
+    "title": "Candy",
+    "difficulty": "Hard",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/015-candy",
+    "slug": "candy",
+    "statement": "Practice Candy (Hard) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "candy",
+      "hard",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Hard",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "candy",
+        "hard",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 16,
+    "title": "Trapping Rain Water",
+    "difficulty": "Hard",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/016-trapping-rain-water",
+    "slug": "trapping-rain-water",
+    "statement": "Practice Trapping Rain Water (Hard) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "trapping",
+      "rain",
+      "water",
+      "hard",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Hard",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "trapping",
+        "rain",
+        "water",
+        "hard",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 17,
+    "title": "Roman to Integer",
+    "difficulty": "Easy",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/017-roman-to-integer",
+    "slug": "roman-to-integer",
+    "statement": "Practice Roman to Integer (Easy) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "roman",
+      "integer",
+      "easy",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Easy",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "roman",
+        "integer",
+        "easy",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 18,
+    "title": "Integer to Roman",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/018-integer-to-roman",
+    "slug": "integer-to-roman",
+    "statement": "Practice Integer to Roman (Medium) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "integer",
+      "roman",
+      "medium",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Medium",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "integer",
+        "roman",
+        "medium",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 19,
+    "title": "Length of Last Word",
+    "difficulty": "Easy",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/019-length-of-last-word",
+    "slug": "length-of-last-word",
+    "statement": "Practice Length of Last Word (Easy) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "length",
+      "last",
+      "word",
+      "easy",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Easy",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "length",
+        "last",
+        "word",
+        "easy",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 20,
+    "title": "Longest Common Prefix",
+    "difficulty": "Easy",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/020-longest-common-prefix",
+    "slug": "longest-common-prefix",
+    "statement": "Practice Longest Common Prefix (Easy) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "longest",
+      "common",
+      "prefix",
+      "easy",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Easy",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "longest",
+        "common",
+        "prefix",
+        "easy",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 21,
+    "title": "Reverse Words in a String",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/021-reverse-words-in-a-string",
+    "slug": "reverse-words-in-a-string",
+    "statement": "Practice Reverse Words in a String (Medium) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "reverse",
+      "words",
+      "medium",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Medium",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "reverse",
+        "words",
+        "medium",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 22,
+    "title": "Zigzag Conversion",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/022-zigzag-conversion",
+    "slug": "zigzag-conversion",
+    "statement": "Practice Zigzag Conversion (Medium) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "zigzag",
+      "conversion",
+      "medium",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Medium",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "zigzag",
+        "conversion",
+        "medium",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 23,
+    "title": "Find the Index of the First Occurrence in a String",
+    "difficulty": "Easy",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/023-find-the-index-of-the-first-occurrence-in-a-string",
+    "slug": "find-the-index-of-the-first-occurrence-in-a-string",
+    "statement": "Practice Find the Index of the First Occurrence in a String (Easy) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "find",
+      "the",
+      "index",
+      "first",
+      "occurrence",
+      "easy",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Easy",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "find",
+        "the",
+        "index",
+        "first",
+        "occurrence",
+        "easy",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 24,
+    "title": "Text Justification",
+    "difficulty": "Hard",
+    "category": "Array / String",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-1-array-string/024-text-justification",
+    "slug": "text-justification",
+    "statement": "Practice Text Justification (Hard) from Top Interview 150 in category Array / String.",
+    "tags": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "array",
+      "string",
+      "two-pointers",
+      "greedy",
+      "text",
+      "justification",
+      "hard",
+      "array-string"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Array / String",
+      "difficulty": "Hard",
+      "patterns": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy"
+      ],
+      "keywords": [
+        "array",
+        "string",
+        "two-pointers",
+        "greedy",
+        "text",
+        "justification",
+        "hard",
+        "array-string"
+      ]
+    }
+  },
+  {
+    "id": 25,
+    "title": "Valid Palindrome",
+    "difficulty": "Easy",
+    "category": "Two Pointers",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-2-two-pointers/025-valid-palindrome",
+    "slug": "valid-palindrome",
+    "statement": "Practice Valid Palindrome (Easy) from Top Interview 150 in category Two Pointers.",
+    "tags": [
+      "two-pointers",
+      "in-place"
+    ],
+    "semanticKeywords": [
+      "two-pointers",
+      "in-place",
+      "valid",
+      "palindrome",
+      "easy"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Two Pointers",
+      "difficulty": "Easy",
+      "patterns": [
+        "two-pointers",
+        "in-place"
+      ],
+      "keywords": [
+        "two-pointers",
+        "in-place",
+        "valid",
+        "palindrome",
+        "easy"
+      ]
+    }
+  },
+  {
+    "id": 26,
+    "title": "Is Subsequence",
+    "difficulty": "Easy",
+    "category": "Two Pointers",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-2-two-pointers/026-is-subsequence",
+    "slug": "is-subsequence",
+    "statement": "Practice Is Subsequence (Easy) from Top Interview 150 in category Two Pointers.",
+    "tags": [
+      "two-pointers",
+      "in-place"
+    ],
+    "semanticKeywords": [
+      "two-pointers",
+      "in-place",
+      "subsequence",
+      "easy"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Two Pointers",
+      "difficulty": "Easy",
+      "patterns": [
+        "two-pointers",
+        "in-place"
+      ],
+      "keywords": [
+        "two-pointers",
+        "in-place",
+        "subsequence",
+        "easy"
+      ]
+    }
+  },
+  {
+    "id": 27,
+    "title": "Two Sum II - Input Array Is Sorted",
+    "difficulty": "Medium",
+    "category": "Two Pointers",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-2-two-pointers/027-two-sum-ii-input-array-is-sorted",
+    "slug": "two-sum-ii-input-array-is-sorted",
+    "statement": "Practice Two Sum II - Input Array Is Sorted (Medium) from Top Interview 150 in category Two Pointers.",
+    "tags": [
+      "two-pointers",
+      "in-place"
+    ],
+    "semanticKeywords": [
+      "two-pointers",
+      "in-place",
+      "two",
+      "sum",
+      "input",
+      "array",
+      "sorted",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Two Pointers",
+      "difficulty": "Medium",
+      "patterns": [
+        "two-pointers",
+        "in-place"
+      ],
+      "keywords": [
+        "two-pointers",
+        "in-place",
+        "two",
+        "sum",
+        "input",
+        "array",
+        "sorted",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 28,
+    "title": "Container With Most Water",
+    "difficulty": "Medium",
+    "category": "Two Pointers",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-2-two-pointers/028-container-with-most-water",
+    "slug": "container-with-most-water",
+    "statement": "Practice Container With Most Water (Medium) from Top Interview 150 in category Two Pointers.",
+    "tags": [
+      "two-pointers",
+      "in-place"
+    ],
+    "semanticKeywords": [
+      "two-pointers",
+      "in-place",
+      "container",
+      "with",
+      "most",
+      "water",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Two Pointers",
+      "difficulty": "Medium",
+      "patterns": [
+        "two-pointers",
+        "in-place"
+      ],
+      "keywords": [
+        "two-pointers",
+        "in-place",
+        "container",
+        "with",
+        "most",
+        "water",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 29,
+    "title": "3Sum",
+    "difficulty": "Medium",
+    "category": "Two Pointers",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-2-two-pointers/029-3sum",
+    "slug": "3sum",
+    "statement": "Practice 3Sum (Medium) from Top Interview 150 in category Two Pointers.",
+    "tags": [
+      "two-pointers",
+      "in-place"
+    ],
+    "semanticKeywords": [
+      "two-pointers",
+      "in-place",
+      "3sum",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Two Pointers",
+      "difficulty": "Medium",
+      "patterns": [
+        "two-pointers",
+        "in-place"
+      ],
+      "keywords": [
+        "two-pointers",
+        "in-place",
+        "3sum",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 30,
+    "title": "Minimum Size Subarray Sum",
+    "difficulty": "Medium",
+    "category": "Sliding Window",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-3-sliding-window/030-minimum-size-subarray-sum",
+    "slug": "minimum-size-subarray-sum",
+    "statement": "Practice Minimum Size Subarray Sum (Medium) from Top Interview 150 in category Sliding Window.",
+    "tags": [
+      "sliding-window",
+      "two-pointers"
+    ],
+    "semanticKeywords": [
+      "sliding-window",
+      "two-pointers",
+      "minimum",
+      "size",
+      "subarray",
+      "sum",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Sliding Window",
+      "difficulty": "Medium",
+      "patterns": [
+        "sliding-window",
+        "two-pointers"
+      ],
+      "keywords": [
+        "sliding-window",
+        "two-pointers",
+        "minimum",
+        "size",
+        "subarray",
+        "sum",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 31,
+    "title": "Longest Substring Without Repeating Characters",
+    "difficulty": "Medium",
+    "category": "Sliding Window",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-3-sliding-window/031-longest-substring-without-repeating-characters",
+    "slug": "longest-substring-without-repeating-characters",
+    "statement": "Practice Longest Substring Without Repeating Characters (Medium) from Top Interview 150 in category Sliding Window.",
+    "tags": [
+      "sliding-window",
+      "two-pointers"
+    ],
+    "semanticKeywords": [
+      "sliding-window",
+      "two-pointers",
+      "longest",
+      "substring",
+      "without",
+      "repeating",
+      "characters",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Sliding Window",
+      "difficulty": "Medium",
+      "patterns": [
+        "sliding-window",
+        "two-pointers"
+      ],
+      "keywords": [
+        "sliding-window",
+        "two-pointers",
+        "longest",
+        "substring",
+        "without",
+        "repeating",
+        "characters",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 32,
+    "title": "Substring with Concatenation of All Words",
+    "difficulty": "Hard",
+    "category": "Sliding Window",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-3-sliding-window/032-substring-with-concatenation-of-all-words",
+    "slug": "substring-with-concatenation-of-all-words",
+    "statement": "Practice Substring with Concatenation of All Words (Hard) from Top Interview 150 in category Sliding Window.",
+    "tags": [
+      "sliding-window",
+      "two-pointers"
+    ],
+    "semanticKeywords": [
+      "sliding-window",
+      "two-pointers",
+      "substring",
+      "with",
+      "concatenation",
+      "all",
+      "words",
+      "hard"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Sliding Window",
+      "difficulty": "Hard",
+      "patterns": [
+        "sliding-window",
+        "two-pointers"
+      ],
+      "keywords": [
+        "sliding-window",
+        "two-pointers",
+        "substring",
+        "with",
+        "concatenation",
+        "all",
+        "words",
+        "hard"
+      ]
+    }
+  },
+  {
+    "id": 33,
+    "title": "Minimum Window Substring",
+    "difficulty": "Hard",
+    "category": "Sliding Window",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-3-sliding-window/033-minimum-window-substring",
+    "slug": "minimum-window-substring",
+    "statement": "Practice Minimum Window Substring (Hard) from Top Interview 150 in category Sliding Window.",
+    "tags": [
+      "sliding-window",
+      "two-pointers"
+    ],
+    "semanticKeywords": [
+      "sliding-window",
+      "two-pointers",
+      "minimum",
+      "window",
+      "substring",
+      "hard"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Sliding Window",
+      "difficulty": "Hard",
+      "patterns": [
+        "sliding-window",
+        "two-pointers"
+      ],
+      "keywords": [
+        "sliding-window",
+        "two-pointers",
+        "minimum",
+        "window",
+        "substring",
+        "hard"
+      ]
+    }
+  },
+  {
+    "id": 34,
+    "title": "Valid Sudoku",
+    "difficulty": "Medium",
+    "category": "Matrix",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-4-matrix/034-valid-sudoku",
+    "slug": "valid-sudoku",
+    "statement": "Practice Valid Sudoku (Medium) from Top Interview 150 in category Matrix.",
+    "tags": [
+      "matrix",
+      "simulation"
+    ],
+    "semanticKeywords": [
+      "matrix",
+      "simulation",
+      "valid",
+      "sudoku",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Matrix",
+      "difficulty": "Medium",
+      "patterns": [
+        "matrix",
+        "simulation"
+      ],
+      "keywords": [
+        "matrix",
+        "simulation",
+        "valid",
+        "sudoku",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 35,
+    "title": "Spiral Matrix",
+    "difficulty": "Medium",
+    "category": "Matrix",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-4-matrix/035-spiral-matrix",
+    "slug": "spiral-matrix",
+    "statement": "Practice Spiral Matrix (Medium) from Top Interview 150 in category Matrix.",
+    "tags": [
+      "matrix",
+      "simulation"
+    ],
+    "semanticKeywords": [
+      "matrix",
+      "simulation",
+      "spiral",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Matrix",
+      "difficulty": "Medium",
+      "patterns": [
+        "matrix",
+        "simulation"
+      ],
+      "keywords": [
+        "matrix",
+        "simulation",
+        "spiral",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 36,
+    "title": "Rotate Image",
+    "difficulty": "Medium",
+    "category": "Matrix",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-4-matrix/036-rotate-image",
+    "slug": "rotate-image",
+    "statement": "Practice Rotate Image (Medium) from Top Interview 150 in category Matrix.",
+    "tags": [
+      "matrix",
+      "simulation"
+    ],
+    "semanticKeywords": [
+      "matrix",
+      "simulation",
+      "rotate",
+      "image",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Matrix",
+      "difficulty": "Medium",
+      "patterns": [
+        "matrix",
+        "simulation"
+      ],
+      "keywords": [
+        "matrix",
+        "simulation",
+        "rotate",
+        "image",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 37,
+    "title": "Set Matrix Zeroes",
+    "difficulty": "Medium",
+    "category": "Matrix",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-4-matrix/037-set-matrix-zeroes",
+    "slug": "set-matrix-zeroes",
+    "statement": "Practice Set Matrix Zeroes (Medium) from Top Interview 150 in category Matrix.",
+    "tags": [
+      "matrix",
+      "simulation"
+    ],
+    "semanticKeywords": [
+      "matrix",
+      "simulation",
+      "set",
+      "zeroes",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Matrix",
+      "difficulty": "Medium",
+      "patterns": [
+        "matrix",
+        "simulation"
+      ],
+      "keywords": [
+        "matrix",
+        "simulation",
+        "set",
+        "zeroes",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 38,
+    "title": "Game of Life",
+    "difficulty": "Medium",
+    "category": "Matrix",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-4-matrix/038-the-game-of-life",
+    "slug": "game-of-life",
+    "statement": "Practice Game of Life (Medium) from Top Interview 150 in category Matrix.",
+    "tags": [
+      "matrix",
+      "simulation"
+    ],
+    "semanticKeywords": [
+      "matrix",
+      "simulation",
+      "game",
+      "life",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Matrix",
+      "difficulty": "Medium",
+      "patterns": [
+        "matrix",
+        "simulation"
+      ],
+      "keywords": [
+        "matrix",
+        "simulation",
+        "game",
+        "life",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 39,
+    "title": "Ransom Note",
+    "difficulty": "Easy",
+    "category": "Hashmap",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-5-hashmap/039-ransom-note",
+    "slug": "ransom-note",
+    "statement": "Practice Ransom Note (Easy) from Top Interview 150 in category Hashmap.",
+    "tags": [
+      "hash-map",
+      "set"
+    ],
+    "semanticKeywords": [
+      "hash-map",
+      "set",
+      "ransom",
+      "note",
+      "easy",
+      "hashmap"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Hashmap",
+      "difficulty": "Easy",
+      "patterns": [
+        "hash-map",
+        "set"
+      ],
+      "keywords": [
+        "hash-map",
+        "set",
+        "ransom",
+        "note",
+        "easy",
+        "hashmap"
+      ]
+    }
+  },
+  {
+    "id": 40,
+    "title": "Isomorphic Strings",
+    "difficulty": "Easy",
+    "category": "Hashmap",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-5-hashmap/040-isomorphic-strings",
+    "slug": "isomorphic-strings",
+    "statement": "Practice Isomorphic Strings (Easy) from Top Interview 150 in category Hashmap.",
+    "tags": [
+      "hash-map",
+      "set"
+    ],
+    "semanticKeywords": [
+      "hash-map",
+      "set",
+      "isomorphic",
+      "strings",
+      "easy",
+      "hashmap"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Hashmap",
+      "difficulty": "Easy",
+      "patterns": [
+        "hash-map",
+        "set"
+      ],
+      "keywords": [
+        "hash-map",
+        "set",
+        "isomorphic",
+        "strings",
+        "easy",
+        "hashmap"
+      ]
+    }
+  },
+  {
+    "id": 41,
+    "title": "Word Pattern",
+    "difficulty": "Easy",
+    "category": "Hashmap",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-5-hashmap/041-word-pattern",
+    "slug": "word-pattern",
+    "statement": "Practice Word Pattern (Easy) from Top Interview 150 in category Hashmap.",
+    "tags": [
+      "hash-map",
+      "set"
+    ],
+    "semanticKeywords": [
+      "hash-map",
+      "set",
+      "word",
+      "pattern",
+      "easy",
+      "hashmap"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Hashmap",
+      "difficulty": "Easy",
+      "patterns": [
+        "hash-map",
+        "set"
+      ],
+      "keywords": [
+        "hash-map",
+        "set",
+        "word",
+        "pattern",
+        "easy",
+        "hashmap"
+      ]
+    }
+  },
+  {
+    "id": 42,
+    "title": "Valid Anagram",
+    "difficulty": "Easy",
+    "category": "Hashmap",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-5-hashmap/042-valid-anagram",
+    "slug": "valid-anagram",
+    "statement": "Practice Valid Anagram (Easy) from Top Interview 150 in category Hashmap.",
+    "tags": [
+      "hash-map",
+      "set"
+    ],
+    "semanticKeywords": [
+      "hash-map",
+      "set",
+      "valid",
+      "anagram",
+      "easy",
+      "hashmap"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Hashmap",
+      "difficulty": "Easy",
+      "patterns": [
+        "hash-map",
+        "set"
+      ],
+      "keywords": [
+        "hash-map",
+        "set",
+        "valid",
+        "anagram",
+        "easy",
+        "hashmap"
+      ]
+    }
+  },
+  {
+    "id": 43,
+    "title": "Group Anagrams",
+    "difficulty": "Medium",
+    "category": "Hashmap",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-5-hashmap/043-group-anagrams",
+    "slug": "group-anagrams",
+    "statement": "Practice Group Anagrams (Medium) from Top Interview 150 in category Hashmap.",
+    "tags": [
+      "hash-map",
+      "set"
+    ],
+    "semanticKeywords": [
+      "hash-map",
+      "set",
+      "group",
+      "anagrams",
+      "medium",
+      "hashmap"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Hashmap",
+      "difficulty": "Medium",
+      "patterns": [
+        "hash-map",
+        "set"
+      ],
+      "keywords": [
+        "hash-map",
+        "set",
+        "group",
+        "anagrams",
+        "medium",
+        "hashmap"
+      ]
+    }
+  },
+  {
+    "id": 44,
+    "title": "Two Sum",
+    "difficulty": "Easy",
+    "category": "Hashmap",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-5-hashmap/044-two-sum",
+    "slug": "two-sum",
+    "statement": "Practice Two Sum (Easy) from Top Interview 150 in category Hashmap.",
+    "tags": [
+      "hash-map",
+      "set"
+    ],
+    "semanticKeywords": [
+      "hash-map",
+      "set",
+      "two",
+      "sum",
+      "easy",
+      "hashmap"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Hashmap",
+      "difficulty": "Easy",
+      "patterns": [
+        "hash-map",
+        "set"
+      ],
+      "keywords": [
+        "hash-map",
+        "set",
+        "two",
+        "sum",
+        "easy",
+        "hashmap"
+      ]
+    }
+  },
+  {
+    "id": 45,
+    "title": "Happy Number",
+    "difficulty": "Easy",
+    "category": "Hashmap",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-5-hashmap/045-happy-number",
+    "slug": "happy-number",
+    "statement": "Practice Happy Number (Easy) from Top Interview 150 in category Hashmap.",
+    "tags": [
+      "hash-map",
+      "set"
+    ],
+    "semanticKeywords": [
+      "hash-map",
+      "set",
+      "happy",
+      "number",
+      "easy",
+      "hashmap"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Hashmap",
+      "difficulty": "Easy",
+      "patterns": [
+        "hash-map",
+        "set"
+      ],
+      "keywords": [
+        "hash-map",
+        "set",
+        "happy",
+        "number",
+        "easy",
+        "hashmap"
+      ]
+    }
+  },
+  {
+    "id": 46,
+    "title": "Contains Duplicate II",
+    "difficulty": "Easy",
+    "category": "Hashmap",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-5-hashmap/046-contains-duplicate-ii",
+    "slug": "contains-duplicate-ii",
+    "statement": "Practice Contains Duplicate II (Easy) from Top Interview 150 in category Hashmap.",
+    "tags": [
+      "hash-map",
+      "set"
+    ],
+    "semanticKeywords": [
+      "hash-map",
+      "set",
+      "contains",
+      "duplicate",
+      "easy",
+      "hashmap"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Hashmap",
+      "difficulty": "Easy",
+      "patterns": [
+        "hash-map",
+        "set"
+      ],
+      "keywords": [
+        "hash-map",
+        "set",
+        "contains",
+        "duplicate",
+        "easy",
+        "hashmap"
+      ]
+    }
+  },
+  {
+    "id": 47,
+    "title": "Longest Consecutive Sequence",
+    "difficulty": "Medium",
+    "category": "Hashmap",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-5-hashmap/047-longest-consecutive-sequence",
+    "slug": "longest-consecutive-sequence",
+    "statement": "Practice Longest Consecutive Sequence (Medium) from Top Interview 150 in category Hashmap.",
+    "tags": [
+      "hash-map",
+      "set"
+    ],
+    "semanticKeywords": [
+      "hash-map",
+      "set",
+      "longest",
+      "consecutive",
+      "sequence",
+      "medium",
+      "hashmap"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Hashmap",
+      "difficulty": "Medium",
+      "patterns": [
+        "hash-map",
+        "set"
+      ],
+      "keywords": [
+        "hash-map",
+        "set",
+        "longest",
+        "consecutive",
+        "sequence",
+        "medium",
+        "hashmap"
+      ]
+    }
+  },
+  {
+    "id": 48,
+    "title": "Summary Ranges",
+    "difficulty": "Easy",
+    "category": "Intervals",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-6-intervals/048-summary-ranges",
+    "slug": "summary-ranges",
+    "statement": "Practice Summary Ranges (Easy) from Top Interview 150 in category Intervals.",
+    "tags": [
+      "intervals",
+      "sorting",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "intervals",
+      "sorting",
+      "greedy",
+      "summary",
+      "ranges",
+      "easy"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Intervals",
+      "difficulty": "Easy",
+      "patterns": [
+        "intervals",
+        "sorting",
+        "greedy"
+      ],
+      "keywords": [
+        "intervals",
+        "sorting",
+        "greedy",
+        "summary",
+        "ranges",
+        "easy"
+      ]
+    }
+  },
+  {
+    "id": 49,
+    "title": "Merge Intervals",
+    "difficulty": "Medium",
+    "category": "Intervals",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-6-intervals/049-merge-intervals",
+    "slug": "merge-intervals",
+    "statement": "Practice Merge Intervals (Medium) from Top Interview 150 in category Intervals.",
+    "tags": [
+      "intervals",
+      "sorting",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "intervals",
+      "sorting",
+      "greedy",
+      "merge",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Intervals",
+      "difficulty": "Medium",
+      "patterns": [
+        "intervals",
+        "sorting",
+        "greedy"
+      ],
+      "keywords": [
+        "intervals",
+        "sorting",
+        "greedy",
+        "merge",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 50,
+    "title": "Insert Interval",
+    "difficulty": "Medium",
+    "category": "Intervals",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-6-intervals/050-insert-interval",
+    "slug": "insert-interval",
+    "statement": "Practice Insert Interval (Medium) from Top Interview 150 in category Intervals.",
+    "tags": [
+      "intervals",
+      "sorting",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "intervals",
+      "sorting",
+      "greedy",
+      "insert",
+      "interval",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Intervals",
+      "difficulty": "Medium",
+      "patterns": [
+        "intervals",
+        "sorting",
+        "greedy"
+      ],
+      "keywords": [
+        "intervals",
+        "sorting",
+        "greedy",
+        "insert",
+        "interval",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 51,
+    "title": "Minimum Number of Arrows to Burst Balloons",
+    "difficulty": "Medium",
+    "category": "Intervals",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-6-intervals/051-minimum-number-of-arrows-to-burst-balloons",
+    "slug": "minimum-number-of-arrows-to-burst-balloons",
+    "statement": "Practice Minimum Number of Arrows to Burst Balloons (Medium) from Top Interview 150 in category Intervals.",
+    "tags": [
+      "intervals",
+      "sorting",
+      "greedy"
+    ],
+    "semanticKeywords": [
+      "intervals",
+      "sorting",
+      "greedy",
+      "minimum",
+      "number",
+      "arrows",
+      "burst",
+      "balloons",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Intervals",
+      "difficulty": "Medium",
+      "patterns": [
+        "intervals",
+        "sorting",
+        "greedy"
+      ],
+      "keywords": [
+        "intervals",
+        "sorting",
+        "greedy",
+        "minimum",
+        "number",
+        "arrows",
+        "burst",
+        "balloons",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 52,
+    "title": "Valid Parentheses",
+    "difficulty": "Easy",
+    "category": "Stack",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-7-stack/052-valid-parentheses",
+    "slug": "valid-parentheses",
+    "statement": "Practice Valid Parentheses (Easy) from Top Interview 150 in category Stack.",
+    "tags": [
+      "stack",
+      "monotonic-stack"
+    ],
+    "semanticKeywords": [
+      "stack",
+      "monotonic-stack",
+      "valid",
+      "parentheses",
+      "easy"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Stack",
+      "difficulty": "Easy",
+      "patterns": [
+        "stack",
+        "monotonic-stack"
+      ],
+      "keywords": [
+        "stack",
+        "monotonic-stack",
+        "valid",
+        "parentheses",
+        "easy"
+      ]
+    }
+  },
+  {
+    "id": 53,
+    "title": "Simplify Path",
+    "difficulty": "Medium",
+    "category": "Stack",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-7-stack/053-simplify-path",
+    "slug": "simplify-path",
+    "statement": "Practice Simplify Path (Medium) from Top Interview 150 in category Stack.",
+    "tags": [
+      "stack",
+      "monotonic-stack"
+    ],
+    "semanticKeywords": [
+      "stack",
+      "monotonic-stack",
+      "simplify",
+      "path",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Stack",
+      "difficulty": "Medium",
+      "patterns": [
+        "stack",
+        "monotonic-stack"
+      ],
+      "keywords": [
+        "stack",
+        "monotonic-stack",
+        "simplify",
+        "path",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 54,
+    "title": "Min Stack",
+    "difficulty": "Medium",
+    "category": "Stack",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-7-stack/054-min-stack",
+    "slug": "min-stack",
+    "statement": "Practice Min Stack (Medium) from Top Interview 150 in category Stack.",
+    "tags": [
+      "stack",
+      "monotonic-stack"
+    ],
+    "semanticKeywords": [
+      "stack",
+      "monotonic-stack",
+      "min",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Stack",
+      "difficulty": "Medium",
+      "patterns": [
+        "stack",
+        "monotonic-stack"
+      ],
+      "keywords": [
+        "stack",
+        "monotonic-stack",
+        "min",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 55,
+    "title": "Evaluate Reverse Polish Notation",
+    "difficulty": "Medium",
+    "category": "Stack",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-7-stack/055-evaluate-reverse-polish-notation",
+    "slug": "evaluate-reverse-polish-notation",
+    "statement": "Practice Evaluate Reverse Polish Notation (Medium) from Top Interview 150 in category Stack.",
+    "tags": [
+      "stack",
+      "monotonic-stack"
+    ],
+    "semanticKeywords": [
+      "stack",
+      "monotonic-stack",
+      "evaluate",
+      "reverse",
+      "polish",
+      "notation",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Stack",
+      "difficulty": "Medium",
+      "patterns": [
+        "stack",
+        "monotonic-stack"
+      ],
+      "keywords": [
+        "stack",
+        "monotonic-stack",
+        "evaluate",
+        "reverse",
+        "polish",
+        "notation",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 56,
+    "title": "Basic Calculator",
+    "difficulty": "Hard",
+    "category": "Stack",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-7-stack/056-basic-calculator",
+    "slug": "basic-calculator",
+    "statement": "Practice Basic Calculator (Hard) from Top Interview 150 in category Stack.",
+    "tags": [
+      "stack",
+      "monotonic-stack"
+    ],
+    "semanticKeywords": [
+      "stack",
+      "monotonic-stack",
+      "basic",
+      "calculator",
+      "hard"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Stack",
+      "difficulty": "Hard",
+      "patterns": [
+        "stack",
+        "monotonic-stack"
+      ],
+      "keywords": [
+        "stack",
+        "monotonic-stack",
+        "basic",
+        "calculator",
+        "hard"
+      ]
+    }
+  },
+  {
+    "id": 57,
+    "title": "Linked List Cycle",
+    "difficulty": "Easy",
+    "category": "Linked List",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-8-linked-list/057-linked-list-cycle",
+    "slug": "linked-list-cycle",
+    "statement": "Practice Linked List Cycle (Easy) from Top Interview 150 in category Linked List.",
+    "tags": [
+      "linked-list",
+      "two-pointers"
+    ],
+    "semanticKeywords": [
+      "linked-list",
+      "two-pointers",
+      "linked",
+      "list",
+      "cycle",
+      "easy"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Linked List",
+      "difficulty": "Easy",
+      "patterns": [
+        "linked-list",
+        "two-pointers"
+      ],
+      "keywords": [
+        "linked-list",
+        "two-pointers",
+        "linked",
+        "list",
+        "cycle",
+        "easy"
+      ]
+    }
+  },
+  {
+    "id": 58,
+    "title": "Add Two Numbers",
+    "difficulty": "Medium",
+    "category": "Linked List",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-8-linked-list/058-add-two-numbers",
+    "slug": "add-two-numbers",
+    "statement": "Practice Add Two Numbers (Medium) from Top Interview 150 in category Linked List.",
+    "tags": [
+      "linked-list",
+      "two-pointers"
+    ],
+    "semanticKeywords": [
+      "linked-list",
+      "two-pointers",
+      "add",
+      "two",
+      "numbers",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Linked List",
+      "difficulty": "Medium",
+      "patterns": [
+        "linked-list",
+        "two-pointers"
+      ],
+      "keywords": [
+        "linked-list",
+        "two-pointers",
+        "add",
+        "two",
+        "numbers",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 59,
+    "title": "Merge Two Sorted Lists",
+    "difficulty": "Easy",
+    "category": "Linked List",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-8-linked-list/059-merge-two-sorted-lists",
+    "slug": "merge-two-sorted-lists",
+    "statement": "Practice Merge Two Sorted Lists (Easy) from Top Interview 150 in category Linked List.",
+    "tags": [
+      "linked-list",
+      "two-pointers"
+    ],
+    "semanticKeywords": [
+      "linked-list",
+      "two-pointers",
+      "merge",
+      "two",
+      "sorted",
+      "lists",
+      "easy"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Linked List",
+      "difficulty": "Easy",
+      "patterns": [
+        "linked-list",
+        "two-pointers"
+      ],
+      "keywords": [
+        "linked-list",
+        "two-pointers",
+        "merge",
+        "two",
+        "sorted",
+        "lists",
+        "easy"
+      ]
+    }
+  },
+  {
+    "id": 60,
+    "title": "Copy List with Random Pointer",
+    "difficulty": "Medium",
+    "category": "Linked List",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-8-linked-list/060-copy-list-with-random-pointer",
+    "slug": "copy-list-with-random-pointer",
+    "statement": "Practice Copy List with Random Pointer (Medium) from Top Interview 150 in category Linked List.",
+    "tags": [
+      "linked-list",
+      "two-pointers"
+    ],
+    "semanticKeywords": [
+      "linked-list",
+      "two-pointers",
+      "copy",
+      "list",
+      "with",
+      "random",
+      "pointer",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Linked List",
+      "difficulty": "Medium",
+      "patterns": [
+        "linked-list",
+        "two-pointers"
+      ],
+      "keywords": [
+        "linked-list",
+        "two-pointers",
+        "copy",
+        "list",
+        "with",
+        "random",
+        "pointer",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 61,
+    "title": "Reverse Linked List II",
+    "difficulty": "Medium",
+    "category": "Linked List",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-8-linked-list/061-reverse-linked-list-ii",
+    "slug": "reverse-linked-list-ii",
+    "statement": "Practice Reverse Linked List II (Medium) from Top Interview 150 in category Linked List.",
+    "tags": [
+      "linked-list",
+      "two-pointers"
+    ],
+    "semanticKeywords": [
+      "linked-list",
+      "two-pointers",
+      "reverse",
+      "linked",
+      "list",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Linked List",
+      "difficulty": "Medium",
+      "patterns": [
+        "linked-list",
+        "two-pointers"
+      ],
+      "keywords": [
+        "linked-list",
+        "two-pointers",
+        "reverse",
+        "linked",
+        "list",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 62,
+    "title": "Reverse Nodes in k-Group",
+    "difficulty": "Hard",
+    "category": "Linked List",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-8-linked-list/062-reverse-nodes-in-k-group",
+    "slug": "reverse-nodes-in-k-group",
+    "statement": "Practice Reverse Nodes in k-Group (Hard) from Top Interview 150 in category Linked List.",
+    "tags": [
+      "linked-list",
+      "two-pointers"
+    ],
+    "semanticKeywords": [
+      "linked-list",
+      "two-pointers",
+      "reverse",
+      "nodes",
+      "group",
+      "hard"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Linked List",
+      "difficulty": "Hard",
+      "patterns": [
+        "linked-list",
+        "two-pointers"
+      ],
+      "keywords": [
+        "linked-list",
+        "two-pointers",
+        "reverse",
+        "nodes",
+        "group",
+        "hard"
+      ]
+    }
+  },
+  {
+    "id": 63,
+    "title": "Remove Nth Node From End of List",
+    "difficulty": "Medium",
+    "category": "Linked List",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-8-linked-list/063-remove-nth-node-from-end-of-list",
+    "slug": "remove-nth-node-from-end-of-list",
+    "statement": "Practice Remove Nth Node From End of List (Medium) from Top Interview 150 in category Linked List.",
+    "tags": [
+      "linked-list",
+      "two-pointers"
+    ],
+    "semanticKeywords": [
+      "linked-list",
+      "two-pointers",
+      "remove",
+      "nth",
+      "node",
+      "from",
+      "end",
+      "list",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Linked List",
+      "difficulty": "Medium",
+      "patterns": [
+        "linked-list",
+        "two-pointers"
+      ],
+      "keywords": [
+        "linked-list",
+        "two-pointers",
+        "remove",
+        "nth",
+        "node",
+        "from",
+        "end",
+        "list",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 64,
+    "title": "Remove Duplicates from Sorted List II",
+    "difficulty": "Medium",
+    "category": "Linked List",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-8-linked-list/064-remove-duplicates-from-sorted-list-ii",
+    "slug": "remove-duplicates-from-sorted-list-ii",
+    "statement": "Practice Remove Duplicates from Sorted List II (Medium) from Top Interview 150 in category Linked List.",
+    "tags": [
+      "linked-list",
+      "two-pointers"
+    ],
+    "semanticKeywords": [
+      "linked-list",
+      "two-pointers",
+      "remove",
+      "duplicates",
+      "from",
+      "sorted",
+      "list",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Linked List",
+      "difficulty": "Medium",
+      "patterns": [
+        "linked-list",
+        "two-pointers"
+      ],
+      "keywords": [
+        "linked-list",
+        "two-pointers",
+        "remove",
+        "duplicates",
+        "from",
+        "sorted",
+        "list",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 65,
+    "title": "Rotate List",
+    "difficulty": "Medium",
+    "category": "Linked List",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-8-linked-list/065-rotate-list",
+    "slug": "rotate-list",
+    "statement": "Practice Rotate List (Medium) from Top Interview 150 in category Linked List.",
+    "tags": [
+      "linked-list",
+      "two-pointers"
+    ],
+    "semanticKeywords": [
+      "linked-list",
+      "two-pointers",
+      "rotate",
+      "list",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Linked List",
+      "difficulty": "Medium",
+      "patterns": [
+        "linked-list",
+        "two-pointers"
+      ],
+      "keywords": [
+        "linked-list",
+        "two-pointers",
+        "rotate",
+        "list",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 66,
+    "title": "Partition List",
+    "difficulty": "Medium",
+    "category": "Linked List",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-8-linked-list/066-partition-list",
+    "slug": "partition-list",
+    "statement": "Practice Partition List (Medium) from Top Interview 150 in category Linked List.",
+    "tags": [
+      "linked-list",
+      "two-pointers"
+    ],
+    "semanticKeywords": [
+      "linked-list",
+      "two-pointers",
+      "partition",
+      "list",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Linked List",
+      "difficulty": "Medium",
+      "patterns": [
+        "linked-list",
+        "two-pointers"
+      ],
+      "keywords": [
+        "linked-list",
+        "two-pointers",
+        "partition",
+        "list",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 67,
+    "title": "LRU Cache",
+    "difficulty": "Medium",
+    "category": "Linked List",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-8-linked-list/067-lru-cache",
+    "slug": "lru-cache",
+    "statement": "Practice LRU Cache (Medium) from Top Interview 150 in category Linked List.",
+    "tags": [
+      "linked-list",
+      "two-pointers"
+    ],
+    "semanticKeywords": [
+      "linked-list",
+      "two-pointers",
+      "lru",
+      "cache",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Linked List",
+      "difficulty": "Medium",
+      "patterns": [
+        "linked-list",
+        "two-pointers"
+      ],
+      "keywords": [
+        "linked-list",
+        "two-pointers",
+        "lru",
+        "cache",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 68,
+    "title": "Maximum Depth of Binary Tree",
+    "difficulty": "Easy",
+    "category": "Binary Tree General",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-9-binary-tree-general/068-maximum-depth-of-binary-tree",
+    "slug": "maximum-depth-of-binary-tree",
+    "statement": "Practice Maximum Depth of Binary Tree (Easy) from Top Interview 150 in category Binary Tree General.",
+    "tags": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "dfs",
+      "bfs",
+      "maximum",
+      "depth",
+      "binary",
+      "easy",
+      "binary-tree-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree General",
+      "difficulty": "Easy",
+      "patterns": [
+        "tree",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "tree",
+        "dfs",
+        "bfs",
+        "maximum",
+        "depth",
+        "binary",
+        "easy",
+        "binary-tree-general"
+      ]
+    }
+  },
+  {
+    "id": 69,
+    "title": "Same Tree",
+    "difficulty": "Easy",
+    "category": "Binary Tree General",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-9-binary-tree-general/069-same-tree",
+    "slug": "same-tree",
+    "statement": "Practice Same Tree (Easy) from Top Interview 150 in category Binary Tree General.",
+    "tags": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "dfs",
+      "bfs",
+      "same",
+      "easy",
+      "binary-tree-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree General",
+      "difficulty": "Easy",
+      "patterns": [
+        "tree",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "tree",
+        "dfs",
+        "bfs",
+        "same",
+        "easy",
+        "binary-tree-general"
+      ]
+    }
+  },
+  {
+    "id": 70,
+    "title": "Invert Binary Tree",
+    "difficulty": "Easy",
+    "category": "Binary Tree General",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-9-binary-tree-general/070-invert-binary-tree",
+    "slug": "invert-binary-tree",
+    "statement": "Practice Invert Binary Tree (Easy) from Top Interview 150 in category Binary Tree General.",
+    "tags": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "dfs",
+      "bfs",
+      "invert",
+      "binary",
+      "easy",
+      "binary-tree-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree General",
+      "difficulty": "Easy",
+      "patterns": [
+        "tree",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "tree",
+        "dfs",
+        "bfs",
+        "invert",
+        "binary",
+        "easy",
+        "binary-tree-general"
+      ]
+    }
+  },
+  {
+    "id": 71,
+    "title": "Symmetric Tree",
+    "difficulty": "Easy",
+    "category": "Binary Tree General",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-9-binary-tree-general/071-symmetric-tree",
+    "slug": "symmetric-tree",
+    "statement": "Practice Symmetric Tree (Easy) from Top Interview 150 in category Binary Tree General.",
+    "tags": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "dfs",
+      "bfs",
+      "symmetric",
+      "easy",
+      "binary-tree-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree General",
+      "difficulty": "Easy",
+      "patterns": [
+        "tree",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "tree",
+        "dfs",
+        "bfs",
+        "symmetric",
+        "easy",
+        "binary-tree-general"
+      ]
+    }
+  },
+  {
+    "id": 72,
+    "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+    "difficulty": "Medium",
+    "category": "Binary Tree General",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-9-binary-tree-general/072-construct-binary-tree-from-preorder-and-inorder-traversal",
+    "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
+    "statement": "Practice Construct Binary Tree from Preorder and Inorder Traversal (Medium) from Top Interview 150 in category Binary Tree General.",
+    "tags": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "dfs",
+      "bfs",
+      "construct",
+      "binary",
+      "from",
+      "preorder",
+      "and",
+      "inorder",
+      "traversal",
+      "medium",
+      "binary-tree-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree General",
+      "difficulty": "Medium",
+      "patterns": [
+        "tree",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "tree",
+        "dfs",
+        "bfs",
+        "construct",
+        "binary",
+        "from",
+        "preorder",
+        "and",
+        "inorder",
+        "traversal",
+        "medium",
+        "binary-tree-general"
+      ]
+    }
+  },
+  {
+    "id": 73,
+    "title": "Construct Binary Tree from Inorder and Postorder Traversal",
+    "difficulty": "Medium",
+    "category": "Binary Tree General",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-9-binary-tree-general/072-construct-binary-tree-from-preorder-and-inorder-traversal",
+    "slug": "construct-binary-tree-from-inorder-and-postorder-traversal",
+    "statement": "Practice Construct Binary Tree from Inorder and Postorder Traversal (Medium) from Top Interview 150 in category Binary Tree General.",
+    "tags": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "dfs",
+      "bfs",
+      "construct",
+      "binary",
+      "from",
+      "inorder",
+      "and",
+      "postorder",
+      "traversal",
+      "medium",
+      "binary-tree-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree General",
+      "difficulty": "Medium",
+      "patterns": [
+        "tree",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "tree",
+        "dfs",
+        "bfs",
+        "construct",
+        "binary",
+        "from",
+        "inorder",
+        "and",
+        "postorder",
+        "traversal",
+        "medium",
+        "binary-tree-general"
+      ]
+    }
+  },
+  {
+    "id": 74,
+    "title": "Populating Next Right Pointers in Each Node II",
+    "difficulty": "Medium",
+    "category": "Binary Tree General",
+    "source": "https://chunhthanhde.gitbook.io/leetcode-top-interview/topic-9-binary-tree-general/074-populating-next-right-pointers-in-each-node-ii",
+    "slug": "populating-next-right-pointers-in-each-node-ii",
+    "statement": "Practice Populating Next Right Pointers in Each Node II (Medium) from Top Interview 150 in category Binary Tree General.",
+    "tags": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "dfs",
+      "bfs",
+      "populating",
+      "next",
+      "right",
+      "pointers",
+      "each",
+      "node",
+      "medium",
+      "binary-tree-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree General",
+      "difficulty": "Medium",
+      "patterns": [
+        "tree",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "tree",
+        "dfs",
+        "bfs",
+        "populating",
+        "next",
+        "right",
+        "pointers",
+        "each",
+        "node",
+        "medium",
+        "binary-tree-general"
+      ]
+    }
+  },
+  {
+    "id": 75,
+    "title": "Flatten Binary Tree to Linked List",
+    "difficulty": "Medium",
+    "category": "Binary Tree General",
+    "source": null,
+    "slug": "flatten-binary-tree-to-linked-list",
+    "statement": "Practice Flatten Binary Tree to Linked List (Medium) from Top Interview 150 in category Binary Tree General.",
+    "tags": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "dfs",
+      "bfs",
+      "flatten",
+      "binary",
+      "linked",
+      "list",
+      "medium",
+      "binary-tree-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree General",
+      "difficulty": "Medium",
+      "patterns": [
+        "tree",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "tree",
+        "dfs",
+        "bfs",
+        "flatten",
+        "binary",
+        "linked",
+        "list",
+        "medium",
+        "binary-tree-general"
+      ]
+    }
+  },
+  {
+    "id": 76,
+    "title": "Path Sum",
+    "difficulty": "Easy",
+    "category": "Binary Tree General",
+    "source": null,
+    "slug": "path-sum",
+    "statement": "Practice Path Sum (Easy) from Top Interview 150 in category Binary Tree General.",
+    "tags": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "dfs",
+      "bfs",
+      "path",
+      "sum",
+      "easy",
+      "binary-tree-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree General",
+      "difficulty": "Easy",
+      "patterns": [
+        "tree",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "tree",
+        "dfs",
+        "bfs",
+        "path",
+        "sum",
+        "easy",
+        "binary-tree-general"
+      ]
+    }
+  },
+  {
+    "id": 77,
+    "title": "Sum Root to Leaf Numbers",
+    "difficulty": "Medium",
+    "category": "Binary Tree General",
+    "source": null,
+    "slug": "sum-root-to-leaf-numbers",
+    "statement": "Practice Sum Root to Leaf Numbers (Medium) from Top Interview 150 in category Binary Tree General.",
+    "tags": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "dfs",
+      "bfs",
+      "sum",
+      "root",
+      "leaf",
+      "numbers",
+      "medium",
+      "binary-tree-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree General",
+      "difficulty": "Medium",
+      "patterns": [
+        "tree",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "tree",
+        "dfs",
+        "bfs",
+        "sum",
+        "root",
+        "leaf",
+        "numbers",
+        "medium",
+        "binary-tree-general"
+      ]
+    }
+  },
+  {
+    "id": 78,
+    "title": "Binary Tree Maximum Path Sum",
+    "difficulty": "Hard",
+    "category": "Binary Tree General",
+    "source": null,
+    "slug": "binary-tree-maximum-path-sum",
+    "statement": "Practice Binary Tree Maximum Path Sum (Hard) from Top Interview 150 in category Binary Tree General.",
+    "tags": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "dfs",
+      "bfs",
+      "binary",
+      "maximum",
+      "path",
+      "sum",
+      "hard",
+      "binary-tree-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree General",
+      "difficulty": "Hard",
+      "patterns": [
+        "tree",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "tree",
+        "dfs",
+        "bfs",
+        "binary",
+        "maximum",
+        "path",
+        "sum",
+        "hard",
+        "binary-tree-general"
+      ]
+    }
+  },
+  {
+    "id": 79,
+    "title": "Binary Search Tree Iterator",
+    "difficulty": "Medium",
+    "category": "Binary Tree General",
+    "source": null,
+    "slug": "binary-search-tree-iterator",
+    "statement": "Practice Binary Search Tree Iterator (Medium) from Top Interview 150 in category Binary Tree General.",
+    "tags": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "dfs",
+      "bfs",
+      "binary",
+      "search",
+      "iterator",
+      "medium",
+      "binary-tree-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree General",
+      "difficulty": "Medium",
+      "patterns": [
+        "tree",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "tree",
+        "dfs",
+        "bfs",
+        "binary",
+        "search",
+        "iterator",
+        "medium",
+        "binary-tree-general"
+      ]
+    }
+  },
+  {
+    "id": 80,
+    "title": "Count Complete Tree Nodes",
+    "difficulty": "Easy",
+    "category": "Binary Tree General",
+    "source": null,
+    "slug": "count-complete-tree-nodes",
+    "statement": "Practice Count Complete Tree Nodes (Easy) from Top Interview 150 in category Binary Tree General.",
+    "tags": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "dfs",
+      "bfs",
+      "count",
+      "complete",
+      "nodes",
+      "easy",
+      "binary-tree-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree General",
+      "difficulty": "Easy",
+      "patterns": [
+        "tree",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "tree",
+        "dfs",
+        "bfs",
+        "count",
+        "complete",
+        "nodes",
+        "easy",
+        "binary-tree-general"
+      ]
+    }
+  },
+  {
+    "id": 81,
+    "title": "Lowest Common Ancestor of a Binary Tree",
+    "difficulty": "Medium",
+    "category": "Binary Tree General",
+    "source": null,
+    "slug": "lowest-common-ancestor-of-a-binary-tree",
+    "statement": "Practice Lowest Common Ancestor of a Binary Tree (Medium) from Top Interview 150 in category Binary Tree General.",
+    "tags": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "dfs",
+      "bfs",
+      "lowest",
+      "common",
+      "ancestor",
+      "binary",
+      "medium",
+      "binary-tree-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree General",
+      "difficulty": "Medium",
+      "patterns": [
+        "tree",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "tree",
+        "dfs",
+        "bfs",
+        "lowest",
+        "common",
+        "ancestor",
+        "binary",
+        "medium",
+        "binary-tree-general"
+      ]
+    }
+  },
+  {
+    "id": 83,
+    "title": "Average of Levels in Binary Tree",
+    "difficulty": "Easy",
+    "category": "Binary Tree BFS",
+    "source": null,
+    "slug": "average-of-levels-in-binary-tree",
+    "statement": "Practice Average of Levels in Binary Tree (Easy) from Top Interview 150 in category Binary Tree BFS.",
+    "tags": [
+      "tree",
+      "bfs",
+      "queue"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "bfs",
+      "queue",
+      "average",
+      "levels",
+      "binary",
+      "easy",
+      "binary-tree-bfs"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree BFS",
+      "difficulty": "Easy",
+      "patterns": [
+        "tree",
+        "bfs",
+        "queue"
+      ],
+      "keywords": [
+        "tree",
+        "bfs",
+        "queue",
+        "average",
+        "levels",
+        "binary",
+        "easy",
+        "binary-tree-bfs"
+      ]
+    }
+  },
+  {
+    "id": 84,
+    "title": "Binary Tree Level Order Traversal",
+    "difficulty": "Medium",
+    "category": "Binary Tree BFS",
+    "source": null,
+    "slug": "binary-tree-level-order-traversal",
+    "statement": "Practice Binary Tree Level Order Traversal (Medium) from Top Interview 150 in category Binary Tree BFS.",
+    "tags": [
+      "tree",
+      "bfs",
+      "queue"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "bfs",
+      "queue",
+      "binary",
+      "level",
+      "order",
+      "traversal",
+      "medium",
+      "binary-tree-bfs"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree BFS",
+      "difficulty": "Medium",
+      "patterns": [
+        "tree",
+        "bfs",
+        "queue"
+      ],
+      "keywords": [
+        "tree",
+        "bfs",
+        "queue",
+        "binary",
+        "level",
+        "order",
+        "traversal",
+        "medium",
+        "binary-tree-bfs"
+      ]
+    }
+  },
+  {
+    "id": 85,
+    "title": "Binary Tree Zigzag Level Order Traversal",
+    "difficulty": "Medium",
+    "category": "Binary Tree BFS",
+    "source": null,
+    "slug": "binary-tree-zigzag-level-order-traversal",
+    "statement": "Practice Binary Tree Zigzag Level Order Traversal (Medium) from Top Interview 150 in category Binary Tree BFS.",
+    "tags": [
+      "tree",
+      "bfs",
+      "queue"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "bfs",
+      "queue",
+      "binary",
+      "zigzag",
+      "level",
+      "order",
+      "traversal",
+      "medium",
+      "binary-tree-bfs"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree BFS",
+      "difficulty": "Medium",
+      "patterns": [
+        "tree",
+        "bfs",
+        "queue"
+      ],
+      "keywords": [
+        "tree",
+        "bfs",
+        "queue",
+        "binary",
+        "zigzag",
+        "level",
+        "order",
+        "traversal",
+        "medium",
+        "binary-tree-bfs"
+      ]
+    }
+  },
+  {
+    "id": 86,
+    "title": "Minimum Absolute Difference in BST",
+    "difficulty": "Easy",
+    "category": "Binary Search Tree",
+    "source": null,
+    "slug": "minimum-absolute-difference-in-bst",
+    "statement": "Practice Minimum Absolute Difference in BST (Easy) from Top Interview 150 in category Binary Search Tree.",
+    "tags": [
+      "bst",
+      "tree",
+      "dfs"
+    ],
+    "semanticKeywords": [
+      "bst",
+      "tree",
+      "dfs",
+      "minimum",
+      "absolute",
+      "difference",
+      "easy",
+      "binary-search-tree"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Search Tree",
+      "difficulty": "Easy",
+      "patterns": [
+        "bst",
+        "tree",
+        "dfs"
+      ],
+      "keywords": [
+        "bst",
+        "tree",
+        "dfs",
+        "minimum",
+        "absolute",
+        "difference",
+        "easy",
+        "binary-search-tree"
+      ]
+    }
+  },
+  {
+    "id": 87,
+    "title": "Kth Smallest Element in a BST",
+    "difficulty": "Medium",
+    "category": "Binary Search Tree",
+    "source": null,
+    "slug": "kth-smallest-element-in-a-bst",
+    "statement": "Practice Kth Smallest Element in a BST (Medium) from Top Interview 150 in category Binary Search Tree.",
+    "tags": [
+      "bst",
+      "tree",
+      "dfs"
+    ],
+    "semanticKeywords": [
+      "bst",
+      "tree",
+      "dfs",
+      "kth",
+      "smallest",
+      "element",
+      "medium",
+      "binary-search-tree"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Search Tree",
+      "difficulty": "Medium",
+      "patterns": [
+        "bst",
+        "tree",
+        "dfs"
+      ],
+      "keywords": [
+        "bst",
+        "tree",
+        "dfs",
+        "kth",
+        "smallest",
+        "element",
+        "medium",
+        "binary-search-tree"
+      ]
+    }
+  },
+  {
+    "id": 88,
+    "title": "Validate Binary Search Tree",
+    "difficulty": "Medium",
+    "category": "Binary Search Tree",
+    "source": null,
+    "slug": "validate-binary-search-tree",
+    "statement": "Practice Validate Binary Search Tree (Medium) from Top Interview 150 in category Binary Search Tree.",
+    "tags": [
+      "bst",
+      "tree",
+      "dfs"
+    ],
+    "semanticKeywords": [
+      "bst",
+      "tree",
+      "dfs",
+      "validate",
+      "binary",
+      "search",
+      "medium",
+      "binary-search-tree"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Search Tree",
+      "difficulty": "Medium",
+      "patterns": [
+        "bst",
+        "tree",
+        "dfs"
+      ],
+      "keywords": [
+        "bst",
+        "tree",
+        "dfs",
+        "validate",
+        "binary",
+        "search",
+        "medium",
+        "binary-search-tree"
+      ]
+    }
+  },
+  {
+    "id": 89,
+    "title": "Number of Islands",
+    "difficulty": "Medium",
+    "category": "Graph General",
+    "source": null,
+    "slug": "number-of-islands",
+    "statement": "Practice Number of Islands (Medium) from Top Interview 150 in category Graph General.",
+    "tags": [
+      "graph",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "graph",
+      "dfs",
+      "bfs",
+      "number",
+      "islands",
+      "medium",
+      "graph-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Graph General",
+      "difficulty": "Medium",
+      "patterns": [
+        "graph",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "graph",
+        "dfs",
+        "bfs",
+        "number",
+        "islands",
+        "medium",
+        "graph-general"
+      ]
+    }
+  },
+  {
+    "id": 90,
+    "title": "Surrounded Regions",
+    "difficulty": "Medium",
+    "category": "Graph General",
+    "source": null,
+    "slug": "surrounded-regions",
+    "statement": "Practice Surrounded Regions (Medium) from Top Interview 150 in category Graph General.",
+    "tags": [
+      "graph",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "graph",
+      "dfs",
+      "bfs",
+      "surrounded",
+      "regions",
+      "medium",
+      "graph-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Graph General",
+      "difficulty": "Medium",
+      "patterns": [
+        "graph",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "graph",
+        "dfs",
+        "bfs",
+        "surrounded",
+        "regions",
+        "medium",
+        "graph-general"
+      ]
+    }
+  },
+  {
+    "id": 91,
+    "title": "Clone Graph",
+    "difficulty": "Medium",
+    "category": "Graph General",
+    "source": null,
+    "slug": "clone-graph",
+    "statement": "Practice Clone Graph (Medium) from Top Interview 150 in category Graph General.",
+    "tags": [
+      "graph",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "graph",
+      "dfs",
+      "bfs",
+      "clone",
+      "medium",
+      "graph-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Graph General",
+      "difficulty": "Medium",
+      "patterns": [
+        "graph",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "graph",
+        "dfs",
+        "bfs",
+        "clone",
+        "medium",
+        "graph-general"
+      ]
+    }
+  },
+  {
+    "id": 92,
+    "title": "Evaluate Division",
+    "difficulty": "Medium",
+    "category": "Graph General",
+    "source": null,
+    "slug": "evaluate-division",
+    "statement": "Practice Evaluate Division (Medium) from Top Interview 150 in category Graph General.",
+    "tags": [
+      "graph",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "graph",
+      "dfs",
+      "bfs",
+      "evaluate",
+      "division",
+      "medium",
+      "graph-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Graph General",
+      "difficulty": "Medium",
+      "patterns": [
+        "graph",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "graph",
+        "dfs",
+        "bfs",
+        "evaluate",
+        "division",
+        "medium",
+        "graph-general"
+      ]
+    }
+  },
+  {
+    "id": 93,
+    "title": "Course Schedule",
+    "difficulty": "Medium",
+    "category": "Graph General",
+    "source": null,
+    "slug": "course-schedule",
+    "statement": "Practice Course Schedule (Medium) from Top Interview 150 in category Graph General.",
+    "tags": [
+      "graph",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "graph",
+      "dfs",
+      "bfs",
+      "course",
+      "schedule",
+      "medium",
+      "graph-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Graph General",
+      "difficulty": "Medium",
+      "patterns": [
+        "graph",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "graph",
+        "dfs",
+        "bfs",
+        "course",
+        "schedule",
+        "medium",
+        "graph-general"
+      ]
+    }
+  },
+  {
+    "id": 94,
+    "title": "Course Schedule II",
+    "difficulty": "Medium",
+    "category": "Graph General",
+    "source": null,
+    "slug": "course-schedule-ii",
+    "statement": "Practice Course Schedule II (Medium) from Top Interview 150 in category Graph General.",
+    "tags": [
+      "graph",
+      "dfs",
+      "bfs"
+    ],
+    "semanticKeywords": [
+      "graph",
+      "dfs",
+      "bfs",
+      "course",
+      "schedule",
+      "medium",
+      "graph-general"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Graph General",
+      "difficulty": "Medium",
+      "patterns": [
+        "graph",
+        "dfs",
+        "bfs"
+      ],
+      "keywords": [
+        "graph",
+        "dfs",
+        "bfs",
+        "course",
+        "schedule",
+        "medium",
+        "graph-general"
+      ]
+    }
+  },
+  {
+    "id": 95,
+    "title": "Snakes and Ladders",
+    "difficulty": "Medium",
+    "category": "Graph BFS",
+    "source": null,
+    "slug": "snakes-and-ladders",
+    "statement": "Practice Snakes and Ladders (Medium) from Top Interview 150 in category Graph BFS.",
+    "tags": [
+      "graph",
+      "bfs",
+      "queue"
+    ],
+    "semanticKeywords": [
+      "graph",
+      "bfs",
+      "queue",
+      "snakes",
+      "and",
+      "ladders",
+      "medium",
+      "graph-bfs"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Graph BFS",
+      "difficulty": "Medium",
+      "patterns": [
+        "graph",
+        "bfs",
+        "queue"
+      ],
+      "keywords": [
+        "graph",
+        "bfs",
+        "queue",
+        "snakes",
+        "and",
+        "ladders",
+        "medium",
+        "graph-bfs"
+      ]
+    }
+  },
+  {
+    "id": 96,
+    "title": "Minimum Genetic Mutation",
+    "difficulty": "Medium",
+    "category": "Graph BFS",
+    "source": null,
+    "slug": "minimum-genetic-mutation",
+    "statement": "Practice Minimum Genetic Mutation (Medium) from Top Interview 150 in category Graph BFS.",
+    "tags": [
+      "graph",
+      "bfs",
+      "queue"
+    ],
+    "semanticKeywords": [
+      "graph",
+      "bfs",
+      "queue",
+      "minimum",
+      "genetic",
+      "mutation",
+      "medium",
+      "graph-bfs"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Graph BFS",
+      "difficulty": "Medium",
+      "patterns": [
+        "graph",
+        "bfs",
+        "queue"
+      ],
+      "keywords": [
+        "graph",
+        "bfs",
+        "queue",
+        "minimum",
+        "genetic",
+        "mutation",
+        "medium",
+        "graph-bfs"
+      ]
+    }
+  },
+  {
+    "id": 97,
+    "title": "Word Ladder",
+    "difficulty": "Hard",
+    "category": "Graph BFS",
+    "source": null,
+    "slug": "word-ladder",
+    "statement": "Practice Word Ladder (Hard) from Top Interview 150 in category Graph BFS.",
+    "tags": [
+      "graph",
+      "bfs",
+      "queue"
+    ],
+    "semanticKeywords": [
+      "graph",
+      "bfs",
+      "queue",
+      "word",
+      "ladder",
+      "hard",
+      "graph-bfs"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Graph BFS",
+      "difficulty": "Hard",
+      "patterns": [
+        "graph",
+        "bfs",
+        "queue"
+      ],
+      "keywords": [
+        "graph",
+        "bfs",
+        "queue",
+        "word",
+        "ladder",
+        "hard",
+        "graph-bfs"
+      ]
+    }
+  },
+  {
+    "id": 98,
+    "title": "Implement Trie (Prefix Tree)",
+    "difficulty": "Medium",
+    "category": "Trie",
+    "source": null,
+    "slug": "implement-trie-prefix-tree",
+    "statement": "Practice Implement Trie (Prefix Tree) (Medium) from Top Interview 150 in category Trie.",
+    "tags": [
+      "trie",
+      "prefix"
+    ],
+    "semanticKeywords": [
+      "trie",
+      "prefix",
+      "implement",
+      "tree",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Trie",
+      "difficulty": "Medium",
+      "patterns": [
+        "trie",
+        "prefix"
+      ],
+      "keywords": [
+        "trie",
+        "prefix",
+        "implement",
+        "tree",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 99,
+    "title": "Design Add and Search Words Data Structure",
+    "difficulty": "Medium",
+    "category": "Trie",
+    "source": null,
+    "slug": "design-add-and-search-words-data-structure",
+    "statement": "Practice Design Add and Search Words Data Structure (Medium) from Top Interview 150 in category Trie.",
+    "tags": [
+      "trie",
+      "prefix"
+    ],
+    "semanticKeywords": [
+      "trie",
+      "prefix",
+      "design",
+      "add",
+      "and",
+      "search",
+      "words",
+      "data",
+      "structure",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Trie",
+      "difficulty": "Medium",
+      "patterns": [
+        "trie",
+        "prefix"
+      ],
+      "keywords": [
+        "trie",
+        "prefix",
+        "design",
+        "add",
+        "and",
+        "search",
+        "words",
+        "data",
+        "structure",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 100,
+    "title": "Word Search II",
+    "difficulty": "Hard",
+    "category": "Trie",
+    "source": null,
+    "slug": "word-search-ii",
+    "statement": "Practice Word Search II (Hard) from Top Interview 150 in category Trie.",
+    "tags": [
+      "trie",
+      "prefix"
+    ],
+    "semanticKeywords": [
+      "trie",
+      "prefix",
+      "word",
+      "search",
+      "hard"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Trie",
+      "difficulty": "Hard",
+      "patterns": [
+        "trie",
+        "prefix"
+      ],
+      "keywords": [
+        "trie",
+        "prefix",
+        "word",
+        "search",
+        "hard"
+      ]
+    }
+  },
+  {
+    "id": 101,
+    "title": "Letter Combinations of a Phone Number",
+    "difficulty": "Medium",
+    "category": "Backtracking",
+    "source": null,
+    "slug": "letter-combinations-of-a-phone-number",
+    "statement": "Practice Letter Combinations of a Phone Number (Medium) from Top Interview 150 in category Backtracking.",
+    "tags": [
+      "backtracking",
+      "recursion"
+    ],
+    "semanticKeywords": [
+      "backtracking",
+      "recursion",
+      "letter",
+      "combinations",
+      "phone",
+      "number",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Backtracking",
+      "difficulty": "Medium",
+      "patterns": [
+        "backtracking",
+        "recursion"
+      ],
+      "keywords": [
+        "backtracking",
+        "recursion",
+        "letter",
+        "combinations",
+        "phone",
+        "number",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 102,
+    "title": "Combinations",
+    "difficulty": "Medium",
+    "category": "Backtracking",
+    "source": null,
+    "slug": "combinations",
+    "statement": "Practice Combinations (Medium) from Top Interview 150 in category Backtracking.",
+    "tags": [
+      "backtracking",
+      "recursion"
+    ],
+    "semanticKeywords": [
+      "backtracking",
+      "recursion",
+      "combinations",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Backtracking",
+      "difficulty": "Medium",
+      "patterns": [
+        "backtracking",
+        "recursion"
+      ],
+      "keywords": [
+        "backtracking",
+        "recursion",
+        "combinations",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 103,
+    "title": "Permutations",
+    "difficulty": "Medium",
+    "category": "Backtracking",
+    "source": null,
+    "slug": "permutations",
+    "statement": "Practice Permutations (Medium) from Top Interview 150 in category Backtracking.",
+    "tags": [
+      "backtracking",
+      "recursion"
+    ],
+    "semanticKeywords": [
+      "backtracking",
+      "recursion",
+      "permutations",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Backtracking",
+      "difficulty": "Medium",
+      "patterns": [
+        "backtracking",
+        "recursion"
+      ],
+      "keywords": [
+        "backtracking",
+        "recursion",
+        "permutations",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 104,
+    "title": "Combination Sum",
+    "difficulty": "Medium",
+    "category": "Backtracking",
+    "source": null,
+    "slug": "combination-sum",
+    "statement": "Practice Combination Sum (Medium) from Top Interview 150 in category Backtracking.",
+    "tags": [
+      "backtracking",
+      "recursion"
+    ],
+    "semanticKeywords": [
+      "backtracking",
+      "recursion",
+      "combination",
+      "sum",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Backtracking",
+      "difficulty": "Medium",
+      "patterns": [
+        "backtracking",
+        "recursion"
+      ],
+      "keywords": [
+        "backtracking",
+        "recursion",
+        "combination",
+        "sum",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 105,
+    "title": "N-Queens II",
+    "difficulty": "Hard",
+    "category": "Backtracking",
+    "source": null,
+    "slug": "n-queens-ii",
+    "statement": "Practice N-Queens II (Hard) from Top Interview 150 in category Backtracking.",
+    "tags": [
+      "backtracking",
+      "recursion"
+    ],
+    "semanticKeywords": [
+      "backtracking",
+      "recursion",
+      "queens",
+      "hard"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Backtracking",
+      "difficulty": "Hard",
+      "patterns": [
+        "backtracking",
+        "recursion"
+      ],
+      "keywords": [
+        "backtracking",
+        "recursion",
+        "queens",
+        "hard"
+      ]
+    }
+  },
+  {
+    "id": 106,
+    "title": "Generate Parentheses",
+    "difficulty": "Medium",
+    "category": "Backtracking",
+    "source": null,
+    "slug": "generate-parentheses",
+    "statement": "Practice Generate Parentheses (Medium) from Top Interview 150 in category Backtracking.",
+    "tags": [
+      "backtracking",
+      "recursion"
+    ],
+    "semanticKeywords": [
+      "backtracking",
+      "recursion",
+      "generate",
+      "parentheses",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Backtracking",
+      "difficulty": "Medium",
+      "patterns": [
+        "backtracking",
+        "recursion"
+      ],
+      "keywords": [
+        "backtracking",
+        "recursion",
+        "generate",
+        "parentheses",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 107,
+    "title": "Word Search",
+    "difficulty": "Medium",
+    "category": "Backtracking",
+    "source": null,
+    "slug": "word-search",
+    "statement": "Practice Word Search (Medium) from Top Interview 150 in category Backtracking.",
+    "tags": [
+      "backtracking",
+      "recursion"
+    ],
+    "semanticKeywords": [
+      "backtracking",
+      "recursion",
+      "word",
+      "search",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Backtracking",
+      "difficulty": "Medium",
+      "patterns": [
+        "backtracking",
+        "recursion"
+      ],
+      "keywords": [
+        "backtracking",
+        "recursion",
+        "word",
+        "search",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 108,
+    "title": "Convert Sorted Array to Binary Search Tree",
+    "difficulty": "Easy",
+    "category": "Divide &amp; Conquer",
+    "source": null,
+    "slug": "convert-sorted-array-to-binary-search-tree",
+    "statement": "Practice Convert Sorted Array to Binary Search Tree (Easy) from Top Interview 150 in category Divide &amp; Conquer.",
+    "tags": [
+      "algorithms",
+      "interview"
+    ],
+    "semanticKeywords": [
+      "algorithms",
+      "interview",
+      "convert",
+      "sorted",
+      "array",
+      "binary",
+      "search",
+      "tree",
+      "easy",
+      "divide-amp-conquer"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Divide &amp; Conquer",
+      "difficulty": "Easy",
+      "patterns": [
+        "algorithms",
+        "interview"
+      ],
+      "keywords": [
+        "algorithms",
+        "interview",
+        "convert",
+        "sorted",
+        "array",
+        "binary",
+        "search",
+        "tree",
+        "easy",
+        "divide-amp-conquer"
+      ]
+    }
+  },
+  {
+    "id": 109,
+    "title": "Sort List",
+    "difficulty": "Medium",
+    "category": "Divide &amp; Conquer",
+    "source": null,
+    "slug": "sort-list",
+    "statement": "Practice Sort List (Medium) from Top Interview 150 in category Divide &amp; Conquer.",
+    "tags": [
+      "algorithms",
+      "interview"
+    ],
+    "semanticKeywords": [
+      "algorithms",
+      "interview",
+      "sort",
+      "list",
+      "medium",
+      "divide-amp-conquer"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Divide &amp; Conquer",
+      "difficulty": "Medium",
+      "patterns": [
+        "algorithms",
+        "interview"
+      ],
+      "keywords": [
+        "algorithms",
+        "interview",
+        "sort",
+        "list",
+        "medium",
+        "divide-amp-conquer"
+      ]
+    }
+  },
+  {
+    "id": 110,
+    "title": "Construct Quad Tree",
+    "difficulty": "Medium",
+    "category": "Divide &amp; Conquer",
+    "source": null,
+    "slug": "construct-quad-tree",
+    "statement": "Practice Construct Quad Tree (Medium) from Top Interview 150 in category Divide &amp; Conquer.",
+    "tags": [
+      "algorithms",
+      "interview"
+    ],
+    "semanticKeywords": [
+      "algorithms",
+      "interview",
+      "construct",
+      "quad",
+      "tree",
+      "medium",
+      "divide-amp-conquer"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Divide &amp; Conquer",
+      "difficulty": "Medium",
+      "patterns": [
+        "algorithms",
+        "interview"
+      ],
+      "keywords": [
+        "algorithms",
+        "interview",
+        "construct",
+        "quad",
+        "tree",
+        "medium",
+        "divide-amp-conquer"
+      ]
+    }
+  },
+  {
+    "id": 111,
+    "title": "Merge k Sorted Lists",
+    "difficulty": "Hard",
+    "category": "Divide &amp; Conquer",
+    "source": null,
+    "slug": "merge-k-sorted-lists",
+    "statement": "Practice Merge k Sorted Lists (Hard) from Top Interview 150 in category Divide &amp; Conquer.",
+    "tags": [
+      "algorithms",
+      "interview"
+    ],
+    "semanticKeywords": [
+      "algorithms",
+      "interview",
+      "merge",
+      "sorted",
+      "lists",
+      "hard",
+      "divide-amp-conquer"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Divide &amp; Conquer",
+      "difficulty": "Hard",
+      "patterns": [
+        "algorithms",
+        "interview"
+      ],
+      "keywords": [
+        "algorithms",
+        "interview",
+        "merge",
+        "sorted",
+        "lists",
+        "hard",
+        "divide-amp-conquer"
+      ]
+    }
+  },
+  {
+    "id": 112,
+    "title": "Maximum Subarray",
+    "difficulty": "Medium",
+    "category": "Kadane&#39;s Algorithm",
+    "source": null,
+    "slug": "maximum-subarray",
+    "statement": "Practice Maximum Subarray (Medium) from Top Interview 150 in category Kadane&#39;s Algorithm.",
+    "tags": [
+      "algorithms",
+      "interview"
+    ],
+    "semanticKeywords": [
+      "algorithms",
+      "interview",
+      "maximum",
+      "subarray",
+      "medium",
+      "kadane-39-s-algorithm"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Kadane&#39;s Algorithm",
+      "difficulty": "Medium",
+      "patterns": [
+        "algorithms",
+        "interview"
+      ],
+      "keywords": [
+        "algorithms",
+        "interview",
+        "maximum",
+        "subarray",
+        "medium",
+        "kadane-39-s-algorithm"
+      ]
+    }
+  },
+  {
+    "id": 113,
+    "title": "Maximum Sum Circular Subarray",
+    "difficulty": "Medium",
+    "category": "Kadane&#39;s Algorithm",
+    "source": null,
+    "slug": "maximum-sum-circular-subarray",
+    "statement": "Practice Maximum Sum Circular Subarray (Medium) from Top Interview 150 in category Kadane&#39;s Algorithm.",
+    "tags": [
+      "algorithms",
+      "interview"
+    ],
+    "semanticKeywords": [
+      "algorithms",
+      "interview",
+      "maximum",
+      "sum",
+      "circular",
+      "subarray",
+      "medium",
+      "kadane-39-s-algorithm"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Kadane&#39;s Algorithm",
+      "difficulty": "Medium",
+      "patterns": [
+        "algorithms",
+        "interview"
+      ],
+      "keywords": [
+        "algorithms",
+        "interview",
+        "maximum",
+        "sum",
+        "circular",
+        "subarray",
+        "medium",
+        "kadane-39-s-algorithm"
+      ]
+    }
+  },
+  {
+    "id": 114,
+    "title": "Search Insert Position",
+    "difficulty": "Easy",
+    "category": "Binary Search",
+    "source": null,
+    "slug": "search-insert-position",
+    "statement": "Practice Search Insert Position (Easy) from Top Interview 150 in category Binary Search.",
+    "tags": [
+      "binary-search",
+      "search-space"
+    ],
+    "semanticKeywords": [
+      "binary-search",
+      "search-space",
+      "search",
+      "insert",
+      "position",
+      "easy"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Search",
+      "difficulty": "Easy",
+      "patterns": [
+        "binary-search",
+        "search-space"
+      ],
+      "keywords": [
+        "binary-search",
+        "search-space",
+        "search",
+        "insert",
+        "position",
+        "easy"
+      ]
+    }
+  },
+  {
+    "id": 115,
+    "title": "Search a 2D Matrix",
+    "difficulty": "Medium",
+    "category": "Binary Search",
+    "source": null,
+    "slug": "search-a-2d-matrix",
+    "statement": "Practice Search a 2D Matrix (Medium) from Top Interview 150 in category Binary Search.",
+    "tags": [
+      "binary-search",
+      "search-space"
+    ],
+    "semanticKeywords": [
+      "binary-search",
+      "search-space",
+      "search",
+      "matrix",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Search",
+      "difficulty": "Medium",
+      "patterns": [
+        "binary-search",
+        "search-space"
+      ],
+      "keywords": [
+        "binary-search",
+        "search-space",
+        "search",
+        "matrix",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 116,
+    "title": "Find Peak Element",
+    "difficulty": "Medium",
+    "category": "Binary Search",
+    "source": null,
+    "slug": "find-peak-element",
+    "statement": "Practice Find Peak Element (Medium) from Top Interview 150 in category Binary Search.",
+    "tags": [
+      "binary-search",
+      "search-space"
+    ],
+    "semanticKeywords": [
+      "binary-search",
+      "search-space",
+      "find",
+      "peak",
+      "element",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Search",
+      "difficulty": "Medium",
+      "patterns": [
+        "binary-search",
+        "search-space"
+      ],
+      "keywords": [
+        "binary-search",
+        "search-space",
+        "find",
+        "peak",
+        "element",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 117,
+    "title": "Search in Rotated Sorted Array",
+    "difficulty": "Medium",
+    "category": "Binary Search",
+    "source": null,
+    "slug": "search-in-rotated-sorted-array",
+    "statement": "Practice Search in Rotated Sorted Array (Medium) from Top Interview 150 in category Binary Search.",
+    "tags": [
+      "binary-search",
+      "search-space"
+    ],
+    "semanticKeywords": [
+      "binary-search",
+      "search-space",
+      "search",
+      "rotated",
+      "sorted",
+      "array",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Search",
+      "difficulty": "Medium",
+      "patterns": [
+        "binary-search",
+        "search-space"
+      ],
+      "keywords": [
+        "binary-search",
+        "search-space",
+        "search",
+        "rotated",
+        "sorted",
+        "array",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 118,
+    "title": "Find First and Last Position of Element in Sorted Array",
+    "difficulty": "Medium",
+    "category": "Binary Search",
+    "source": null,
+    "slug": "find-first-and-last-position-of-element-in-sorted-array",
+    "statement": "Practice Find First and Last Position of Element in Sorted Array (Medium) from Top Interview 150 in category Binary Search.",
+    "tags": [
+      "binary-search",
+      "search-space"
+    ],
+    "semanticKeywords": [
+      "binary-search",
+      "search-space",
+      "find",
+      "first",
+      "and",
+      "last",
+      "position",
+      "element",
+      "sorted",
+      "array",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Search",
+      "difficulty": "Medium",
+      "patterns": [
+        "binary-search",
+        "search-space"
+      ],
+      "keywords": [
+        "binary-search",
+        "search-space",
+        "find",
+        "first",
+        "and",
+        "last",
+        "position",
+        "element",
+        "sorted",
+        "array",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 119,
+    "title": "Find Minimum in Rotated Sorted Array",
+    "difficulty": "Medium",
+    "category": "Binary Search",
+    "source": null,
+    "slug": "find-minimum-in-rotated-sorted-array",
+    "statement": "Practice Find Minimum in Rotated Sorted Array (Medium) from Top Interview 150 in category Binary Search.",
+    "tags": [
+      "binary-search",
+      "search-space"
+    ],
+    "semanticKeywords": [
+      "binary-search",
+      "search-space",
+      "find",
+      "minimum",
+      "rotated",
+      "sorted",
+      "array",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Search",
+      "difficulty": "Medium",
+      "patterns": [
+        "binary-search",
+        "search-space"
+      ],
+      "keywords": [
+        "binary-search",
+        "search-space",
+        "find",
+        "minimum",
+        "rotated",
+        "sorted",
+        "array",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 120,
+    "title": "Median of Two Sorted Arrays",
+    "difficulty": "Hard",
+    "category": "Binary Search",
+    "source": null,
+    "slug": "median-of-two-sorted-arrays",
+    "statement": "Practice Median of Two Sorted Arrays (Hard) from Top Interview 150 in category Binary Search.",
+    "tags": [
+      "binary-search",
+      "search-space"
+    ],
+    "semanticKeywords": [
+      "binary-search",
+      "search-space",
+      "median",
+      "two",
+      "sorted",
+      "arrays",
+      "hard"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Search",
+      "difficulty": "Hard",
+      "patterns": [
+        "binary-search",
+        "search-space"
+      ],
+      "keywords": [
+        "binary-search",
+        "search-space",
+        "median",
+        "two",
+        "sorted",
+        "arrays",
+        "hard"
+      ]
+    }
+  },
+  {
+    "id": 121,
+    "title": "Kth Largest Element in an Array",
+    "difficulty": "Medium",
+    "category": "Heap",
+    "source": null,
+    "slug": "kth-largest-element-in-an-array",
+    "statement": "Practice Kth Largest Element in an Array (Medium) from Top Interview 150 in category Heap.",
+    "tags": [
+      "heap",
+      "priority-queue"
+    ],
+    "semanticKeywords": [
+      "heap",
+      "priority-queue",
+      "kth",
+      "largest",
+      "element",
+      "array",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Heap",
+      "difficulty": "Medium",
+      "patterns": [
+        "heap",
+        "priority-queue"
+      ],
+      "keywords": [
+        "heap",
+        "priority-queue",
+        "kth",
+        "largest",
+        "element",
+        "array",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 122,
+    "title": "IPO",
+    "difficulty": "Hard",
+    "category": "Heap",
+    "source": null,
+    "slug": "ipo",
+    "statement": "Practice IPO (Hard) from Top Interview 150 in category Heap.",
+    "tags": [
+      "heap",
+      "priority-queue"
+    ],
+    "semanticKeywords": [
+      "heap",
+      "priority-queue",
+      "ipo",
+      "hard"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Heap",
+      "difficulty": "Hard",
+      "patterns": [
+        "heap",
+        "priority-queue"
+      ],
+      "keywords": [
+        "heap",
+        "priority-queue",
+        "ipo",
+        "hard"
+      ]
+    }
+  },
+  {
+    "id": 123,
+    "title": "Find K Pairs with Smallest Sums",
+    "difficulty": "Medium",
+    "category": "Heap",
+    "source": null,
+    "slug": "find-k-pairs-with-smallest-sums",
+    "statement": "Practice Find K Pairs with Smallest Sums (Medium) from Top Interview 150 in category Heap.",
+    "tags": [
+      "heap",
+      "priority-queue"
+    ],
+    "semanticKeywords": [
+      "heap",
+      "priority-queue",
+      "find",
+      "pairs",
+      "with",
+      "smallest",
+      "sums",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Heap",
+      "difficulty": "Medium",
+      "patterns": [
+        "heap",
+        "priority-queue"
+      ],
+      "keywords": [
+        "heap",
+        "priority-queue",
+        "find",
+        "pairs",
+        "with",
+        "smallest",
+        "sums",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 124,
+    "title": "Find Median from Data Stream",
+    "difficulty": "Hard",
+    "category": "Heap",
+    "source": null,
+    "slug": "find-median-from-data-stream",
+    "statement": "Practice Find Median from Data Stream (Hard) from Top Interview 150 in category Heap.",
+    "tags": [
+      "heap",
+      "priority-queue"
+    ],
+    "semanticKeywords": [
+      "heap",
+      "priority-queue",
+      "find",
+      "median",
+      "from",
+      "data",
+      "stream",
+      "hard"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Heap",
+      "difficulty": "Hard",
+      "patterns": [
+        "heap",
+        "priority-queue"
+      ],
+      "keywords": [
+        "heap",
+        "priority-queue",
+        "find",
+        "median",
+        "from",
+        "data",
+        "stream",
+        "hard"
+      ]
+    }
+  },
+  {
+    "id": 125,
+    "title": "Add Binary",
+    "difficulty": "Easy",
+    "category": "Bit Manipulation",
+    "source": null,
+    "slug": "add-binary",
+    "statement": "Practice Add Binary (Easy) from Top Interview 150 in category Bit Manipulation.",
+    "tags": [
+      "bit-manipulation"
+    ],
+    "semanticKeywords": [
+      "bit-manipulation",
+      "add",
+      "binary",
+      "easy"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Bit Manipulation",
+      "difficulty": "Easy",
+      "patterns": [
+        "bit-manipulation"
+      ],
+      "keywords": [
+        "bit-manipulation",
+        "add",
+        "binary",
+        "easy"
+      ]
+    }
+  },
+  {
+    "id": 126,
+    "title": "Reverse Bits",
+    "difficulty": "Easy",
+    "category": "Bit Manipulation",
+    "source": null,
+    "slug": "reverse-bits",
+    "statement": "Practice Reverse Bits (Easy) from Top Interview 150 in category Bit Manipulation.",
+    "tags": [
+      "bit-manipulation"
+    ],
+    "semanticKeywords": [
+      "bit-manipulation",
+      "reverse",
+      "bits",
+      "easy"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Bit Manipulation",
+      "difficulty": "Easy",
+      "patterns": [
+        "bit-manipulation"
+      ],
+      "keywords": [
+        "bit-manipulation",
+        "reverse",
+        "bits",
+        "easy"
+      ]
+    }
+  },
+  {
+    "id": 127,
+    "title": "Number of 1 Bits",
+    "difficulty": "Easy",
+    "category": "Bit Manipulation",
+    "source": null,
+    "slug": "number-of-1-bits",
+    "statement": "Practice Number of 1 Bits (Easy) from Top Interview 150 in category Bit Manipulation.",
+    "tags": [
+      "bit-manipulation"
+    ],
+    "semanticKeywords": [
+      "bit-manipulation",
+      "number",
+      "bits",
+      "easy"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Bit Manipulation",
+      "difficulty": "Easy",
+      "patterns": [
+        "bit-manipulation"
+      ],
+      "keywords": [
+        "bit-manipulation",
+        "number",
+        "bits",
+        "easy"
+      ]
+    }
+  },
+  {
+    "id": 128,
+    "title": "Single Number",
+    "difficulty": "Easy",
+    "category": "Bit Manipulation",
+    "source": null,
+    "slug": "single-number",
+    "statement": "Practice Single Number (Easy) from Top Interview 150 in category Bit Manipulation.",
+    "tags": [
+      "bit-manipulation"
+    ],
+    "semanticKeywords": [
+      "bit-manipulation",
+      "single",
+      "number",
+      "easy"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Bit Manipulation",
+      "difficulty": "Easy",
+      "patterns": [
+        "bit-manipulation"
+      ],
+      "keywords": [
+        "bit-manipulation",
+        "single",
+        "number",
+        "easy"
+      ]
+    }
+  },
+  {
+    "id": 129,
+    "title": "Single Number II",
+    "difficulty": "Medium",
+    "category": "Bit Manipulation",
+    "source": null,
+    "slug": "single-number-ii",
+    "statement": "Practice Single Number II (Medium) from Top Interview 150 in category Bit Manipulation.",
+    "tags": [
+      "bit-manipulation"
+    ],
+    "semanticKeywords": [
+      "bit-manipulation",
+      "single",
+      "number",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Bit Manipulation",
+      "difficulty": "Medium",
+      "patterns": [
+        "bit-manipulation"
+      ],
+      "keywords": [
+        "bit-manipulation",
+        "single",
+        "number",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 130,
+    "title": "Bitwise AND of Numbers Range",
+    "difficulty": "Medium",
+    "category": "Bit Manipulation",
+    "source": null,
+    "slug": "bitwise-and-of-numbers-range",
+    "statement": "Practice Bitwise AND of Numbers Range (Medium) from Top Interview 150 in category Bit Manipulation.",
+    "tags": [
+      "bit-manipulation"
+    ],
+    "semanticKeywords": [
+      "bit-manipulation",
+      "bitwise",
+      "and",
+      "numbers",
+      "range",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Bit Manipulation",
+      "difficulty": "Medium",
+      "patterns": [
+        "bit-manipulation"
+      ],
+      "keywords": [
+        "bit-manipulation",
+        "bitwise",
+        "and",
+        "numbers",
+        "range",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 131,
+    "title": "Palindrome Number",
+    "difficulty": "Easy",
+    "category": "Math",
+    "source": null,
+    "slug": "palindrome-number",
+    "statement": "Practice Palindrome Number (Easy) from Top Interview 150 in category Math.",
+    "tags": [
+      "math"
+    ],
+    "semanticKeywords": [
+      "math",
+      "palindrome",
+      "number",
+      "easy"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Math",
+      "difficulty": "Easy",
+      "patterns": [
+        "math"
+      ],
+      "keywords": [
+        "math",
+        "palindrome",
+        "number",
+        "easy"
+      ]
+    }
+  },
+  {
+    "id": 132,
+    "title": "Plus One",
+    "difficulty": "Easy",
+    "category": "Math",
+    "source": null,
+    "slug": "plus-one",
+    "statement": "Practice Plus One (Easy) from Top Interview 150 in category Math.",
+    "tags": [
+      "math"
+    ],
+    "semanticKeywords": [
+      "math",
+      "plus",
+      "one",
+      "easy"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Math",
+      "difficulty": "Easy",
+      "patterns": [
+        "math"
+      ],
+      "keywords": [
+        "math",
+        "plus",
+        "one",
+        "easy"
+      ]
+    }
+  },
+  {
+    "id": 133,
+    "title": "Factorial Trailing Zeroes",
+    "difficulty": "Medium",
+    "category": "Math",
+    "source": null,
+    "slug": "factorial-trailing-zeroes",
+    "statement": "Practice Factorial Trailing Zeroes (Medium) from Top Interview 150 in category Math.",
+    "tags": [
+      "math"
+    ],
+    "semanticKeywords": [
+      "math",
+      "factorial",
+      "trailing",
+      "zeroes",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Math",
+      "difficulty": "Medium",
+      "patterns": [
+        "math"
+      ],
+      "keywords": [
+        "math",
+        "factorial",
+        "trailing",
+        "zeroes",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 134,
+    "title": "Sqrt(x)",
+    "difficulty": "Easy",
+    "category": "Math",
+    "source": null,
+    "slug": "sqrt-x",
+    "statement": "Practice Sqrt(x) (Easy) from Top Interview 150 in category Math.",
+    "tags": [
+      "math"
+    ],
+    "semanticKeywords": [
+      "math",
+      "sqrt",
+      "easy"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Math",
+      "difficulty": "Easy",
+      "patterns": [
+        "math"
+      ],
+      "keywords": [
+        "math",
+        "sqrt",
+        "easy"
+      ]
+    }
+  },
+  {
+    "id": 135,
+    "title": "Pow(x, n)",
+    "difficulty": "Medium",
+    "category": "Math",
+    "source": null,
+    "slug": "pow-x-n",
+    "statement": "Practice Pow(x, n) (Medium) from Top Interview 150 in category Math.",
+    "tags": [
+      "math"
+    ],
+    "semanticKeywords": [
+      "math",
+      "pow",
+      "medium"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Math",
+      "difficulty": "Medium",
+      "patterns": [
+        "math"
+      ],
+      "keywords": [
+        "math",
+        "pow",
+        "medium"
+      ]
+    }
+  },
+  {
+    "id": 136,
+    "title": "Max Points on a Line",
+    "difficulty": "Hard",
+    "category": "Math",
+    "source": null,
+    "slug": "max-points-on-a-line",
+    "statement": "Practice Max Points on a Line (Hard) from Top Interview 150 in category Math.",
+    "tags": [
+      "math"
+    ],
+    "semanticKeywords": [
+      "math",
+      "max",
+      "points",
+      "line",
+      "hard"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Math",
+      "difficulty": "Hard",
+      "patterns": [
+        "math"
+      ],
+      "keywords": [
+        "math",
+        "max",
+        "points",
+        "line",
+        "hard"
+      ]
+    }
+  },
+  {
+    "id": 137,
+    "title": "Climbing Stairs",
+    "difficulty": "Easy",
+    "category": "1D DP",
+    "source": null,
+    "slug": "climbing-stairs",
+    "statement": "Practice Climbing Stairs (Easy) from Top Interview 150 in category 1D DP.",
+    "tags": [
+      "dp",
+      "dynamic-programming"
+    ],
+    "semanticKeywords": [
+      "dp",
+      "dynamic-programming",
+      "climbing",
+      "stairs",
+      "easy",
+      "1d-dp"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "1D DP",
+      "difficulty": "Easy",
+      "patterns": [
+        "dp",
+        "dynamic-programming"
+      ],
+      "keywords": [
+        "dp",
+        "dynamic-programming",
+        "climbing",
+        "stairs",
+        "easy",
+        "1d-dp"
+      ]
+    }
+  },
+  {
+    "id": 138,
+    "title": "House Robber",
+    "difficulty": "Medium",
+    "category": "1D DP",
+    "source": null,
+    "slug": "house-robber",
+    "statement": "Practice House Robber (Medium) from Top Interview 150 in category 1D DP.",
+    "tags": [
+      "dp",
+      "dynamic-programming"
+    ],
+    "semanticKeywords": [
+      "dp",
+      "dynamic-programming",
+      "house",
+      "robber",
+      "medium",
+      "1d-dp"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "1D DP",
+      "difficulty": "Medium",
+      "patterns": [
+        "dp",
+        "dynamic-programming"
+      ],
+      "keywords": [
+        "dp",
+        "dynamic-programming",
+        "house",
+        "robber",
+        "medium",
+        "1d-dp"
+      ]
+    }
+  },
+  {
+    "id": 139,
+    "title": "Word Break",
+    "difficulty": "Medium",
+    "category": "1D DP",
+    "source": null,
+    "slug": "word-break",
+    "statement": "Practice Word Break (Medium) from Top Interview 150 in category 1D DP.",
+    "tags": [
+      "dp",
+      "dynamic-programming"
+    ],
+    "semanticKeywords": [
+      "dp",
+      "dynamic-programming",
+      "word",
+      "break",
+      "medium",
+      "1d-dp"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "1D DP",
+      "difficulty": "Medium",
+      "patterns": [
+        "dp",
+        "dynamic-programming"
+      ],
+      "keywords": [
+        "dp",
+        "dynamic-programming",
+        "word",
+        "break",
+        "medium",
+        "1d-dp"
+      ]
+    }
+  },
+  {
+    "id": 140,
+    "title": "Coin Change",
+    "difficulty": "Medium",
+    "category": "1D DP",
+    "source": null,
+    "slug": "coin-change",
+    "statement": "Practice Coin Change (Medium) from Top Interview 150 in category 1D DP.",
+    "tags": [
+      "dp",
+      "dynamic-programming"
+    ],
+    "semanticKeywords": [
+      "dp",
+      "dynamic-programming",
+      "coin",
+      "change",
+      "medium",
+      "1d-dp"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "1D DP",
+      "difficulty": "Medium",
+      "patterns": [
+        "dp",
+        "dynamic-programming"
+      ],
+      "keywords": [
+        "dp",
+        "dynamic-programming",
+        "coin",
+        "change",
+        "medium",
+        "1d-dp"
+      ]
+    }
+  },
+  {
+    "id": 141,
+    "title": "Longest Increasing Subsequence",
+    "difficulty": "Medium",
+    "category": "1D DP",
+    "source": null,
+    "slug": "longest-increasing-subsequence",
+    "statement": "Practice Longest Increasing Subsequence (Medium) from Top Interview 150 in category 1D DP.",
+    "tags": [
+      "dp",
+      "dynamic-programming"
+    ],
+    "semanticKeywords": [
+      "dp",
+      "dynamic-programming",
+      "longest",
+      "increasing",
+      "subsequence",
+      "medium",
+      "1d-dp"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "1D DP",
+      "difficulty": "Medium",
+      "patterns": [
+        "dp",
+        "dynamic-programming"
+      ],
+      "keywords": [
+        "dp",
+        "dynamic-programming",
+        "longest",
+        "increasing",
+        "subsequence",
+        "medium",
+        "1d-dp"
+      ]
+    }
+  },
+  {
+    "id": 142,
+    "title": "Triangle",
+    "difficulty": "Medium",
+    "category": "Multidimensional DP",
+    "source": null,
+    "slug": "triangle",
+    "statement": "Practice Triangle (Medium) from Top Interview 150 in category Multidimensional DP.",
+    "tags": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp"
+    ],
+    "semanticKeywords": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp",
+      "triangle",
+      "medium",
+      "multidimensional-dp"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Multidimensional DP",
+      "difficulty": "Medium",
+      "patterns": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp"
+      ],
+      "keywords": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp",
+        "triangle",
+        "medium",
+        "multidimensional-dp"
+      ]
+    }
+  },
+  {
+    "id": 143,
+    "title": "Minimum Path Sum",
+    "difficulty": "Medium",
+    "category": "Multidimensional DP",
+    "source": null,
+    "slug": "minimum-path-sum",
+    "statement": "Practice Minimum Path Sum (Medium) from Top Interview 150 in category Multidimensional DP.",
+    "tags": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp"
+    ],
+    "semanticKeywords": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp",
+      "minimum",
+      "path",
+      "sum",
+      "medium",
+      "multidimensional-dp"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Multidimensional DP",
+      "difficulty": "Medium",
+      "patterns": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp"
+      ],
+      "keywords": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp",
+        "minimum",
+        "path",
+        "sum",
+        "medium",
+        "multidimensional-dp"
+      ]
+    }
+  },
+  {
+    "id": 144,
+    "title": "Unique Paths II",
+    "difficulty": "Medium",
+    "category": "Multidimensional DP",
+    "source": null,
+    "slug": "unique-paths-ii",
+    "statement": "Practice Unique Paths II (Medium) from Top Interview 150 in category Multidimensional DP.",
+    "tags": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp"
+    ],
+    "semanticKeywords": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp",
+      "unique",
+      "paths",
+      "medium",
+      "multidimensional-dp"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Multidimensional DP",
+      "difficulty": "Medium",
+      "patterns": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp"
+      ],
+      "keywords": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp",
+        "unique",
+        "paths",
+        "medium",
+        "multidimensional-dp"
+      ]
+    }
+  },
+  {
+    "id": 145,
+    "title": "Longest Palindromic Substring",
+    "difficulty": "Medium",
+    "category": "Multidimensional DP",
+    "source": null,
+    "slug": "longest-palindromic-substring",
+    "statement": "Practice Longest Palindromic Substring (Medium) from Top Interview 150 in category Multidimensional DP.",
+    "tags": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp"
+    ],
+    "semanticKeywords": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp",
+      "longest",
+      "palindromic",
+      "substring",
+      "medium",
+      "multidimensional-dp"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Multidimensional DP",
+      "difficulty": "Medium",
+      "patterns": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp"
+      ],
+      "keywords": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp",
+        "longest",
+        "palindromic",
+        "substring",
+        "medium",
+        "multidimensional-dp"
+      ]
+    }
+  },
+  {
+    "id": 146,
+    "title": "Interleaving String",
+    "difficulty": "Medium",
+    "category": "Multidimensional DP",
+    "source": null,
+    "slug": "interleaving-string",
+    "statement": "Practice Interleaving String (Medium) from Top Interview 150 in category Multidimensional DP.",
+    "tags": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp"
+    ],
+    "semanticKeywords": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp",
+      "interleaving",
+      "string",
+      "medium",
+      "multidimensional-dp"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Multidimensional DP",
+      "difficulty": "Medium",
+      "patterns": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp"
+      ],
+      "keywords": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp",
+        "interleaving",
+        "string",
+        "medium",
+        "multidimensional-dp"
+      ]
+    }
+  },
+  {
+    "id": 147,
+    "title": "Edit Distance",
+    "difficulty": "Medium",
+    "category": "Multidimensional DP",
+    "source": null,
+    "slug": "edit-distance",
+    "statement": "Practice Edit Distance (Medium) from Top Interview 150 in category Multidimensional DP.",
+    "tags": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp"
+    ],
+    "semanticKeywords": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp",
+      "edit",
+      "distance",
+      "medium",
+      "multidimensional-dp"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Multidimensional DP",
+      "difficulty": "Medium",
+      "patterns": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp"
+      ],
+      "keywords": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp",
+        "edit",
+        "distance",
+        "medium",
+        "multidimensional-dp"
+      ]
+    }
+  },
+  {
+    "id": 148,
+    "title": "Best Time to Buy and Sell Stock III",
+    "difficulty": "Hard",
+    "category": "Multidimensional DP",
+    "source": null,
+    "slug": "best-time-to-buy-and-sell-stock-iii",
+    "statement": "Practice Best Time to Buy and Sell Stock III (Hard) from Top Interview 150 in category Multidimensional DP.",
+    "tags": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp"
+    ],
+    "semanticKeywords": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp",
+      "best",
+      "time",
+      "buy",
+      "and",
+      "sell",
+      "stock",
+      "iii",
+      "hard",
+      "multidimensional-dp"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Multidimensional DP",
+      "difficulty": "Hard",
+      "patterns": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp"
+      ],
+      "keywords": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp",
+        "best",
+        "time",
+        "buy",
+        "and",
+        "sell",
+        "stock",
+        "iii",
+        "hard",
+        "multidimensional-dp"
+      ]
+    }
+  },
+  {
+    "id": 149,
+    "title": "Best Time to Buy and Sell Stock IV",
+    "difficulty": "Hard",
+    "category": "Multidimensional DP",
+    "source": null,
+    "slug": "best-time-to-buy-and-sell-stock-iv",
+    "statement": "Practice Best Time to Buy and Sell Stock IV (Hard) from Top Interview 150 in category Multidimensional DP.",
+    "tags": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp"
+    ],
+    "semanticKeywords": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp",
+      "best",
+      "time",
+      "buy",
+      "and",
+      "sell",
+      "stock",
+      "hard",
+      "multidimensional-dp"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Multidimensional DP",
+      "difficulty": "Hard",
+      "patterns": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp"
+      ],
+      "keywords": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp",
+        "best",
+        "time",
+        "buy",
+        "and",
+        "sell",
+        "stock",
+        "hard",
+        "multidimensional-dp"
+      ]
+    }
+  },
+  {
+    "id": 150,
+    "title": "Maximal Square",
+    "difficulty": "Medium",
+    "category": "Multidimensional DP",
+    "source": null,
+    "slug": "maximal-square",
+    "statement": "Practice Maximal Square (Medium) from Top Interview 150 in category Multidimensional DP.",
+    "tags": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp"
+    ],
+    "semanticKeywords": [
+      "dp",
+      "dynamic-programming",
+      "2d-dp",
+      "maximal",
+      "square",
+      "medium",
+      "multidimensional-dp"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Multidimensional DP",
+      "difficulty": "Medium",
+      "patterns": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp"
+      ],
+      "keywords": [
+        "dp",
+        "dynamic-programming",
+        "2d-dp",
+        "maximal",
+        "square",
+        "medium",
+        "multidimensional-dp"
+      ]
+    }
+  },
+  {
+    "id": 8282,
+    "title": "Binary Tree Right Side View",
+    "difficulty": "Medium",
+    "category": "Binary Tree BFS",
+    "source": null,
+    "slug": "binary-tree-right-side-view",
+    "statement": "Practice Binary Tree Right Side View (Medium) from Top Interview 150 in category Binary Tree BFS.",
+    "tags": [
+      "tree",
+      "bfs",
+      "queue"
+    ],
+    "semanticKeywords": [
+      "tree",
+      "bfs",
+      "queue",
+      "binary",
+      "right",
+      "side",
+      "view",
+      "medium",
+      "binary-tree-bfs"
+    ],
+    "retrievalMeta": {
+      "topicPrimary": "Binary Tree BFS",
+      "difficulty": "Medium",
+      "patterns": [
+        "tree",
+        "bfs",
+        "queue"
+      ],
+      "keywords": [
+        "tree",
+        "bfs",
+        "queue",
+        "binary",
+        "right",
+        "side",
+        "view",
+        "medium",
+        "binary-tree-bfs"
+      ]
+    }
+  }
+]

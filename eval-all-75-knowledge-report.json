@@ -1,0 +1,1999 @@
+{
+  "generatedAt": "2026-03-01T17:55:25.738Z",
+  "source": "https://raw.githubusercontent.com/brprojects/Leetcode_75/main/README.md",
+  "models": {
+    "gpt-4.1-nano": {
+      "inSetPassCount": 54,
+      "knowsPassCount": 60,
+      "total": 75,
+      "all75InSet": false,
+      "all75Known": false,
+      "missedInSet": [
+        {
+          "index": 16,
+          "title": "Max Consecutive Ones III"
+        },
+        {
+          "index": 18,
+          "title": "Find the Highest Altitude"
+        },
+        {
+          "index": 20,
+          "title": "Find the Difference of Two Arrays"
+        },
+        {
+          "index": 22,
+          "title": "Determine if Two Strings Are Close"
+        },
+        {
+          "index": 23,
+          "title": "Equal Row and Column Pairs"
+        },
+        {
+          "index": 27,
+          "title": "Number of Recent Calls"
+        },
+        {
+          "index": 28,
+          "title": "Dota2 Senate"
+        },
+        {
+          "index": 29,
+          "title": "Delete the Middle Node of a Linked List"
+        },
+        {
+          "index": 33,
+          "title": "Maximum Depth of Binary Tree"
+        },
+        {
+          "index": 34,
+          "title": "Leaf-Similar Trees"
+        },
+        {
+          "index": 35,
+          "title": "Count Good Nodes in Binary Tree"
+        },
+        {
+          "index": 40,
+          "title": "Maximum Level Sum of a Binary Tree"
+        },
+        {
+          "index": 42,
+          "title": "Delete Node in a BST"
+        },
+        {
+          "index": 49,
+          "title": "Kth Largest Element in an Array"
+        },
+        {
+          "index": 50,
+          "title": "Smallest Number in Infinite Set"
+        },
+        {
+          "index": 51,
+          "title": "Maximum Subsequence Score"
+        },
+        {
+          "index": 54,
+          "title": "Successful Pairs of Spells and Potions"
+        },
+        {
+          "index": 57,
+          "title": "Letter Combinations of a Phone Number"
+        },
+        {
+          "index": 60,
+          "title": "Min Cost Climbing Stairs"
+        },
+        {
+          "index": 72,
+          "title": "Non-overlapping Intervals"
+        },
+        {
+          "index": 74,
+          "title": "Daily Temperatures"
+        }
+      ],
+      "unknownProblems": [
+        {
+          "index": 16,
+          "title": "Max Consecutive Ones III"
+        },
+        {
+          "index": 18,
+          "title": "Find the Highest Altitude"
+        },
+        {
+          "index": 22,
+          "title": "Determine if Two Strings Are Close"
+        },
+        {
+          "index": 23,
+          "title": "Equal Row and Column Pairs"
+        },
+        {
+          "index": 28,
+          "title": "Dota2 Senate"
+        },
+        {
+          "index": 29,
+          "title": "Delete the Middle Node of a Linked List"
+        },
+        {
+          "index": 34,
+          "title": "Leaf-Similar Trees"
+        },
+        {
+          "index": 35,
+          "title": "Count Good Nodes in Binary Tree"
+        },
+        {
+          "index": 49,
+          "title": "Kth Largest Element in an Array"
+        },
+        {
+          "index": 50,
+          "title": "Smallest Number in Infinite Set"
+        },
+        {
+          "index": 51,
+          "title": "Maximum Subsequence Score"
+        },
+        {
+          "index": 54,
+          "title": "Successful Pairs of Spells and Potions"
+        },
+        {
+          "index": 60,
+          "title": "Min Cost Climbing Stairs"
+        },
+        {
+          "index": 72,
+          "title": "Non-overlapping Intervals"
+        },
+        {
+          "index": 74,
+          "title": "Daily Temperatures"
+        }
+      ],
+      "perProblem": [
+        {
+          "index": 1,
+          "title": "Merge Strings Alternately",
+          "category": "Array / String",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two pointers to iterate through both strings, appending characters alternately to the result until one string ends, then append the remainder of the other string.",
+          "edge_case": "One string is empty or both strings are of different lengths.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 2,
+          "title": "Greatest Common Divisor of Strings",
+          "category": "Array / String",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Find the GCD of the lengths, then check if the substring of that length divides both strings.",
+          "edge_case": "Strings where one is a multiple of the other, e.g., 'AAA' and 'AAAAAA'.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 3,
+          "title": "Kids With the Greatest Number of Candies",
+          "category": "Array / String",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Compare each child's candies with the maximum candies plus the extra candies, and determine if they can have the greatest number after receiving extra candies.",
+          "edge_case": "All children have the same number of candies initially, and extra candies are zero.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 4,
+          "title": "Can Place Flowers",
+          "category": "Array / String",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Iterate through the array, greedily place flowers in available spots where adjacent spots are empty, taking care to avoid consecutive placements.",
+          "edge_case": "Array with all 1s, where no flowers can be placed.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 5,
+          "title": "Reverse Vowels of a String",
+          "category": "Array / String",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two pointers to swap vowels from both ends moving towards the center.",
+          "edge_case": "String with no vowels or all vowels.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 6,
+          "title": "Reverse Words in a String",
+          "category": "Array / String",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Split the string into words, reverse the list of words, and join them back into a string.",
+          "edge_case": "Input string contains only spaces or is empty.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 7,
+          "title": "Product of Array Except Self",
+          "category": "Array / String",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two passes to compute prefix and suffix products for each element, avoiding division.",
+          "edge_case": "Handling zeros in the array where the product should be zero except when only one zero exists.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 8,
+          "title": "Increasing Triplet Subsequence",
+          "category": "Array / String",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Iterate through the array, maintaining two variables to track the smallest and second smallest values found so far. If a value greater than both is found, return true, indicating an increasing triplet exists.",
+          "edge_case": "Array with all elements equal, e.g., [2, 2, 2], should return false as no strictly increasing triplet exists.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 9,
+          "title": "String Compression",
+          "category": "Array / String",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two pointers to track the current character group and its count, then overwrite the original array with compressed data while iterating.",
+          "edge_case": "Input string with all identical characters, e.g., \"aaaaaa\".",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 10,
+          "title": "Move Zeroes",
+          "category": "Two Pointers",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two pointers: one to iterate through the array, and another to track the position to insert non-zero elements, swapping or overwriting as needed.",
+          "edge_case": "Array contains all zeros or no zeros at all.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 11,
+          "title": "Is Subsequence",
+          "category": "Two Pointers",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two pointers to iterate through the strings, advancing the pointer in 's' only when characters match in 't'. If the pointer in 's' reaches the end, 's' is a subsequence of 't'.",
+          "edge_case": "Empty string 's' (always a subsequence) or 't' shorter than 's'.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 12,
+          "title": "Container With Most Water",
+          "category": "Two Pointers",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two pointers starting at both ends of the array, and move the pointer that points to the shorter line inward to find the maximum area.",
+          "edge_case": "All lines are of the same height, so the maximum area is the height multiplied by the distance between the lines.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 13,
+          "title": "Max Number of K-Sum Pairs",
+          "category": "Two Pointers",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Sort array and use two pointers to find pairs that sum to k, moving pointers accordingly.",
+          "edge_case": "Array with all elements the same and sum equals twice that element.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 14,
+          "title": "Maximum Average Subarray I",
+          "category": "Sliding Window",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a sliding window of size k to compute the sum of the first window, then slide it through the array, updating the sum by subtracting the element leaving the window and adding the new element entering, while tracking the maximum sum.",
+          "edge_case": "Array length equals k, so only one subarray to consider.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 15,
+          "title": "Maximum Number of Vowels in a Substring of Given Length",
+          "category": "Sliding Window",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a sliding window of size k to traverse the string, counting vowels within the window and updating the maximum count.",
+          "edge_case": "String length less than k, where the maximum vowels count is simply the total vowels in the entire string.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 16,
+          "title": "Max Consecutive Ones III",
+          "category": "Sliding Window",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": false,
+          "key_idea": "",
+          "edge_case": "",
+          "inSetPass": false,
+          "knowsPass": false
+        },
+        {
+          "index": 17,
+          "title": "Longest Subarray of 1's After Deleting One Element",
+          "category": "Sliding Window",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a sliding window to find the longest subarray with at most one zero, representing deleting one element.",
+          "edge_case": "Array contains only ones, so deleting any element won't change the length.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 18,
+          "title": "Find the Highest Altitude",
+          "category": "Prefix Sum",
+          "difficulty": "Easy",
+          "in_leetcode_75": false,
+          "knows_problem": false,
+          "key_idea": "",
+          "edge_case": "",
+          "inSetPass": false,
+          "knowsPass": false
+        },
+        {
+          "index": 19,
+          "title": "Find Pivot Index",
+          "category": "Prefix Sum",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Calculate the total sum of the array, then iterate through the array maintaining a running sum. For each index, check if the sum of elements to the left equals the total sum minus the sum to the left minus the current element.",
+          "edge_case": "Array with all zeros, which should return any index or 0 depending on the implementation, or an array with only one element.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 20,
+          "title": "Find the Difference of Two Arrays",
+          "category": "Hash Map / Set",
+          "difficulty": "Easy",
+          "in_leetcode_75": false,
+          "knows_problem": true,
+          "key_idea": "Use hash sets to find elements present in one array but not the other.",
+          "edge_case": "Empty arrays as input.",
+          "inSetPass": false,
+          "knowsPass": true
+        },
+        {
+          "index": 21,
+          "title": "Unique Number of Occurrences",
+          "category": "Hash Map / Set",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Count the occurrences of each number using a hash map, then verify if all counts are unique by storing them in a set and comparing its size to the number of unique counts.",
+          "edge_case": "All elements are the same, e.g., [1,1,1], which results in a single occurrence count.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 22,
+          "title": "Determine if Two Strings Are Close",
+          "category": "Hash Map / Set",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": false,
+          "key_idea": "",
+          "edge_case": "",
+          "inSetPass": false,
+          "knowsPass": false
+        },
+        {
+          "index": 23,
+          "title": "Equal Row and Column Pairs",
+          "category": "Hash Map / Set",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": false,
+          "key_idea": "",
+          "edge_case": "",
+          "inSetPass": false,
+          "knowsPass": false
+        },
+        {
+          "index": 24,
+          "title": "Removing Stars From a String",
+          "category": "Stack",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a stack to process characters; when a star '*' is encountered, pop the top element from the stack, otherwise push the character onto the stack.",
+          "edge_case": "String contains only stars or no stars at all.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 25,
+          "title": "Asteroid Collision",
+          "category": "Stack",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a stack to keep track of the asteroids, and when a new asteroid collides with the last one in the stack (both moving towards each other), resolve the collision based on their sizes.",
+          "edge_case": "All asteroids are moving in the same direction, so there are no collisions.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 26,
+          "title": "Decode String",
+          "category": "Stack",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a stack to decode the string by pushing characters and numbers, and process when a closing bracket is encountered.",
+          "edge_case": "Nested encoded strings like '3[a2[c]]'",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 27,
+          "title": "Number of Recent Calls",
+          "category": "Queue",
+          "difficulty": "Easy",
+          "in_leetcode_75": false,
+          "knows_problem": true,
+          "key_idea": "Use a queue to store the call timestamps and remove timestamps older than 3000 milliseconds from the current call.",
+          "edge_case": "Multiple calls occurring at the same timestamp.",
+          "inSetPass": false,
+          "knowsPass": true
+        },
+        {
+          "index": 28,
+          "title": "Dota2 Senate",
+          "category": "Queue",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": false,
+          "key_idea": "",
+          "edge_case": "",
+          "inSetPass": false,
+          "knowsPass": false
+        },
+        {
+          "index": 29,
+          "title": "Delete the Middle Node of a Linked List",
+          "category": "Linked List",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": false,
+          "key_idea": "",
+          "edge_case": "",
+          "inSetPass": false,
+          "knowsPass": false
+        },
+        {
+          "index": 30,
+          "title": "Odd Even Linked List",
+          "category": "Linked List",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two pointers to separate odd and even nodes, then connect the end of the odd list to the head of the even list.",
+          "edge_case": "Empty list or list with only one node.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 31,
+          "title": "Reverse Linked List",
+          "category": "Linked List",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Iteratively reverse the pointers of the linked list, maintaining previous and current nodes.",
+          "edge_case": "Empty list or list with only one node",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 32,
+          "title": "Maximum Twin Sum of a Linked List",
+          "category": "Linked List",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use fast and slow pointers to find the middle of the linked list, reverse the second half, and then iterate through both halves to compute the maximum twin sum.",
+          "edge_case": "List with an odd number of nodes, where the middle node does not have a twin.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 33,
+          "title": "Maximum Depth of Binary Tree",
+          "category": "Binary Tree - DFS",
+          "difficulty": "Easy",
+          "in_leetcode_75": false,
+          "knows_problem": true,
+          "key_idea": "Use DFS to compute the maximum depth of the binary tree by recursively calculating the depth of left and right subtrees and taking the maximum.",
+          "edge_case": "Empty tree (root is null) should return 0.",
+          "inSetPass": false,
+          "knowsPass": true
+        },
+        {
+          "index": 34,
+          "title": "Leaf-Similar Trees",
+          "category": "Binary Tree - DFS",
+          "difficulty": "Easy",
+          "in_leetcode_75": false,
+          "knows_problem": false,
+          "key_idea": "",
+          "edge_case": "",
+          "inSetPass": false,
+          "knowsPass": false
+        },
+        {
+          "index": 35,
+          "title": "Count Good Nodes in Binary Tree",
+          "category": "Binary Tree - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": false,
+          "key_idea": "",
+          "edge_case": "",
+          "inSetPass": false,
+          "knowsPass": false
+        },
+        {
+          "index": 36,
+          "title": "Path Sum III",
+          "category": "Binary Tree - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use DFS to traverse each node and, for each node, check all paths starting from it that sum to the target value, typically with a recursive helper function.",
+          "edge_case": "Tree with all nodes having the same value and multiple paths summing to the target due to overlaps.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 37,
+          "title": "Longest ZigZag Path in a Binary Tree",
+          "category": "Binary Tree - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use DFS to traverse each node, tracking the length of the zigzag sequence based on the last move direction, updating the maximum length found.",
+          "edge_case": "Tree with only one node or all nodes having the same value, which results in a zigzag length of 1.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 38,
+          "title": "Lowest Common Ancestor of a Binary Tree",
+          "category": "Binary Tree - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use DFS to traverse the tree and identify the lowest common ancestor based on descendant presence.",
+          "edge_case": "One of the nodes is the ancestor of the other.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 39,
+          "title": "Binary Tree Right Side View",
+          "category": "Binary Tree - BFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Perform a level-by-level BFS traversal, recording the last node of each level.",
+          "edge_case": "Tree with only left children or only right children.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 40,
+          "title": "Maximum Level Sum of a Binary Tree",
+          "category": "Binary Tree - BFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": true,
+          "key_idea": "Use BFS to traverse the tree level by level and keep track of the sum at each level to find the maximum.",
+          "edge_case": "Tree with only one node or multiple levels having the same maximum sum",
+          "inSetPass": false,
+          "knowsPass": true
+        },
+        {
+          "index": 41,
+          "title": "Search in a Binary Search Tree",
+          "category": "Binary Search Tree",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use the BST property to traverse left or right depending on the value being searched for, until finding the node or reaching null.",
+          "edge_case": "Searching for a value not present in the tree.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 42,
+          "title": "Delete Node in a BST",
+          "category": "Binary Search Tree",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": true,
+          "key_idea": "Replace the value of the node to be deleted with either its inorder successor or inorder predecessor, then delete that successor or predecessor node.",
+          "edge_case": "Deleting a node with two children, which requires finding and replacing with inorder successor or predecessor.",
+          "inSetPass": false,
+          "knowsPass": true
+        },
+        {
+          "index": 43,
+          "title": "Keys and Rooms",
+          "category": "Graphs - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use Depth-First Search (DFS) starting from the initial room to explore all reachable rooms, marking visited rooms to avoid revisiting.",
+          "edge_case": "All rooms are locked except the initial room, and one of the rooms has a key that leads to a previously visited room, testing the ability to revisit rooms if needed.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 44,
+          "title": "Number of Provinces",
+          "category": "Graphs - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use DFS to traverse each unvisited node in the graph, counting the number of connected components, which represent the provinces.",
+          "edge_case": "All cities are isolated, so the number of provinces equals the number of cities.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 45,
+          "title": "Reorder Routes to Make All Paths Lead to the City Zero",
+          "category": "Graphs - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use DFS to traverse the graph, count edges that need reversing to ensure all paths lead to city zero.",
+          "edge_case": "When all roads are already correctly oriented or when no roads are reachable from city zero.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 46,
+          "title": "Evaluate Division",
+          "category": "Graphs - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use graph to represent equations and their division results, then perform DFS for queries to find the result.",
+          "edge_case": "Handle division by zero or queries for variables not in the graph.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 47,
+          "title": "Nearest Exit from Entrance in Maze",
+          "category": "Graphs - BFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use BFS starting from the entrance to find the shortest path to the nearest exit, considering maze boundaries as potential exit points.",
+          "edge_case": "Maze where the entrance is already on an exit boundary, so the shortest path is zero.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 48,
+          "title": "Rotting Oranges",
+          "category": "Graphs - BFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use BFS to simulate the spread of rot from initially rotten oranges to adjacent fresh oranges, tracking the number of minutes until all reachable fresh oranges rot.",
+          "edge_case": "All oranges are initially rotten or empty cells, resulting in zero minutes needed.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 49,
+          "title": "Kth Largest Element in an Array",
+          "category": "Heap / Priority Queue",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": false,
+          "key_idea": "",
+          "edge_case": "",
+          "inSetPass": false,
+          "knowsPass": false
+        },
+        {
+          "index": 50,
+          "title": "Smallest Number in Infinite Set",
+          "category": "Heap / Priority Queue",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": false,
+          "key_idea": "",
+          "edge_case": "",
+          "inSetPass": false,
+          "knowsPass": false
+        },
+        {
+          "index": 51,
+          "title": "Maximum Subsequence Score",
+          "category": "Heap / Priority Queue",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": false,
+          "key_idea": "",
+          "edge_case": "",
+          "inSetPass": false,
+          "knowsPass": false
+        },
+        {
+          "index": 52,
+          "title": "Total Cost to Hire K Workers",
+          "category": "Heap / Priority Queue",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a min-heap to select the least costly candidates from the two ends of the list, gradually moving inward.",
+          "edge_case": "When k equals the total number of workers, all workers are hired, possibly from both ends.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 53,
+          "title": "Guess Number Higher or Lower",
+          "category": "Binary Search",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use binary search to efficiently find the target number by repeatedly dividing the search range based on comparison results.",
+          "edge_case": "When the range narrows down to a single element, ensure the algorithm correctly identifies the target or terminates.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 54,
+          "title": "Successful Pairs of Spells and Potions",
+          "category": "Binary Search",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": false,
+          "key_idea": "",
+          "edge_case": "",
+          "inSetPass": false,
+          "knowsPass": false
+        },
+        {
+          "index": 55,
+          "title": "Find Peak Element",
+          "category": "Binary Search",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use binary search to compare middle element with its neighbors to determine the direction of the peak.",
+          "edge_case": "Array with only one element or multiple same elements",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 56,
+          "title": "Koko Eating Bananas",
+          "category": "Binary Search",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use binary search on the maximum number of bananas Koko can eat per hour, checking feasibility for each candidate value.",
+          "edge_case": "When Koko has only one banana and the number of hours equals the number of bananas, the solution should handle this minimal case efficiently.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 57,
+          "title": "Letter Combinations of a Phone Number",
+          "category": "Backtracking",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": true,
+          "key_idea": "Use backtracking to generate all possible letter combinations by exploring each digit's corresponding characters recursively.",
+          "edge_case": "Input contains only one digit, or contains digits '0' or '1' which do not map to any letters.",
+          "inSetPass": false,
+          "knowsPass": true
+        },
+        {
+          "index": 58,
+          "title": "Combination Sum III",
+          "category": "Backtracking",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use backtracking to explore all combinations of numbers from 1 to 9, adding numbers to the current combination if the sum does not exceed 'k', and recurse until the combination size is 'n' with sum equal to 'k'.",
+          "edge_case": "When n > 9, it's impossible to find such combinations, so the result should be empty.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 59,
+          "title": "N-th Tribonacci Number",
+          "category": "DP - 1D",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming to compute each Tribonacci number based on the sum of the previous three numbers, iterating from the base cases up to N.",
+          "edge_case": "When N is less than 3, return the corresponding base values of the sequence.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 60,
+          "title": "Min Cost Climbing Stairs",
+          "category": "DP - 1D",
+          "difficulty": "Easy",
+          "in_leetcode_75": false,
+          "knows_problem": false,
+          "key_idea": "",
+          "edge_case": "",
+          "inSetPass": false,
+          "knowsPass": false
+        },
+        {
+          "index": 61,
+          "title": "House Robber",
+          "category": "DP - 1D",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming to keep track of the maximum amount that can be robbed up to each house, by choosing between robbing the current house plus the best two houses before, or skipping the current house.",
+          "edge_case": "When there are no houses or only one house, the output should be 0 or the value of that single house respectively.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 62,
+          "title": "Domino and Tromino Tiling",
+          "category": "DP - 1D",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming to count the number of ways to tile a 2 x n board, employing recurrence relations derived from breaking down the problem into smaller subproblems.",
+          "edge_case": "n = 1 or n = 2, which are the smallest boards and serve as base cases.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 63,
+          "title": "Unique Paths",
+          "category": "DP - Multidimensional",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming to accumulate the number of paths from the start to each cell, updating based on the top and left neighboring cells.",
+          "edge_case": "Grid with only one row or one column where only a single path exists.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 64,
+          "title": "Longest Common Subsequence",
+          "category": "DP - Multidimensional",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming with a 2D array where each cell dp[i][j] represents the length of the LCS of the first i characters of text1 and the first j characters of text2. Fill the table based on character matches or the maximum LCS excluding one string.",
+          "edge_case": "One or both strings are empty, resulting in an LCS length of 0.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 65,
+          "title": "Best Time to Buy and Sell Stock with Transaction Fee",
+          "category": "DP - Multidimensional",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming with two states: holding and not holding stock, accounting for transaction fees in transitions.",
+          "edge_case": "When the transaction fee is high enough that making any transaction is not profitable, the maximum profit should be zero.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 66,
+          "title": "Edit Distance",
+          "category": "DP - Multidimensional",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming with a 2D array to store minimum edit distances for substrings.",
+          "edge_case": "One string is empty, and the other is non-empty.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 67,
+          "title": "Counting Bits",
+          "category": "Bit Manipulation",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming with the relation res[i] = res[i >> 1] + (i & 1) to efficiently compute the number of set bits for all numbers from 0 to n.",
+          "edge_case": "When n = 0, the output should be [0].",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 68,
+          "title": "Single Number",
+          "category": "Bit Manipulation",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use XOR operation to cancel out all duplicate numbers, leaving only the single number.",
+          "edge_case": "Array contains only one element.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 69,
+          "title": "Minimum Flips to Make a OR b Equal to c",
+          "category": "Bit Manipulation",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use bit manipulation to compare bits of a, b, and c; determine flips needed based on bitwise operations.",
+          "edge_case": "When a, b, and c are all zero, no flips are required.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 70,
+          "title": "Implement Trie (Prefix Tree)",
+          "category": "Trie",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a TrieNode class with a dictionary of children and a boolean flag for word termination; insert words by traversing or creating nodes for each character; search by traversing nodes; prefix check by verifying traversal of prefix.",
+          "edge_case": "Inserting an empty string and searching for a prefix that doesn't exist in the Trie.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 71,
+          "title": "Search Suggestions System",
+          "category": "Trie",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Build a Trie of all products; for each prefix of the search input, retrieve up to 3 products with that prefix by traversing the Trie.",
+          "edge_case": "Input prefix does not match any product, resulting in an empty suggestions list for that prefix.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 72,
+          "title": "Non-overlapping Intervals",
+          "category": "Intervals",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": false,
+          "key_idea": "",
+          "edge_case": "",
+          "inSetPass": false,
+          "knowsPass": false
+        },
+        {
+          "index": 73,
+          "title": "Minimum Number of Arrows to Burst Balloons",
+          "category": "Intervals",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Sort the balloons by their ending points and greedily select arrows at the end of each interval to burst as many balloons as possible.",
+          "edge_case": "All balloons are overlapping at a single point, requiring only one arrow.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 74,
+          "title": "Daily Temperatures",
+          "category": "Monotonic Stack",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": false,
+          "key_idea": "",
+          "edge_case": "",
+          "inSetPass": false,
+          "knowsPass": false
+        },
+        {
+          "index": 75,
+          "title": "Online Stock Span",
+          "category": "Monotonic Stack",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a stack to maintain stock prices and their spans; for each new price, pop from the stack until the top element has a price greater than the current, then compute span based on remaining elements.",
+          "edge_case": "All prices are the same, resulting in maximum span for each inserted stock.",
+          "inSetPass": true,
+          "knowsPass": true
+        }
+      ]
+    },
+    "gpt-4.1-mini": {
+      "inSetPassCount": 69,
+      "knowsPassCount": 75,
+      "total": 75,
+      "all75InSet": false,
+      "all75Known": true,
+      "missedInSet": [
+        {
+          "index": 1,
+          "title": "Merge Strings Alternately"
+        },
+        {
+          "index": 18,
+          "title": "Find the Highest Altitude"
+        },
+        {
+          "index": 20,
+          "title": "Find the Difference of Two Arrays"
+        },
+        {
+          "index": 47,
+          "title": "Nearest Exit from Entrance in Maze"
+        },
+        {
+          "index": 51,
+          "title": "Maximum Subsequence Score"
+        },
+        {
+          "index": 52,
+          "title": "Total Cost to Hire K Workers"
+        }
+      ],
+      "unknownProblems": [],
+      "perProblem": [
+        {
+          "index": 1,
+          "title": "Merge Strings Alternately",
+          "category": "Array / String",
+          "difficulty": "Easy",
+          "in_leetcode_75": false,
+          "knows_problem": true,
+          "key_idea": "Iterate through both strings simultaneously using indices, append characters alternately from each string to the result, and once one string is exhausted, append the remaining characters from the other string.",
+          "edge_case": "One string is empty or much shorter than the other; ensure remaining characters from the longer string are appended correctly.",
+          "inSetPass": false,
+          "knowsPass": true
+        },
+        {
+          "index": 2,
+          "title": "Greatest Common Divisor of Strings",
+          "category": "Array / String",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "The key idea is to check if the concatenation of the two strings in both orders is the same, i.e., if str1 + str2 == str2 + str1. If so, the greatest common divisor string is the prefix substring of length equal to the GCD of the lengths of str1 and str2.",
+          "edge_case": "One edge case is when one string is empty; the GCD string should be the other non-empty string, or when the strings have no common divisor substring, which returns an empty string.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 3,
+          "title": "Kids With the Greatest Number of Candies",
+          "category": "Array / String",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Find the maximum number of candies any kid has, then for each kid, check if adding extra candies would make their count at least equal to the maximum, returning a boolean list.",
+          "edge_case": "All kids have the same number of candies and extra candies are zero.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 4,
+          "title": "Can Place Flowers",
+          "category": "Array / String",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Traverse the flowerbed array, and whenever you find a spot that is 0 and whose adjacent spots (if any) are also 0, plant a flower there (set to 1), and decrease the number of flowers to plant. If at any point number of flowers to plant becomes zero or less, return true.",
+          "edge_case": "The flowerbed has only one plot, e.g. [0], and n=1; also consider flowerbeds with no possible places due to adjacent flowers, e.g. [1,0,1].",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 5,
+          "title": "Reverse Vowels of a String",
+          "category": "Array / String",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two pointers starting from the beginning and end of the string, move them toward each other, swap vowels when both pointers point to vowels, and skip non-vowel characters.",
+          "edge_case": "String with no vowels should remain unchanged.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 6,
+          "title": "Reverse Words in a String",
+          "category": "Array / String",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Split the string by spaces to extract words, remove empty strings caused by multiple spaces, then reverse the list of words and join them with a single space.",
+          "edge_case": "Input string may have leading, trailing, or multiple spaces between words; also consider empty string input.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 7,
+          "title": "Product of Array Except Self",
+          "category": "Array / String",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Compute prefix products from the left and suffix products from the right, then multiply them for each index to get the product of all elements except the current one, all without using division.",
+          "edge_case": "The input array contains zeros; specifically, when there is more than one zero, all products except at zeros are zero.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 8,
+          "title": "Increasing Triplet Subsequence",
+          "category": "Array / String",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two variables to track the smallest and second smallest elements seen so far while iterating through the array; if a number is found greater than both, an increasing triplet exists.",
+          "edge_case": "An array with all identical elements where no increasing triplet can exist.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 9,
+          "title": "String Compression",
+          "category": "Array / String",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two pointers: one to read the characters and one to write the compressed string in-place. Count the occurrences of each character and write the character followed by the count (if greater than 1).",
+          "edge_case": "Input with all unique characters (e.g., ['a','b','c']), which should remain unchanged after compression.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 10,
+          "title": "Move Zeroes",
+          "category": "Two Pointers",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two pointers: one to iterate through the array and the other to track the position to place the next non-zero element, then fill the rest with zeros.",
+          "edge_case": "All elements are zeroes; the array should remain unchanged.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 11,
+          "title": "Is Subsequence",
+          "category": "Two Pointers",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two pointers to iterate through both strings. Move the pointer in the main string forward when characters match, otherwise move the pointer in the subsequence string forward until all characters are matched or string ends.",
+          "edge_case": "Empty subsequence string is always a subsequence of any string.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 12,
+          "title": "Container With Most Water",
+          "category": "Two Pointers",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two pointers, one at the beginning and one at the end of the array, calculate area, move the pointer with the smaller height inward to try to find a larger area.",
+          "edge_case": "Array with two elements; the maximum container is just between them.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 13,
+          "title": "Max Number of K-Sum Pairs",
+          "category": "Two Pointers",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Sort the array and use two pointers from start and end to find pairs with sum k, incrementing count when sum matches and moving pointers accordingly.",
+          "edge_case": "Array contains multiple duplicate numbers which can form multiple valid pairs, ensure each element is used at most once.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 14,
+          "title": "Maximum Average Subarray I",
+          "category": "Sliding Window",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a sliding window of fixed size k to compute sums efficiently by adding the next element and removing the first element of the previous window, tracking the maximum sum to get the maximum average.",
+          "edge_case": "The array length equals k, so the entire array is the only subarray; also consider arrays with negative numbers which might affect the maximum average.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 15,
+          "title": "Maximum Number of Vowels in a Substring of Given Length",
+          "category": "Sliding Window",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a sliding window of fixed size k to count vowels in the current window and update the maximum count as the window moves through the string.",
+          "edge_case": "All characters in the string are vowels, ensuring the maximum count equals k.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 16,
+          "title": "Max Consecutive Ones III",
+          "category": "Sliding Window",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a sliding window to maintain at most K zeroes within the window; expand right pointer and if zero count exceeds K, move left pointer to reduce zeros.",
+          "edge_case": "All elements are zeros and K is zero, resulting in maximum consecutive ones being zero.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 17,
+          "title": "Longest Subarray of 1's After Deleting One Element",
+          "category": "Sliding Window",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a sliding window to maintain a window containing at most one zero and track the maximum length of the window minus one (since one element must be deleted).",
+          "edge_case": "Array with all ones, where after deletion the longest subarray is length one less than the array size.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 18,
+          "title": "Find the Highest Altitude",
+          "category": "Prefix Sum",
+          "difficulty": "Easy",
+          "in_leetcode_75": false,
+          "knows_problem": true,
+          "key_idea": "Compute prefix sums of the net gains array to find altitude at each point and track the maximum altitude encountered.",
+          "edge_case": "All gains are negative, resulting in descending altitude from the start.",
+          "inSetPass": false,
+          "knowsPass": true
+        },
+        {
+          "index": 19,
+          "title": "Find Pivot Index",
+          "category": "Prefix Sum",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Calculate the total sum of the array, then iterate through the array while keeping track of the sum of elements to the left. For each index, check if the left sum equals total sum minus left sum minus the current element; if yes, that index is the pivot.",
+          "edge_case": "An array where all elements are zero, in which any index can be a pivot index, but the leftmost such index should be returned.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 20,
+          "title": "Find the Difference of Two Arrays",
+          "category": "Hash Map / Set",
+          "difficulty": "Easy",
+          "in_leetcode_75": false,
+          "knows_problem": true,
+          "key_idea": "Use two sets to store the unique elements from each array, then find the difference by subtracting one set from the other to identify elements unique to each array.",
+          "edge_case": "One or both arrays are empty, resulting in one or both difference lists being empty.",
+          "inSetPass": false,
+          "knowsPass": true
+        },
+        {
+          "index": 21,
+          "title": "Unique Number of Occurrences",
+          "category": "Hash Map / Set",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Count the occurrences of each number using a hash map, then check if the counts are unique by inserting them into a set and comparing sizes.",
+          "edge_case": "An array where all elements are the same (e.g., [1,1,1,1]) should return true since all occurrences counts are unique (only one count).",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 22,
+          "title": "Determine if Two Strings Are Close",
+          "category": "Hash Map / Set",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Two strings are close if they have the same set of characters and their frequency counts can be rearranged to be equal. To solve, count frequency of characters in both strings, then compare the sets of chars and sorted frequency lists.",
+          "edge_case": "Strings with same characters but different frequency distributions, e.g., 'aabbcc' and 'ccbbba' where one char's frequency cannot be matched by any in the other.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 23,
+          "title": "Equal Row and Column Pairs",
+          "category": "Hash Map / Set",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Convert each row and each column into a tuple or string form and use a hash map to count the frequency of each row; then sum up the counts for each column that matches a row representation.",
+          "edge_case": "Matrix with only one row and one column (1x1), where the single element forms both row and column, resulting in one pair.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 24,
+          "title": "Removing Stars From a String",
+          "category": "Stack",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a stack to process the string characters; push non-star characters onto the stack and pop from the stack when a star is encountered.",
+          "edge_case": "The input string may start with several stars, which should be ignored since there are no characters to remove yet.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 25,
+          "title": "Asteroid Collision",
+          "category": "Stack",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a stack to keep track of asteroids moving to the right. When a new asteroid moves to the left, compare it with the top of the stack to resolve collisions by size until either the stack is empty or no collision occurs.",
+          "edge_case": "Asteroids moving in the same direction do not collide; also, an asteroid of size zero (if any) should be considered carefully, though problem constraints typically assume positive sizes.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 26,
+          "title": "Decode String",
+          "category": "Stack",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a stack to keep track of the current string and the repeat count. When encountering a '[', push the current string and count onto the stack and reset them. When encountering a ']', pop from the stack and construct the decoded string by repeating the current substring accordingly.",
+          "edge_case": "An encoded string with nested brackets like '3[a2[c]]' where decoding inside brackets must be done before outer ones.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 27,
+          "title": "Number of Recent Calls",
+          "category": "Queue",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a queue to store timestamps of recent calls; when a new call arrives, enqueue its timestamp and dequeue timestamps that are older than 3000 milliseconds from the current timestamp. The size of the queue represents the number of calls in the recent 3000 ms window.",
+          "edge_case": "Multiple calls arriving at the same timestamp; ensure all are counted accurately without prematurely dequeuing.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 28,
+          "title": "Dota2 Senate",
+          "category": "Queue",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two queues to simulate banning process, one for Radiant senators and one for Dire senators, track indices to decide which senator bans which opponent next.",
+          "edge_case": "All senators belong to a single party initially, so they immediately win without any ban action.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 29,
+          "title": "Delete the Middle Node of a Linked List",
+          "category": "Linked List",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use two pointers, slow and fast. Move fast pointer two steps and slow pointer one step at a time. When fast reaches the end, slow will be at the middle node. Then delete the slow node by adjusting the previous node's next pointer.",
+          "edge_case": "Linked list has only one node; deleting the middle node results in an empty list.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 30,
+          "title": "Odd Even Linked List",
+          "category": "Linked List",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Rearrange the linked list by connecting all nodes at odd positions together, then all nodes at even positions together. Use two pointers for odd and even nodes respectively, and finally connect the end of the odd list to the head of the even list.",
+          "edge_case": "An edge case is when the linked list is empty or contains only one node, where the list remains unchanged.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 31,
+          "title": "Reverse Linked List",
+          "category": "Linked List",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Iterate through the linked list, reversing the pointer of each node to point to its previous node instead of its next node, maintaining a `prev` and `current` pointer until the end of the list is reached.",
+          "edge_case": "The linked list is empty (head is null), so the reversed list should also be null.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 32,
+          "title": "Maximum Twin Sum of a Linked List",
+          "category": "Linked List",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Find the midpoint of the linked list using slow and fast pointers, reverse the second half of the list, then iterate over both halves simultaneously to calculate the sums of twin nodes, keeping track of the maximum sum.",
+          "edge_case": "List length is even and could be as small as 2, ensuring the reversal and pairing logic must handle the minimal case correctly.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 33,
+          "title": "Maximum Depth of Binary Tree",
+          "category": "Binary Tree - DFS",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use DFS to recursively compute the depth of left and right subtrees, then return the maximum of the two depths plus one for the current node.",
+          "edge_case": "An empty tree (root is null) should return a depth of 0.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 34,
+          "title": "Leaf-Similar Trees",
+          "category": "Binary Tree - DFS",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Perform a DFS traversal on both trees to collect their leaf values in order, then compare the two leaf value lists for equality.",
+          "edge_case": "One tree has leaves with duplicate values while the other has leaves with the same values but arranged differently; the sequences must match exactly in order.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 35,
+          "title": "Count Good Nodes in Binary Tree",
+          "category": "Binary Tree - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use DFS to traverse the tree while keeping track of the maximum value along the path from the root to the current node. A node is good if its value is greater than or equal to all values seen so far on that path.",
+          "edge_case": "Tree where all nodes have the same value, ensuring all nodes are considered good; also a tree skewed to one side (all left or all right).",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 36,
+          "title": "Path Sum III",
+          "category": "Binary Tree - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a DFS traversal with a prefix sum hashmap to count the number of paths that sum to the target. The hashmap stores cumulative sums and their frequencies to efficiently find valid subpaths.",
+          "edge_case": "The tree contains negative numbers and the path can start and end anywhere, including a single node that equals the target sum.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 37,
+          "title": "Longest ZigZag Path in a Binary Tree",
+          "category": "Binary Tree - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use DFS traversal to compute the longest ZigZag path starting from each node, tracking direction (left or right) and updating the maximum length found during traversal.",
+          "edge_case": "A tree with a single node where the longest ZigZag path is zero since there are no edges to zigzag.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 38,
+          "title": "Lowest Common Ancestor of a Binary Tree",
+          "category": "Binary Tree - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Perform a DFS starting from the root. If the current node is null or matches either of the two target nodes, return that node. Recursively search left and right subtrees for the targets. If both sides return a non-null result, the current node is the lowest common ancestor. If only one side returns a non-null result, propagate that result up.",
+          "edge_case": "One of the nodes is the ancestor of the other, so the lowest common ancestor is that node itself.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 39,
+          "title": "Binary Tree Right Side View",
+          "category": "Binary Tree - BFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Perform a level-order traversal (BFS) of the binary tree and at each level, record the last node encountered, which represents the rightmost node visible from the right side view.",
+          "edge_case": "A tree where all nodes have only left children, resulting in the right side view showing all these left nodes as the visible nodes.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 40,
+          "title": "Maximum Level Sum of a Binary Tree",
+          "category": "Binary Tree - BFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Perform a level-order traversal (BFS) of the binary tree while keeping track of the sum of values at each level. Update the maximum sum and corresponding level whenever a higher sum is found.",
+          "edge_case": "A tree where all nodes have negative values, ensuring the algorithm correctly handles sums less than zero.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 41,
+          "title": "Search in a Binary Search Tree",
+          "category": "Binary Search Tree",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use the BST property where left child nodes are smaller and right child nodes are larger to decide whether to search left or right subtree recursively or iteratively.",
+          "edge_case": "The target value might not be present in the BST, resulting in a return of null (or equivalent).",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 42,
+          "title": "Delete Node in a BST",
+          "category": "Binary Search Tree",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "To delete a node in a BST, first locate the node. If the node has no children, remove it directly. If it has one child, replace it with its child. If it has two children, replace it with its in-order successor (smallest node in right subtree) or in-order predecessor (largest node in left subtree), then recursively delete that successor or predecessor node.",
+          "edge_case": "Deleting the root node when it has two children requires correctly updating the root reference after finding the in-order successor and deleting it.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 43,
+          "title": "Keys and Rooms",
+          "category": "Graphs - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Perform a DFS or BFS starting from room 0, using keys found in each room to visit other rooms. If all rooms are visited, return true; otherwise, return false.",
+          "edge_case": "A case where some rooms have no keys at all, making those rooms unreachable from room 0.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 44,
+          "title": "Number of Provinces",
+          "category": "Graphs - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Model the problem as an undirected graph where each city is a node. Use DFS to traverse and mark all reachable cities from a starting city, counting each DFS call as one province (connected component).",
+          "edge_case": "The adjacency matrix is all zeros except diagonal entries, meaning each city is isolated; the number of provinces equals the number of cities.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 45,
+          "title": "Reorder Routes to Make All Paths Lead to the City Zero",
+          "category": "Graphs - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Perform a DFS from city zero, reversing all edges that lead away from zero to ensure all paths direct towards zero.",
+          "edge_case": "A graph where all edges already lead towards city zero, so no edges need reversal.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 46,
+          "title": "Evaluate Division",
+          "category": "Graphs - DFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Model the given equations as a graph where variables are nodes and edges represent division ratios. Use DFS to find a path from numerator to denominator in each query and multiply edge weights along the path to get the result.",
+          "edge_case": "Queries involving variables not present in the graph should return -1.0, and queries where numerator and denominator are the same variable should return 1.0.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 47,
+          "title": "Nearest Exit from Entrance in Maze",
+          "category": "Graphs - BFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": true,
+          "key_idea": "Use BFS starting from the entrance to explore the maze, marking visited positions, and stop when reaching the nearest exit (an edge cell different from the entrance).",
+          "edge_case": "The entrance itself is on the edge but not an exit; the maze might be all walls except the entrance.",
+          "inSetPass": false,
+          "knowsPass": true
+        },
+        {
+          "index": 48,
+          "title": "Rotting Oranges",
+          "category": "Graphs - BFS",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a BFS approach starting from all initially rotten oranges, spreading rot to adjacent fresh oranges level by level, counting the minutes until no fresh oranges remain.",
+          "edge_case": "Grid with no fresh oranges initially (should return 0), or grid where some fresh oranges cannot be reached by rotten ones (should return -1).",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 49,
+          "title": "Kth Largest Element in an Array",
+          "category": "Heap / Priority Queue",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a min-heap of size k to keep track of the k largest elements seen. After processing all elements, the root of the heap is the kth largest element.",
+          "edge_case": "The array contains duplicates; ensure duplicates are counted separately since the kth largest depends on sorted order including duplicates.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 50,
+          "title": "Smallest Number in Infinite Set",
+          "category": "Heap / Priority Queue",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a min-heap to store the numbers that have been removed and then added back. When smallestNumber is called, return either the smallest number from the heap (if any) or the current smallest number not yet removed. When addBack is called, add the number back into the min-heap if it is smaller than the current smallest number and not already present.",
+          "edge_case": "Adding back a number that is already present in the set should have no effect.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 51,
+          "title": "Maximum Subsequence Score",
+          "category": "Heap / Priority Queue",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": true,
+          "key_idea": "Use a min-heap to keep track of the k subsequence elements with the highest scores while iterating through sorted pairs based on one attribute; update the maximum score by combining the heap sum and the current minimum attribute.",
+          "edge_case": "All elements having the same value for the attribute used for sorting, resulting in multiple subsequences with equal scores.",
+          "inSetPass": false,
+          "knowsPass": true
+        },
+        {
+          "index": 52,
+          "title": "Total Cost to Hire K Workers",
+          "category": "Heap / Priority Queue",
+          "difficulty": "Medium",
+          "in_leetcode_75": false,
+          "knows_problem": true,
+          "key_idea": "Use two heaps to track the lowest cost workers from the start and end of the list, then hire the worker with the lowest cost from these two pools iteratively until k workers are hired.",
+          "edge_case": "When k is equal to the number of workers, hire all workers and sum their costs; no need to compare heaps.",
+          "inSetPass": false,
+          "knowsPass": true
+        },
+        {
+          "index": 53,
+          "title": "Guess Number Higher or Lower",
+          "category": "Binary Search",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use binary search between 1 and n to guess the number by comparing the guess with the target via an API that returns whether the guess is higher, lower, or equal.",
+          "edge_case": "When the search space narrows down to one number, ensure that the guess is checked correctly to avoid missing the target.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 54,
+          "title": "Successful Pairs of Spells and Potions",
+          "category": "Binary Search",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "For each spell, use binary search on the sorted potions array to find the first potion that when multiplied by the spell strength meets or exceeds the success threshold, then count the number of valid potions as the suffix length from that index.",
+          "edge_case": "When the success threshold is very high, some spells may have zero successful potions because no potion's strength can meet the threshold when multiplied.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 55,
+          "title": "Find Peak Element",
+          "category": "Binary Search",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use binary search to find a peak by comparing middle element with neighbors; if middle is less than right neighbor, move right, else move left.",
+          "edge_case": "Array of two elements where both could be peaks at either end; also consider strictly increasing or decreasing arrays.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 56,
+          "title": "Koko Eating Bananas",
+          "category": "Binary Search",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use binary search on the eating speed. For a guessed speed, calculate total hours needed to eat all bananas and adjust speed accordingly to find the minimum speed meeting the allowed hours.",
+          "edge_case": "When the allowed hours equal the number of piles, the minimum speed is the size of the largest pile, as Koko can only eat one pile hour by hour.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 57,
+          "title": "Letter Combinations of a Phone Number",
+          "category": "Backtracking",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use backtracking to generate all combinations of letters by mapping each digit to its corresponding characters on a phone keypad, and recursively build strings by selecting one character per digit.",
+          "edge_case": "Input is an empty string, which should return an empty list since there are no digits to map to letters.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 58,
+          "title": "Combination Sum III",
+          "category": "Backtracking",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use backtracking to generate combinations of k numbers from 1 to 9 such that their sum equals n. Prune paths where the sum exceeds n or the combination length exceeds k.",
+          "edge_case": "When k is 1, simply check if n is between 1 and 9; otherwise, no combination exists.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 59,
+          "title": "N-th Tribonacci Number",
+          "category": "DP - 1D",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a dynamic programming approach where dp[i] = dp[i-1] + dp[i-2] + dp[i-3], with base cases dp[0]=0, dp[1]=1, dp[2]=1.",
+          "edge_case": "When n is 0, the result is 0; when n is 1 or 2, the result is 1. Also, testing for larger n to ensure no integer overflow issues.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 60,
+          "title": "Min Cost Climbing Stairs",
+          "category": "DP - 1D",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming to compute the minimum cost to reach each stair by taking the minimum of the cost to reach the previous stair or the one before that, then add the current stair's cost.",
+          "edge_case": "When the cost array has only two elements, the minimum cost is the minimum of these two since you can start from step 0 or step 1.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 61,
+          "title": "House Robber",
+          "category": "DP - 1D",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming where dp[i] represents the maximum amount of money that can be robbed up to house i without triggering alarms; at each house, choose to either rob it plus dp[i-2] or skip it and take dp[i-1].",
+          "edge_case": "When the list of houses is empty or contains only one house.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 62,
+          "title": "Domino and Tromino Tiling",
+          "category": "DP - 1D",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming where dp[i] represents the number of ways to tile a 2 x i board. The recurrence considers placing vertical dominoes and various tromino placements that cover parts of the board, often utilizing an auxiliary array for partial states to handle tromino shapes.",
+          "edge_case": "When n is very small, like n=1 or n=2, there are limited ways to tile and the base cases must be correctly initialized to avoid incorrect counts.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 63,
+          "title": "Unique Paths",
+          "category": "DP - Multidimensional",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming to count the number of ways to each cell by summing the number of ways to the cell above and the cell to the left, starting from the top-left corner.",
+          "edge_case": "Grid with either m=1 or n=1, where there's only one path straight along the single row or column.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 64,
+          "title": "Longest Common Subsequence",
+          "category": "DP - Multidimensional",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming with a 2D table where dp[i][j] stores the length of the longest common subsequence of the first i characters of text1 and the first j characters of text2. Update dp based on matching characters or the maximum subsequence length from previous indices.",
+          "edge_case": "One or both strings are empty, resulting in an LCS length of 0.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 65,
+          "title": "Best Time to Buy and Sell Stock with Transaction Fee",
+          "category": "DP - Multidimensional",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming to track two states: holding a stock and not holding a stock, updating them daily by deciding whether to buy, sell with transaction fee, or hold.",
+          "edge_case": "Prices are strictly decreasing, ensuring that the algorithm correctly returns zero profit as no transaction is beneficial.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 66,
+          "title": "Edit Distance",
+          "category": "DP - Multidimensional",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming to compute a 2D dp table where dp[i][j] represents the minimum edit distance between the first i characters of word1 and the first j characters of word2. The solution considers insertion, deletion, and substitution operations.",
+          "edge_case": "One edge case is when one of the strings is empty, so the edit distance equals the length of the other string.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 67,
+          "title": "Counting Bits",
+          "category": "Bit Manipulation",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use dynamic programming where dp[i] = dp[i >> 1] + (i & 1), leveraging results from smaller numbers.",
+          "edge_case": "Input 0, where the count of bits is zero and serves as the base case.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 68,
+          "title": "Single Number",
+          "category": "Bit Manipulation",
+          "difficulty": "Easy",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use XOR operation to cancel out numbers appearing twice, the single number remains as result.",
+          "edge_case": "Array contains only one element, which is the single number itself.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 69,
+          "title": "Minimum Flips to Make a OR b Equal to c",
+          "category": "Bit Manipulation",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "To find the minimum number of flips to make (a OR b) equal to c, examine each bit position of a, b, and c. If the bit in c is 0, both bits in a and b must be flipped to 0 if they are 1; this requires counting the number of 1s in those positions. If the bit in c is 1, at least one bit in a or b at that position must be 1; if both are 0, one must be flipped.",
+          "edge_case": "One edge case is when c has a 0 bit, but both a and b have 1s at that bit position, requiring two flips instead of one.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 70,
+          "title": "Implement Trie (Prefix Tree)",
+          "category": "Trie",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a tree data structure where each node contains an array or hashmap of child nodes corresponding to characters, with a boolean flag indicating end of a word. Insert adds characters node by node creating new nodes as needed; search traverses nodes character by character; startsWith checks prefixes similarly.",
+          "edge_case": "Inserting and searching empty strings or strings with overlapping prefixes, ensuring that words like 'app' and 'apple' are handled correctly and that search does not falsely return true for prefixes when full words aren't present.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 71,
+          "title": "Search Suggestions System",
+          "category": "Trie",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a Trie data structure to store all products, and during search, traverse the Trie based on the current prefix and collect up to three lexicographically minimum suggestions at each step.",
+          "edge_case": "When no products match the current prefix, return an empty list for that prefix.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 72,
+          "title": "Non-overlapping Intervals",
+          "category": "Intervals",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Sort intervals by their end time, then greedily select intervals that start after the last selected interval ends to maximize the number of non-overlapping intervals.",
+          "edge_case": "Intervals that share the same end time should be carefully handled to avoid overlaps; also consider intervals that are fully nested within others.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 73,
+          "title": "Minimum Number of Arrows to Burst Balloons",
+          "category": "Intervals",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Sort intervals by their end coordinates and greedily shoot arrows to burst balloons overlapping with the current arrow position, minimizing number of arrows.",
+          "edge_case": "Balloons with the same start and end points or overlapping completely; also cases with no balloons (empty list).",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 74,
+          "title": "Daily Temperatures",
+          "category": "Monotonic Stack",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a monotonic decreasing stack to keep indices of days. For each day, pop from the stack while the current temperature is warmer than the temperature at the index on top of the stack, and calculate the difference in days.",
+          "edge_case": "All temperatures are the same, so no warmer future day, result should be all zeros.",
+          "inSetPass": true,
+          "knowsPass": true
+        },
+        {
+          "index": 75,
+          "title": "Online Stock Span",
+          "category": "Monotonic Stack",
+          "difficulty": "Medium",
+          "in_leetcode_75": true,
+          "knows_problem": true,
+          "key_idea": "Use a stack to keep pairs of (price, span) and pop while current price is greater or equal to stack top price, accumulating spans.",
+          "edge_case": "Consecutive days with the same price leading to spans that combine previous spans correctly.",
+          "inSetPass": true,
+          "knowsPass": true
+        }
+      ]
+    }
+  }
+}

@@ -8,6 +8,7 @@ const PROFILE_KEY = "l33tsp33k.profile.v2";
 const CHAT_KEY = "l33tsp33k.chat.v2";
 const CODE_KEY = "l33tsp33k.code.v2";
 const TEXT_KEY = "l33tsp33k.text.v2";
+const ANON_ID_KEY = "l33tsp33k.anon-id.v1";
 
 type TargetField = "chat" | "code";
 type KeyboardMode = "alpha" | "symbols";
@@ -122,6 +123,11 @@ export default function Home() {
   ]);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
+  const [sessionId, setSessionId] = useState<string>("");
+  const [anonId, setAnonId] = useState<string>("");
+  const [authUser, setAuthUser] = useState<{ id: string; email?: string | null } | null>(null);
+  const [creditBalance, setCreditBalance] = useState<number>(0);
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
 
   const [panelOpen, setPanelOpen] = useState(true);
   const [panelTab, setPanelTab] = useState<PanelTab>("problem");
@@ -154,6 +160,13 @@ export default function Home() {
 
     setProfile(loadedProfile);
 
+    let localAnonId = localStorage.getItem(ANON_ID_KEY);
+    if (!localAnonId) {
+      localAnonId = crypto.randomUUID();
+      localStorage.setItem(ANON_ID_KEY, localAnonId);
+    }
+    setAnonId(localAnonId);
+
     if (chatRaw) {
       try {
         const normalized = normalizeMessages(JSON.parse(chatRaw));
@@ -167,6 +180,31 @@ export default function Home() {
 
     if (typeof textRaw === "string") setDraft(textRaw);
     if (typeof codeRaw === "string") setCode(codeRaw);
+
+    const hydrate = async () => {
+      try {
+        const response = await fetch(`/api/auth/session?anonId=${encodeURIComponent(localAnonId ?? "")}`);
+        if (!response.ok) return;
+        const payload = await response.json();
+        setAuthUser(payload.user ?? null);
+        setCreditBalance(payload.credits?.balanceDollars ?? 0);
+
+        if (typeof payload.activeProblemId === "number") {
+          setProfile((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  activeProblemId: payload.activeProblemId,
+                }
+              : prev,
+          );
+        }
+      } catch {
+        // Ignore hydration failures; app still works in local-only mode.
+      }
+    };
+
+    void hydrate();
   }, []);
 
   useEffect(() => {
@@ -283,6 +321,32 @@ export default function Home() {
     setQuickActions(["Give me a short hint", "Review my approach", "Pick the next best problem for me"]);
     setPanelTab("problem");
     setPanelOpen(true);
+    if (!authUser) {
+      localStorage.removeItem(CHAT_KEY);
+      localStorage.removeItem(PROFILE_KEY);
+    }
+  }
+
+  async function startCheckout() {
+    if (!authUser || purchaseLoading) return;
+    setPurchaseLoading(true);
+    setError("");
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quantity: 1 }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? "Checkout failed");
+      if (payload.url) {
+        window.location.href = payload.url;
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Checkout failed");
+    } finally {
+      setPurchaseLoading(false);
+    }
   }
 
   async function sendTurn(options: { sendText: boolean; sendCode: boolean; presetText?: string }) {
@@ -320,6 +384,8 @@ export default function Home() {
           activeProblemId: profile.activeProblemId,
           profile,
           conversation: nextMessages,
+          anonId,
+          sessionId,
         }),
       });
 
@@ -329,6 +395,13 @@ export default function Home() {
       }
 
       const payload = (await response.json()) as ChatApiResponse;
+      if (payload.sessionId) setSessionId(payload.sessionId);
+      if (payload.activeProblemId && payload.activeProblemId !== profile.activeProblemId) {
+        setProfile((prev) => (prev ? { ...prev, activeProblemId: payload.activeProblemId! } : prev));
+      }
+      if (payload.usage?.remainingBalanceDollars != null) {
+        setCreditBalance(payload.usage.remainingBalanceDollars);
+      }
 
       setMessages((prev) => {
         const tail = [payload.assessment.summaryNote, `Next: ${payload.assessment.nextStep}`]
@@ -339,7 +412,7 @@ export default function Home() {
 
       setQuickActions(payload.quickActions);
 
-      const nextProblemId = payload.assessment.moveToProblemId;
+      const nextProblemId = payload.activeProblemId ?? payload.assessment.moveToProblemId;
       const moved = nextProblemId !== profile.activeProblemId;
 
       setProfile((prev) => {
@@ -397,21 +470,46 @@ export default function Home() {
       <header className="sticky top-0 z-20 border-b border-black/10 bg-[#f3f2ec]/95 px-4 py-3 backdrop-blur">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-bold tracking-tight">l33tsp33k</h1>
-          <button
-            type="button"
-            onClick={resetLocalState}
-            className="rounded-full border border-black/15 px-3 py-1 text-xs font-medium"
-          >
-            Reset
-          </button>
+          <div className="flex items-center gap-2">
+            {authUser ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    void startCheckout();
+                  }}
+                  className="rounded-full border border-black/15 px-3 py-1 text-xs font-semibold"
+                >
+                  {purchaseLoading ? "..." : "Buy $10"}
+                </button>
+                <a href="/auth/sign-out" className="rounded-full border border-black/15 px-3 py-1 text-xs font-medium">
+                  Logout
+                </a>
+              </>
+            ) : (
+              <a href="/auth/sign-in?returnTo=/" className="rounded-full border border-black/15 px-3 py-1 text-xs font-medium">
+                Login
+              </a>
+            )}
+            <button
+              type="button"
+              onClick={resetLocalState}
+              className="rounded-full border border-black/15 px-3 py-1 text-xs font-medium"
+            >
+              Reset
+            </button>
+          </div>
         </div>
-        <p className="mt-1 text-xs text-black/70">Chat-first LC75 tutor · GPT-4.1-mini · local profile only</p>
+        <p className="mt-1 text-xs text-black/70">
+          Chat-first LC150 tutor · GPT-4.1-mini · {authUser ? "logged-in + DB credits" : "free anonymous mode"}
+        </p>
         <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-black/10">
-          <div className="h-full bg-[#1a7f52] transition-all" style={{ width: `${(masteredCount / 75) * 100}%` }} />
+          <div className="h-full bg-[#1a7f52] transition-all" style={{ width: `${(masteredCount / 150) * 100}%` }} />
         </div>
         <p className="mt-1 text-xs font-medium">
-          Mastered {masteredCount}/75 · Active #{activeProblem.id} · {activeProblem.title}
+          Mastered {masteredCount}/150 · Active #{activeProblem.id} · {activeProblem.title}
         </p>
+        {authUser ? <p className="text-xs text-black/65">Credits: ${creditBalance.toFixed(2)}</p> : null}
       </header>
 
       <section className="flex-1 overflow-y-auto px-4 py-4">

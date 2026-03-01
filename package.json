@@ -6,9 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:migrate": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f db/schema.sql",
+    "db:seed:lc150": "node scripts/seed-lc150.mjs",
+    "data:gen:lc150": "node scripts/generate-lc150.mjs"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
+    "@vercel/blob": "^2.3.0",
+    "@workos-inc/authkit-nextjs": "^2.15.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.575.0",
@@ -17,6 +23,7 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "stripe": "^20.4.0",
     "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import problems from "@/data/leetcode75.json";
+import problems from "@/data/lc150.json";
 import type { LC75Problem, LocalProfile } from "@/lib/types";
 
 export const leetcode75 = problems as LC75Problem[];

@@ -1,0 +1,767 @@
+{
+  "generatedAt": "2026-03-01T18:46:23.741Z",
+  "model": "gpt-4.1-mini",
+  "problems": [
+    "Product of Array Except Self",
+    "Rotting Oranges",
+    "Longest Common Subsequence"
+  ],
+  "learners": [
+    "novice",
+    "advanced"
+  ],
+  "architectures": [
+    {
+      "id": "single_call",
+      "description": "One tutor call handles guidance, grading, hints, and mastery decision."
+    },
+    {
+      "id": "multi_call",
+      "description": "Planner + Tutor + Grader + Mastery calls with structured JSON state exchange."
+    }
+  ],
+  "aggregate": {
+    "single_call": {
+      "rubricAverages": {
+        "pedagogy": 5,
+        "correctness": 5,
+        "flow": 4.83,
+        "motivation": 5,
+        "mastery_reliability": 5,
+        "composite": 4.97
+      },
+      "masteryRate": 0.5,
+      "avgTurns": 13.17,
+      "avgFailedAttempts": 0.33,
+      "count": 6
+    },
+    "multi_call": {
+      "rubricAverages": {
+        "pedagogy": 4.83,
+        "correctness": 4.83,
+        "flow": 4.67,
+        "motivation": 4.67,
+        "mastery_reliability": 5,
+        "composite": 4.8
+      },
+      "masteryRate": 1,
+      "avgTurns": 6,
+      "avgFailedAttempts": 2,
+      "count": 6
+    }
+  },
+  "scenarios": [
+    {
+      "architecture": "single_call",
+      "learner": "novice",
+      "problem": "Product of Array Except Self",
+      "outcomes": {
+        "mastered": true,
+        "turns": 10,
+        "failedAttempts": 0,
+        "hintsUsed": 0
+      },
+      "rubric": {
+        "pedagogy": 5,
+        "correctness": 5,
+        "flow": 5,
+        "motivation": 5,
+        "mastery_reliability": 5,
+        "summary": "The assistant employed a clear, Socratic method, prompting the user to consider approaches and edge cases before coding. The explanations were fully accurate, including correctness and handling of zeros. The conversation was concise and suitable for mobile learning with actionable steps and confirmation prompts. Motivation was sustained by encouragement to try coding and offering review. The mastery signal was used judiciously, only marking mastery after correct reasoning and code verification."
+      },
+      "transcript": [
+        {
+          "role": "user",
+          "content": "Can we practice Product of Array Except Self?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! Let's start with your approach. How do you plan to solve the \"Product of Array Except Self\" problem? What data structures or methods will you use?"
+        },
+        {
+          "role": "user",
+          "content": "I think I can use two arrays to store products: one from the left and one from the right. Then multiply corresponding elements to get the result. Maybe use a loop to fill these arrays. But I’m not sure about the complexity or if there’s a better way. Is this approach okay?"
+        },
+        {
+          "role": "assistant",
+          "content": "You're on the right track! Using two arrays to store left and right products and then multiplying element-wise works and is intuitive. This approach has O(n) time complexity and O(n) space complexity.\n\nCan you think about how to reduce the extra space used? Is it possible to solve this using the output array itself to store intermediate results and just a few extra variables?\n\nWhat could be an edge case you want to keep in mind with your approach? \n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Hmm, so instead of using two extra arrays, I can try storing the left products directly in the output array first? Then maybe iterate from the right side using a variable to keep track of the right products and multiply as I go? That way I only need O(1) extra space besides the output. \n\nAs for edge cases, maybe if the array contains zeros? Since multiplying zero can mess up the product values if not handled correctly. \n\nDoes this make sense? Should I try coding this?"
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly, that approach makes perfect sense! You’ll first build the output array with left products, then pass from the right multiplying and updating. Handling zeros naturally works here without extra special cases.\n\nYes, you should definitely try coding it! This will solidify your understanding and help catch small details.\n\nIf you want, I can review your code afterward and help with any bugs or improvements.\n\nReady to give it a shot?  \nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Yes, I’m ready to try! I think I’ll first create an output array with left products, then multiply from the right side. I might get stuck with indexing though. I’ll write it in Python and share it here once done. Should I start with the function signature or jump straight to the main logic?"
+        },
+        {
+          "role": "assistant",
+          "content": "Starting with the function signature is a good habit—it gives your code structure and clarifies inputs/outputs. For this problem, something like `def productExceptSelf(nums: List[int]) -> List[int]:` works.\n\nAfter that, write the main logic step-by-step. Keep track of indices carefully when building left products and when iterating from the right to multiply.\n\nIf you get stuck on indexing, consider writing out the intermediate arrays or using print statements to debug.\n\nGo ahead and try writing your code now; share it when ready, and I’ll help you refine it!\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "def productExceptSelf(nums: List[int]) -> List[int]:\n    n = len(nums)\n    left_products = [1] * n\n    for i in range(1, n):\n        left_products[i] = left_products[i-1] * nums[i-1]\n\n    right_product = 1\n    for i in range(n-1, -1, -1):\n        left_products[i] *= right_product\n        right_product *= nums[i]\n\n    return left_products\n\nIs this correct? I’m not sure if the multiplication inside the second loop is right."
+        },
+        {
+          "role": "assistant",
+          "content": "Your code is correct! The first loop computes products of elements to the left of each index, stored in `left_products`.  \nThe second loop walks backward, maintaining `right_product` as the product of elements to the right, and multiplies it with `left_products[i]`.  \nThis efficiently gives the product of all elements except self at each index.  \n\nYour space complexity is O(n) for the output array, and time complexity O(n) with two passes. Regarding zeros, this method naturally handles them well without special cases.  \n\nHave you thought about how this approach works on an example input, like `[1,2,3,4]`? It helps to validate your logic mentally.\n\nMASTERY_SIGNAL: yes"
+        }
+      ]
+    },
+    {
+      "architecture": "single_call",
+      "learner": "novice",
+      "problem": "Rotting Oranges",
+      "outcomes": {
+        "mastered": false,
+        "turns": 15,
+        "failedAttempts": 1,
+        "hintsUsed": 0
+      },
+      "rubric": {
+        "pedagogy": 5,
+        "correctness": 5,
+        "flow": 4,
+        "motivation": 5,
+        "mastery_reliability": 5,
+        "summary": "The assistant skillfully used a Socratic method, prompting the user to think through BFS approach and edge cases without prematurely giving answers, which shows excellent pedagogy. The guidance on BFS layers, tracking fresh oranges, handling edge cases, and correct placement of time increment is algorithmically sound and accurate. The conversation flow is good with concise, focused turns, though some messages might feel slightly long for a mobile app; still, the interaction remains clear and actionable. The assistant consistently motivated the user, encouraging code sharing, testing, and further practice with edge cases, enhancing learning persistence. Lastly, the mastery signal is reliably not falsely marked as mastered, reflecting careful evaluation."
+      },
+      "transcript": [
+        {
+          "role": "user",
+          "content": "Can we practice Rotting Oranges?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! How would you approach the problem of rotting oranges spreading over time? What data structure or algorithm might be useful here?"
+        },
+        {
+          "role": "user",
+          "content": "Hmm, I think I’d try to track the rotten oranges and spread the rot step by step. Maybe use a queue to keep the rotten oranges and do something like BFS to spread the rot to nearby fresh oranges each minute? But I’m not fully sure how to handle the grid or when to stop. What do you think?"
+        },
+        {
+          "role": "assistant",
+          "content": "You’re on the right track! BFS and a queue are perfect for spreading rot minute by minute. To handle the grid:\n\n- Initialize the queue with all initially rotten oranges.\n- Keep count of fresh oranges.\n- At each step (minute), process all oranges in the queue (current rotten ones), rot neighbors if fresh, add them to the queue.\n- Stop when no new oranges rot in a step.\n\nQuestion: How would you keep track of how many minutes have passed? How do you know when to return -1 (some oranges can't rot)?"
+        },
+        {
+          "role": "user",
+          "content": "I think I’d keep a variable like `minutes = 0` and increase it after each BFS layer, since each layer is one minute. If at the end, some fresh oranges are left, return -1 because they can’t rot. Otherwise, return `minutes`. Is it okay to increase the minute count only after processing the entire current layer? Would that handle oranges rotting at the same time correctly?"
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, incrementing the `minutes` after processing the entire current BFS layer rightly models the passage of time. Each layer corresponds to oranges rotting simultaneously in that minute. This ensures you don’t count partial minutes and correctly handle simultaneous rotting.\n\nOne edge case to watch out for: if no fresh orange exists initially or no new oranges rot during BFS, you might want to return 0 (no time needed). How might you handle that in your code to distinguish these cases?\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Got it! So, to handle the edge cases, I could first count all the fresh oranges before starting BFS. If there are none, just return 0 immediately. Then, during BFS, if by the end some fresh oranges remain unrotten, return -1. Otherwise, return the minutes counted. Does this make sense? Should I share some code for it?"
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly right! Counting fresh oranges upfront and handling those edge cases will make your solution robust. Sharing your code would be a great next step—it will help me spot any potential logic or boundary issues and guide you further. Feel free to paste it when you're ready!"
+        },
+        {
+          "role": "user",
+          "content": "Okay, here’s my code for Rotting Oranges. It uses BFS to spread rot from rotten oranges to adjacent fresh ones each minute. But I get wrong answers on some test cases, maybe I’m missing edge cases or messing up the time count. Can you help me debug?\n\n```python\nfrom collections import deque\n\ndef orangesRotting(grid):\n    rows, cols = len(grid), len(grid[0])\n    fresh = 0\n    queue = deque()\n\n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] == 2:\n                queue.append((r, c))\n            elif grid[r][c] == 1:\n                fresh += 1\n\n    time = 0\n    directions = [(1,0), (-1,0), (0,1), (0,-1)]\n\n    while queue and fresh > 0:\n        for _ in range(len(queue)):\n            x, y = queue.popleft()\n            for dx, dy in directions:\n                nx, ny = x + dx, y + dy"
+        },
+        {
+          "role": "assistant",
+          "content": "Your approach looks on track so far! A few things to check:\n\n1. After calculating `nx, ny`, do you check if it’s inside the grid and if `grid[nx][ny] == 1` (fresh)? Only then you should rot it (change to 2), decrement `fresh`, and append to `queue`.\n2. Do you increment `time` only after processing the entire layer (outside the inner for loop but inside the while)?\n3. At the end, if `fresh > 0`, you return -1, else `time`.\n\nCan you share the rest of your code after `nx, ny = x + dx, y + dy`? This will help spot if any of these steps are missing or incorrect.\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Sure! Here's what I wrote after `nx, ny = x + dx, y + dy`:\n\n```python\nif grid[nx][ny] == 1:\n    grid[nx][ny] = 2\n    fresh -= 1\n    queue.append((nx, ny))\ntime += 1\n```\n\nI think I also incremented time here. Is that correct?"
+        },
+        {
+          "role": "assistant",
+          "content": "Good catch to question this! Incrementing `time` inside the inner for loop (i.e., after checking each neighbor) will overcount minutes because it updates time for each rotten orange spread in the same minute.\n\nWhere should `time += 1` be placed? Hint: it should increase **once per BFS layer**, after processing all nodes at that minute, not for each neighbor.\n\nCan you try moving `time += 1` to just after the inner for-loop that processes the entire current queue layer, and then test the code again?\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Ah, I see! I think I should move `time += 1` outside the inner for loop, right after processing all oranges in the current queue. So it increments once per BFS level, representing one minute passing.\n\nLet me try this change:\n\n```python\nwhile queue:\n    for _ in range(len(queue)):\n        # process neighbors...\n    time += 1  # moved here\n```\n\nI'll run some test cases now to see if it works correctly. Thanks!"
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly! Incrementing `time` once per BFS level correctly models each minute as all rotten oranges spread rot simultaneously.\n\nOne advice: after the BFS finishes, check if there are still fresh oranges left. If yes, return -1. Also, if no fresh oranges to start with, return 0 immediately.\n\nTip: sometimes your time count may be off by 1 because you increment time even when no new orange rots during that minute. Consider incrementing `time` only if the queue grows (new rotten oranges added) after processing the current level.\n\nTest with these edge cases: all fresh or all empty, or no rotten oranges initially.\n\nKeep me posted!  \nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Got it, that makes sense! So I should only increment time if the BFS spreads rot to new oranges in the current level. Also, after BFS ends, check if fresh oranges remain and return -1 if yes. And start with checking if there are no fresh oranges initially to return 0.\n\nI'll try fixing that and testing edge cases like:\n\n- all fresh oranges\n- all empty cells\n- no rotten oranges initially\n\nThanks! I'll update you after I try. Could you maybe show a quick example of counting time correctly in BFS?"
+        }
+      ]
+    },
+    {
+      "architecture": "single_call",
+      "learner": "novice",
+      "problem": "Longest Common Subsequence",
+      "outcomes": {
+        "mastered": true,
+        "turns": 10,
+        "failedAttempts": 1,
+        "hintsUsed": 0
+      },
+      "rubric": {
+        "pedagogy": 5,
+        "correctness": 5,
+        "flow": 5,
+        "motivation": 5,
+        "mastery_reliability": 5,
+        "summary": "The assistant employs an excellent Socratic approach, incrementally guiding the user to understand LCS and memoization without giving direct answers initially. The code provided is correct and covers essential base cases. The conversation is broken into concise, manageable turns suitable for mobile learning, maintaining user engagement and motivation by inviting user input and offering further learning opportunities. The mastery signal appears well-aligned with the user's demonstrated understanding and final code correctness, avoiding premature mastery marking."
+      },
+      "transcript": [
+        {
+          "role": "user",
+          "content": "Can we practice Longest Common Subsequence?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! How would you start solving the Longest Common Subsequence (LCS) problem? Could you describe your approach or write a function outline? This will help me guide you step-by-step. \n\nHint: Think about comparing characters from the two strings and how you might use recursion or dynamic programming for optimization.\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Okay, I think I can start by comparing the first characters of both strings. If they match, I add 1 plus the LCS of the remaining parts. If not, then I try excluding the first character from either string and take the max. So, the function might be like:\n\n```\ndef lcs(s1, s2):\n    if s1 == \"\" or s2 == \"\":\n        return 0\n    if s1[0] == s2[0]:\n        return 1 + lcs(s1[1:], s2[1:])\n    else:\n        return max(lcs(s1, s2[1:]), lcs(s1[1:], s2))\n```\n\nIs this the right start?"
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, this is a solid recursive start! You correctly handle the base case and decision-making when characters match or not.\n\nWhat do you think about the time complexity of this code? How many subproblems do you think it might solve repeatedly? Can you spot any inefficiency here?\n\nHint: What technique often optimizes recursion with overlapping subproblems?\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "I think the time complexity might be really high, maybe exponential? Because the function calls itself twice a lot. It probably solves the same subproblems many times over. The inefficiency seems to be repeated calculations of the same stuff.\n\nIs the technique to optimize this called memoization? Like storing results so we don't compute them again?"
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly right! Memoization stores results of subproblems in a cache (usually a dictionary) so repeated calls return the cached result instantly, drastically reducing the time from exponential to O(m*n), where m and n are string lengths.\n\nHow would you modify your function to use memoization? Think about what keys and values should be in the cache. Give it a try, and share your code snippet!\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Okay, I think the keys should be the indices of the two strings, like i and j, and the value is the LCS length for those positions. Here is my attempt:\n\n```python\ndef lcs_memo(s1, s2, i, j, cache):\n    if i == len(s1) or j == len(s2):\n        return 0\n    if (i, j) in cache:\n        return cache[(i, j)]\n    if s1[i] == s2[j]:\n        cache[(i, j)] = 1 + lcs_memo(s1, s2, i+1, j+1, cache)\n    else:\n        cache[(i, j)] = max(lcs_memo(s1, s2, i+1, j, cache), lcs_memo(s1, s2, i, j+1, cache))\n    return cache[(i, j)]\n```\n\nIs this correct? How do I call it initially?"
+        },
+        {
+          "role": "assistant",
+          "content": "Your implementation is correct! You handle base cases, caching, and recursion properly.\n\nTo call it initially, start from indices 0 for both strings and an empty cache, like:\n\n```python\nresult = lcs_memo(s1, s2, 0, 0, {})\n```\n\nThis will compute the LCS length for the full strings using memoization.\n\nWould you like help to convert this into a cleaner wrapper function that hides indices and cache from the user? \n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Yes, that would really help! I get confused managing indices and cache myself. A wrapper would make calling it easier and cleaner. Could you show me how to write that?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! You can define a wrapper that only takes the two strings, then defines the inner memoized function with indices and cache hidden inside.\n\nHere’s a simple example:\n\n```python\ndef longest_common_subsequence(s1, s2):\n    cache = {}\n    def helper(i, j):\n        if i == len(s1) or j == len(s2):\n            return 0\n        if (i, j) in cache:\n            return cache[(i, j)]\n        if s1[i] == s2[j]:\n            cache[(i, j)] = 1 + helper(i+1, j+1)\n        else:\n            cache[(i, j)] = max(helper(i+1, j), helper(i, j+1))\n        return cache[(i, j)]\n    return helper(0, 0)\n```\n\nThis way, the caller just calls `longest_common_subsequence(s1, s2)` without worrying about indices or cache.\n\nWould you like to discuss iterative DP too?\n\nMASTERY_SIGNAL: yes"
+        }
+      ]
+    },
+    {
+      "architecture": "single_call",
+      "learner": "advanced",
+      "problem": "Product of Array Except Self",
+      "outcomes": {
+        "mastered": false,
+        "turns": 15,
+        "failedAttempts": 0,
+        "hintsUsed": 0
+      },
+      "rubric": {
+        "pedagogy": 5,
+        "correctness": 5,
+        "flow": 5,
+        "motivation": 5,
+        "mastery_reliability": 5,
+        "summary": "The assistant employed excellent pedagogy by prompting the user to think critically at every step, reinforcing understanding without giving direct answers early on. The correctness was strong, covering time and space complexity, edge cases such as zeros and single elements, and verifying predicted outputs carefully. The conversation flow was well-tailored for mobile learning: concise, clear, and actionable messages that encouraged user participation without overwhelming. The assistant maintained high motivation and clarity, praising the user and prompting them forward logically. Mastery signals were conservative and did not prematurely mark the user as mastered. Overall, the tutoring interaction was highly effective."
+      },
+      "transcript": [
+        {
+          "role": "user",
+          "content": "Can we practice Product of Array Except Self?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! Let's start with the approach. \n\nIf you have an array nums, how can you find the product of all elements except the current one for each position without using division?\n\nWhat data structure or passes over the array do you think might help here?"
+        },
+        {
+          "role": "user",
+          "content": "I think we can use two passes: one to store the product of all elements to the left of each index, and another for the product of all elements to the right. Then multiply these two for each position. Maybe use two arrays for left and right products?"
+        },
+        {
+          "role": "assistant",
+          "content": "You're on the right track! Using two arrays, one for left products and one for right products, and then combining them is a solid approach.\n\nWhat will be the time complexity of this method? Can you think of a way to reduce the space complexity to O(1) besides the output array? \n\nTry coding your approach now, and let's check it step by step! \n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "The time complexity is O(n) because we traverse the array a few times but only linearly. To reduce space complexity to O(1), I can use the output array itself to store the left products, then multiply by the right products on the fly without a separate right array.\n\nHere’s what I’m thinking in pseudocode:\n\n1. Create output array.\n2. Fill output with left products while iterating left to right.\n3. Use a variable to keep track of right products while iterating right to left, multiply output[i] by right product.\n4. Update right product.\n\nI’ll try coding this now. Would you like me to share it once done?"
+        },
+        {
+          "role": "assistant",
+          "content": "Excellent plan! You clearly understand the time and space complexity. Yes, please share your code once done, and I’ll help review it step-by-step. This will help us ensure correctness and optimize if needed. Keep track of edge cases like zeros in the array!\n\nLooking forward to seeing your implementation.\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Thanks! I’ve started coding. Here’s my approach:\n\n1. Create an output array initialized with 1s.\n2. Traverse from left to right, keep running product of elements to the left, store it in output.\n3. Then traverse from right to left, multiply running product of elements to the right.\n\nHere’s the code snippet so far:\n\n```python\ndef productExceptSelf(nums):\n    n = len(nums)\n    output = [1] * n\n    left_prod = 1\n    for i in range(n):\n        output[i] = left_prod\n        left_prod *= nums[i]\n    right_prod = 1\n    for i in range(n-1, -1, -1):\n        output[i] *= right_prod\n        right_prod *= nums[i]\n    return output\n```\n\nShould I add tests next or handle edge cases first?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great implementation! Your code is clean and efficiently solves the problem in O(n) time and O(1) extra space.\n\nBefore adding more tests, can you think of any special inputs that might cause unexpected behavior? For example, what happens if the array contains zeros or has length 1?\n\nTry to write a few test cases covering:\n- Normal input without zeros\n- Input with zeros\n- Single element input\n\nIf you want, I can help you come up with those test cases or check your tests.\n\nWhat will you do next?\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Good point! I didn’t think about zeros or single element arrays before.\n\nHere’s what I plan to test:\n\n- [1, 2, 3, 4] — normal input\n- [1, 0, 3, 4] — one zero inside\n- [0, 0, 3, 4] — multiple zeros\n- [5] — single element\n\nI’ll write these tests and check the outputs. If you want, I can share the results for feedback. Does that sound good?"
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect! Those are great test cases, covering normal and edge cases well. Go ahead and run them. When you share the results, let's verify correctness and if your code handles zeros and single-element arrays properly.\n\nAlso, think about expected outputs for each test before running to check your understanding.\n\nLooking forward to your test results!\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Great! Here are my expected outputs:\n\n- [1, 2, 3, 4]: [24, 12, 8, 6]\n- [0, 1, 2, 3]: [6, 0, 0, 0]\n- [1, 0, 0, 4]: [0, 0, 0, 0]\n- [5]: [1]\n\nI'll run the code and share the actual outputs now."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice work on predicting expected outputs! Just one quick check: for test case `[0, 1, 2, 3]`, what's the product of all other elements except the one at index 0?\n\nCan you double-check your expected output for that case before running your code? This will help reinforce correctness.\n\nWhat do you think it should be?\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "For the test case `[0, 1, 2, 3]`, the product except self at index 0 should be the product of `[1, 2, 3]`, which is 6.\n\nSo output for index 0 is 6.\n\nI think my expected output should be `[6, 0, 0, 0]` because for other indices, the product involves zero from index 0, making those products zero.\n\nDoes that seem right?"
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly right! For that input, only the element at index 0 excludes zero when multiplying, so it gets the product of `[1,2,3]=6`. Others multiply with zero and become zero.\n\nIt looks like your expected output is spot on. Next, run your code with these tests and compare your actual outputs to your expectations.\n\nIf any outputs differ, we can debug together step-by-step.\n\nDoes this help clarify your understanding?\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Yes, that does help clarify! I see why the first element becomes 6 and the others zero due to the zero in the input array. I’ll run my code with those test cases now and note any output mismatches. If something seems off, I’ll share my results here and we can debug step-by-step. Thanks!"
+        }
+      ]
+    },
+    {
+      "architecture": "single_call",
+      "learner": "advanced",
+      "problem": "Rotting Oranges",
+      "outcomes": {
+        "mastered": true,
+        "turns": 14,
+        "failedAttempts": 0,
+        "hintsUsed": 0
+      },
+      "rubric": {
+        "pedagogy": 5,
+        "correctness": 5,
+        "flow": 5,
+        "motivation": 5,
+        "mastery_reliability": 5,
+        "summary": "The tutor used a highly effective Socratic method to guide the learner step-by-step towards the correct BFS solution for the Rotten Oranges problem, encouraging the learner to think critically without giving away answers too soon. The explanations were accurate, covered edge cases well, and the tutor confirmed key points with questions. The conversation consisted of concise, actionable turns suitable for mobile, maintaining engagement while promoting confidence and independence. Mastery signals were appropriately conservative, ensuring reliable assessment of learner understanding."
+      },
+      "transcript": [
+        {
+          "role": "user",
+          "content": "Can we practice Rotting Oranges?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! How would you approach the problem—what’s your initial idea for simulating the rotting process of oranges?"
+        },
+        {
+          "role": "user",
+          "content": "I’d probably use a BFS approach starting from all the initially rotten oranges and spread the rot to adjacent fresh ones each minute. We keep track of time steps until no more fresh oranges can rot. Does this sound right? Should I use a queue to manage the BFS?"
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, your approach is on the right track! Using BFS with a queue is perfect because you want to process multiple rotten oranges simultaneously each minute. Initially, add all rotten oranges to the queue, then in each round (minute), try to rot all adjacent fresh oranges and add them to your queue for the next round. Keep track of the time steps as levels in BFS. Also, make sure to count the fresh oranges first so you can detect if some remain unreachable.\n\nWhat data structure will you use to track visited cells or ensure you don't rot the same orange twice?"
+        },
+        {
+          "role": "user",
+          "content": "I plan to modify the grid itself to track visited cells by changing fresh oranges (1) to rotten (2) once they rot. This way, I won't rot the same orange twice since only fresh oranges get changed. Is this approach enough, or should I keep a separate visited set?"
+        },
+        {
+          "role": "assistant",
+          "content": "Modifying the grid in-place to mark fresh oranges as rotten is sufficient and efficient. This eliminates the need for a separate visited set, saving space and simplifying your code. Just ensure you only enqueue and process fresh oranges and update their state right away to prevent multiple visits. \n\nCan you think of any edge cases where this approach might struggle or need extra checks?\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Hmm, maybe in cases where there are no fresh oranges at all, or when all oranges are already rotten, the algorithm should quickly return 0 without processing. Also, if the grid is empty or filled with empty cells (0s), it should handle that gracefully. Maybe isolated fresh oranges that can never rot because they aren’t adjacent to rotten ones could be tricky to detect? Would that cause infinite loops or incorrect results?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great observations! You are right:\n\n- If no fresh oranges exist at start, return 0 immediately.\n- If all are rotten or empty cells, return 0 without extra processing.\n- If fresh oranges are isolated and never reached, BFS finishes but fresh count > 0, so the correct output is -1.\n- Infinite loops won’t happen because you only enqueue fresh oranges once and mark them rotten immediately.\n\nChecking fresh count at the end will help detect unreachable fresh oranges. How would you implement the fresh count tracking and check at the end? \n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "I think I would start by scanning the grid once to count all the fresh oranges upfront and also enqueue all rotten oranges for BFS. Then, whenever BFS rots a fresh orange (marking it rotten), I would decrease the fresh count by one. After BFS finishes, if fresh count > 0, return -1; else return the minutes elapsed. Does that sound right? Should I implement it like this?"
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly! Your plan covers all key aspects:\n\n- One initial pass to count fresh oranges and enqueue rotten ones.\n- BFS to rot fresh neighbors, decrementing fresh count each time.\n- After BFS, if fresh count > 0, return -1 (some couldn't rot).\n- Otherwise, return minutes elapsed.\n\nThis approach ensures correctness and efficiency (O(m*n) time and space). You can now confidently implement it!\n\nWould you like a quick code template to start? Or do you want to try coding it yourself first?\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Thanks! I think I’m ready to give it a try myself first. I’ll start coding and might ask for help if I get stuck."
+        },
+        {
+          "role": "assistant",
+          "content": "Sounds perfect! Take your time and test different cases, especially edge cases like no fresh oranges or isolated fresh spots. If you hit any issues or want me to review your code, just share it here. Good luck coding your BFS solution for the rotten oranges!\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Thanks! I’ve started coding the BFS with a queue for rotten oranges and tracking minutes. Quick thought: should I process all rotten oranges at each minute as a group or handle them one by one? I’m guessing by levels (all currently rotten rotten spread first) to increment time properly?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great question! Processing rotten oranges level-by-level (all rotten at current minute) is the right approach. This way you:\n\n- Rot all fresh neighbors for the current minute.\n- Increment time only after finishing that level.\n- Prevent timing errors from spreading fresh oranges multiple times in one minute.\n\nIf you processed one by one, time could increment incorrectly and cause wrong results.\n\nSo, your intuition to handle BFS in levels (standard multi-source BFS) is spot on!\n\nKeep going and feel free to share code if you want feedback.\n\nMASTERY_SIGNAL: yes"
+        }
+      ]
+    },
+    {
+      "architecture": "single_call",
+      "learner": "advanced",
+      "problem": "Longest Common Subsequence",
+      "outcomes": {
+        "mastered": false,
+        "turns": 15,
+        "failedAttempts": 0,
+        "hintsUsed": 0
+      },
+      "rubric": {
+        "pedagogy": 5,
+        "correctness": 5,
+        "flow": 5,
+        "motivation": 5,
+        "mastery_reliability": 5,
+        "summary": "The assistant uses a strong Socratic method, asking guiding questions and encouraging the user to attempt solutions before providing hints or confirming correctness, promoting deep understanding. The explanations and code provided are fully correct and cover important edge cases and implementation details, including initialization and reconstruction guidance. The conversation flow is concise and well-paced, suitable for mobile by breaking down complex topics into manageable steps. The assistant consistently motivates the user to try coding themselves and reflects understanding back to them, sustaining engagement and clarity. The mastery signal is respected properly, avoiding premature mastery claims, which ensures reliability in evaluating user progress."
+      },
+      "transcript": [
+        {
+          "role": "user",
+          "content": "Can we practice Longest Common Subsequence?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! To start, can you explain in your own words what the Longest Common Subsequence (LCS) problem is? What inputs does it take, and what output does it produce?"
+        },
+        {
+          "role": "user",
+          "content": "The Longest Common Subsequence problem is about finding the longest sequence that appears in the same order, but not necessarily consecutively, in two given strings. The inputs are two strings, and the output is the length of the longest subsequence common to both strings. For example, for \"abcde\" and \"ace\", the LCS is \"ace\" with length 3. Is that right?"
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly right! Your understanding of the problem and the example are correct.\n\nNext, how would you approach solving this problem? Can you describe an algorithm or strategy you might use? For example, would you consider recursion, dynamic programming, or something else? What inputs would your algorithm use and what result would it return?"
+        },
+        {
+          "role": "user",
+          "content": "I’d use dynamic programming for this since recursion alone would be inefficient. My idea is to build a 2D table where the rows represent one string and the columns represent the other. Each cell stores the length of the LCS up to those positions. If characters match, add 1 plus the diagonal previous cell’s value; otherwise, take the max of left or top cell. Inputs are the two strings, and the output is the number in the bottom-right cell of the table representing the LCS length. Does that sound like a good approach?"
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, that is an excellent approach! Your understanding of using a 2D DP table to store LCS lengths, handling matches and mismatches correctly, and returning the bottom-right cell value is exactly how dynamic programming solves this problem.\n\nNext, how would you implement the initialization of this 2D table? What values would you put in the first row and first column before filling the rest of the table?"
+        },
+        {
+          "role": "user",
+          "content": "For initializing the 2D DP table, I’d set the entire first row and first column to 0. This represents the case where one string is empty, so the LCS length is 0. Then, I’d fill the rest based on character matches or max of adjacent cells. Does that sound right?"
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, that's exactly right! Initializing the first row and column with zeros correctly handles the base cases where one string has zero length, so the LCS length must be 0. You're on track to implement the main DP logic after that initialization.\n\nWould you like to try writing the code for the DP table filling step, or would you prefer a hint on how to handle the character comparisons and max operations? \n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "I think I want to try writing the DP table filling code myself first. I'll compare characters from both strings at each position, right? And then use the max of either skipping a character from one string or the other? I'll give it a shot now."
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly! When filling your DP table, for each position (i,j), compare the characters s1[i-1] and s2[j-1]:\n\n- If they match, dp[i][j] = 1 + dp[i-1][j-1]\n- Else, dp[i][j] = max(dp[i-1][j], dp[i][j-1])\n\nThis way, you either include the matching character in LCS or skip one from either string.\n\nGo ahead and write the code for this part; let me know if you'd like me to review or help with edge cases afterward! \n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Got it! Here's my code for filling the dp table:\n\n```python\ndef longest_common_subsequence(s1, s2):\n    m, n = len(s1), len(s2)\n    dp = [[0]*(n+1) for _ in range(m+1)]\n\n    for i in range(1, m+1):\n        for j in range(1, n+1):\n            if s1[i-1] == s2[j-1]:\n                dp[i][j] = 1 + dp[i-1][j-1]\n            else:\n                dp[i][j] = max(dp[i-1][j], dp[i][j-1])\n    return dp[m][n]\n```\n\nShould I add code to reconstruct the actual subsequence, or just the length is fine for now?"
+        },
+        {
+          "role": "assistant",
+          "content": "Your implementation for the DP table filling looks correct and efficient! Returning just the length is perfectly fine if the problem only asks for that. \n\nWould you like to try reconstructing the actual subsequence yourself? Hint: start from dp[m][n] and trace backwards, choosing characters when s1[i-1] == s2[j-1], or moving in the direction of the larger dp value otherwise.\n\nAdding reconstruction is a great next step for deeper understanding, but depends on the problem requirements.\n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Thanks! Yes, I’d like to try reconstructing the subsequence. So starting from dp[m][n], if characters match, add that char and move diagonally. Otherwise, move in the direction where dp value is bigger, either up or left. Do you think I should build the subsequence in reverse and then reverse it at the end? Also, any tips on handling indexing carefully?"
+        },
+        {
+          "role": "assistant",
+          "content": "You got the approach right! Yes, building the subsequence while moving backward (from dp[m][n]) means you gather characters in reverse order, so reversing it at the end is simplest.  \n\nFor indexing:  \n- Remember dp indices are offset by 1 compared to s1, s2, so when dp[i][j] refers to s1[i-1], s2[j-1].  \n- Be careful with boundaries (stop when i == 0 or j == 0).  \n- When moving up, decrease i; when moving left, decrease j; diagonal means both decrease by 1.  \n\nTry implementing it, and I can help review your reconstruction code afterwards!  \n\nMASTERY_SIGNAL: no"
+        },
+        {
+          "role": "user",
+          "content": "Got it! I'll implement the reconstruction starting from dp[m][n], moving backward and collecting characters. I'll remember to reverse the result at the end. Also, I'll watch the i-1, j-1 indexing for s1 and s2. I'll stop when i or j hits 0. I'll share my reconstruction code once done for review. Thanks!"
+        }
+      ]
+    },
+    {
+      "architecture": "multi_call",
+      "learner": "novice",
+      "problem": "Product of Array Except Self",
+      "outcomes": {
+        "mastered": true,
+        "turns": 4,
+        "failedAttempts": 1,
+        "hintsUsed": 0
+      },
+      "rubric": {
+        "pedagogy": 5,
+        "correctness": 5,
+        "flow": 5,
+        "motivation": 5,
+        "mastery_reliability": 5,
+        "summary": "The assistant employs a strong Socratic method by encouraging user thinking and coding without giving away the full solution early. It correctly identifies issues, gives constructive feedback, and progressively guides the learner through prefix and suffix product arrays. The conversation is concise and focused, suitable for mobile with short actionable steps. The assistant's grading and hints accurately reflect the user's input and understanding, ensuring mastery reliability without false positives. Overall, this is an effective tutoring interaction toward mastering 'Product of Array Except Self.'"
+      },
+      "transcript": [
+        {
+          "role": "user",
+          "content": "Can we practice Product of Array Except Self?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! How do you think we can get the product of all elements before an index, and all elements after it, separately? Can you try coding just one prefix or suffix product array first?\n\n[grade=incorrect; issue=No code submission provided to evaluate for the 'Product of Array Except Self' problem.; next=Input: [1,2,3,4]\nExpected Output: [24,12,8,6]]"
+        },
+        {
+          "role": "user",
+          "content": "I think we can try making a prefix product array first. It will have the product of all elements before each index. For example, for [1,2,3,4], prefix product would be [1, 1, 2, 6]. I will try to code this now. \n\n```python\nnums = [1, 2, 3, 4]\nprefix = [1] * len(nums)\n\nfor i in range(1, len(nums)):\n    prefix[i] = prefix[i-1] * nums[i-1]\n\nprint(prefix)  # Should output [1,1,2,6]\n```\n\nIs this what you meant?"
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, perfect! Your prefix array correctly holds the product of all elements before each index. Next, can you try building a suffix product array that holds the product of all elements after each index? This will help us multiply prefix and suffix products for the final output. Give it a try!\n\n[grade=correct; issue=The prefix product array is correctly computed as per the explanation.; next=nums = [2, 3, 4, 5]]"
+        }
+      ]
+    },
+    {
+      "architecture": "multi_call",
+      "learner": "novice",
+      "problem": "Rotting Oranges",
+      "outcomes": {
+        "mastered": true,
+        "turns": 6,
+        "failedAttempts": 2,
+        "hintsUsed": 0
+      },
+      "rubric": {
+        "pedagogy": 5,
+        "correctness": 5,
+        "flow": 5,
+        "motivation": 5,
+        "mastery_reliability": 5,
+        "summary": "The tutor effectively employed the Socratic method by asking targeted questions to guide the learner to solve the problem incrementally without giving away full solutions prematurely. The guidance was technically correct and addressed the problem details like BFS traversal, managing the queue, and marking oranges as rotten to avoid revisits. The conversation consisted of concise, manageable steps suitable for mobile learning, helping maintain engagement without overwhelming the user. Motivational language was encouraging and reiterated progress and next steps clearly, promoting confidence and willingness to continue practicing. The mastery judgment aligns well with the interaction and evidence of comprehension and problem solving, avoiding false positives."
+      },
+      "transcript": [
+        {
+          "role": "user",
+          "content": "Can we practice Rotting Oranges?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! Let’s start with the basics. How would you represent the initial state of the grid to track fresh and rotten oranges before simulating the rotting process? \n\nNext step: Identify all the rotten oranges and enqueue their positions to prepare for a BFS. Can you write code for that?\n\n[grade=incorrect; issue=No code submission provided to evaluate for the Rotting Oranges problem.; next=Input: [[2,1,1],[1,1,0],[0,1,1]] Output: 4]"
+        },
+        {
+          "role": "user",
+          "content": "I think I should scan the grid and for each cell if it has a rotten orange (2), add its coordinates to a queue for BFS. I'll try this in Python:\n\n```python\nfrom collections import deque\n\ndef find_rotten_oranges(grid):\n    q = deque()\n    for r in range(len(grid)):\n        for c in range(len(grid[0])):\n            if grid[r][c] == 2:\n                q.append((r, c))\n    return q\n\ngrid = [[2,1,1],[1,1,0],[0,1,1]]\nprint(find_rotten_oranges(grid))\n```\n\nDoes this look right to you?"
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, that’s a solid start! You’re correctly collecting all initial rotten oranges to start your BFS from those points.\n\nNext, can you think about how to track the passage of time or \"minutes\" as the rot spreads? Hint: it often involves processing the queue level by level.\n\nTry writing code to perform BFS and update fresh oranges each minute. Need help with that?\n\n[grade=partial; issue=The provided code correctly identifies the initial rotten oranges and returns their coordinates. However, it does not implement the full solution for the problem, which involves spreading the rot and computing the time until all oranges are rotten or determining if it's impossible.; next=[[2,1,1],[0,1,1],[1,0,1]]]"
+        },
+        {
+          "role": "user",
+          "content": "Okay, so after finding the starting rotten oranges, I think I need to do BFS level by level. Each level represents one minute passing. I can dequeue all rotten oranges at the current level, infect their fresh neighbors, and enqueue them. Then increase the time by 1.\n\nHere's my idea in pseudocode:\n\n```\ntime = 0\nwhile queue not empty:\n    for each orange in current level:\n        rot adjacent fresh oranges, add to queue\n    time += 1\n```\n\nDoes this look right? Where should I mark fresh oranges as rotten?"
+        },
+        {
+          "role": "assistant",
+          "content": "Your approach is correct! You should mark fresh oranges as rotten right when you enqueue them, inside the inner loop where you infect neighbors. This ensures you don’t revisit the same orange.\n\nNext step: Implement the BFS loop in code, and inside it, update grid fresh oranges (1) to rotten (2) as you enqueue them. Want me to help you write that part?\n\n[grade=correct; issue=The approach using BFS level by level with time increment after processing current level is correct. Fresh oranges should be marked as rotten immediately when they are infected (i.e., when enqueuing them) to avoid multiple visits.; next=[[2,1,1],[1,1,0],[0,1,1]]]"
+        }
+      ]
+    },
+    {
+      "architecture": "multi_call",
+      "learner": "novice",
+      "problem": "Longest Common Subsequence",
+      "outcomes": {
+        "mastered": true,
+        "turns": 4,
+        "failedAttempts": 1,
+        "hintsUsed": 0
+      },
+      "rubric": {
+        "pedagogy": 4,
+        "correctness": 5,
+        "flow": 4,
+        "motivation": 4,
+        "mastery_reliability": 5,
+        "summary": "The assistant uses a guided, Socratic approach by first asking the user to define subsequence and reflect on checking common subsequences, which encourages active learning (pedagogy 4). The explanations are accurate, discussing dynamic programming and initializing a DP table, correctly guiding the user toward the LCS solution (correctness 5). Turns are concise and focused, appropriate for mobile, with prompts encouraging small coding steps (flow 4). The assistant's tone and scaffolded guidance also maintain motivation and clarity for continued practice (motivation 4). The outcome is mastery marked true with minimal hints used and only one failed attempt, consistent with the assistant's careful guidance, indicating reliable mastery assessment (mastery_reliability 5)."
+      },
+      "transcript": [
+        {
+          "role": "user",
+          "content": "Can we practice Longest Common Subsequence?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! Let's start simple. Given two strings, can you define what a subsequence is? Then, how would you check if a subsequence is common to both? Try explaining that first.\n\n[grade=partial; issue=The submission does not include any code solution; it is a question/request to practice, not an implementation.; next=Input:\nX = \"AGGTAB\"\nY = \"GXTXAYB\"\nExpected Output:\n4]"
+        },
+        {
+          "role": "user",
+          "content": "A subsequence is a sequence that appears in the same order but not necessarily contiguous. To check if a subsequence is common to both strings, I think we can try to find that sequence in both by checking each character against the strings in order. Is that correct? Also, could you help me start with a basic code to find the length of the longest common subsequence?"
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly right! To build the LCS dynamically, we compare characters from the ends of both strings and use solutions of smaller subproblems.\n\nTry writing a function that creates a 2D DP array `dp` where `dp[i][j]` stores LCS length of substrings `X[:i]` and `Y[:j]`. Start by initializing the first row and column to zero.\n\nWould you like me to show you the setup of this DP table?\n\n[grade=correct; issue=Your understanding of a subsequence is correct: characters appear in the same order but need not be contiguous. To find the length of the longest common subsequence (LCS), a common approach is to use dynamic programming that compares characters of both strings.; next=Input:\nstring1 = 'ABCBDAB'\nstring2 = 'BDCAB'\nExpected output: 4 (The LCS is 'BDAB' or 'BCAB')]"
+        }
+      ]
+    },
+    {
+      "architecture": "multi_call",
+      "learner": "advanced",
+      "problem": "Product of Array Except Self",
+      "outcomes": {
+        "mastered": true,
+        "turns": 4,
+        "failedAttempts": 1,
+        "hintsUsed": 0
+      },
+      "rubric": {
+        "pedagogy": 5,
+        "correctness": 5,
+        "flow": 4,
+        "motivation": 5,
+        "mastery_reliability": 5,
+        "summary": "The assistant uses an effective Socratic approach, guiding the user through building the solution step-by-step without giving everything away. Responses are accurate and correct regarding the algorithm. The turns are concise and focused, suitable for mobile interaction, though slightly longer than minimal. The assistant motivates the user well to continue practicing by prompting the next step. The mastery is reliably assessed based on the user's correct responses and progress."
+      },
+      "transcript": [
+        {
+          "role": "user",
+          "content": "Can we practice Product of Array Except Self?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! How can you track products before and after each element without division? Think about using two passes: one from left to right and another from right to left. What would you store in each pass? Try writing code to build a left product array first. Want to start with that?\n\n[grade=incorrect; issue=No code submission to evaluate; only a question about practicing the problem was provided.; next=[1,2,3,4]]"
+        },
+        {
+          "role": "user",
+          "content": "Yes, I want to start with building a left product array. I think it stores the product of all elements to the left of each index. Here's what I have in mind:\n\n```python\nnums = [1, 2, 3, 4]\nleft_products = [1] * len(nums)\n\nfor i in range(1, len(nums)):\n    left_products[i] = left_products[i-1] * nums[i-1]\n\nprint(left_products)\n```\n\nDoes this look right to you? Should I try the right product array next?"
+        },
+        {
+          "role": "assistant",
+          "content": "Your left_products array is perfect! It correctly holds the product of all elements to the left.\n\nNext, how would you build a right_products array that stores products of all elements to the right of each index? Think about iterating from the end to the beginning. Give it a try!\n\n[grade=correct; issue=The code correctly computes the left product array, storing the product of all elements to the left of each index.; next=Try the input nums = [1, 2, 3, 4] and verify if left_products prints [1, 1, 2, 6] as expected.]"
+        }
+      ]
+    },
+    {
+      "architecture": "multi_call",
+      "learner": "advanced",
+      "problem": "Rotting Oranges",
+      "outcomes": {
+        "mastered": true,
+        "turns": 14,
+        "failedAttempts": 6,
+        "hintsUsed": 0
+      },
+      "rubric": {
+        "pedagogy": 5,
+        "correctness": 4,
+        "flow": 5,
+        "motivation": 4,
+        "mastery_reliability": 5,
+        "summary": "The tutoring maintains a strong Socratic approach, prompting the user to think through algorithm steps without providing full code upfront. The assistant guides the user gradually to implement BFS for the Rotting Oranges problem, emphasizing key points like tracking fresh oranges, handling minute increments, and avoiding infinite loops. The conversation flow is appropriate for mobile, with concise, incremental instructions and actionable next steps. The motivation is sustained through positive feedback and encouragement to implement and test ideas. Mastery reliability is high as the assistant does not prematurely mark mastery and encourages completed code sharing before final assessment. The main minor issue is partial or truncated code snippets in the transcript, but the assistant consistently requests complete code for review, ensuring correctness verification before mastery. Overall, this is an effective, learner-centered tutoring session well suited for the mobile app context."
+      },
+      "transcript": [
+        {
+          "role": "user",
+          "content": "Can we practice Rotting Oranges?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! How would you represent the initial state with fresh and rotten oranges in a queue for BFS? Try locating all rotten oranges as starting points and pushing their positions into a queue. This sets the stage to simulate the rotting spread level-by-level. Give it a shot!\n\n[grade=incorrect; issue=The submission does not contain any code or solution related to the Rotting Oranges problem, only a question about practicing it.; next=Input: [[2,1,1],[1,1,0],[0,1,1]]]"
+        },
+        {
+          "role": "user",
+          "content": "Got it! To represent the initial state, I'll scan the grid and enqueue all rotten oranges' positions.\n\nHere's a quick snippet:\n\n```python\nfrom collections import deque\n\ngrid = [[2,1,1],[1,1,0],[0,1,1]]\nq = deque()\n\nfor i in range(len(grid)):\n    for j in range(len(grid[0])):\n        if grid[i][j] == 2:  # rotten orange\n            q.append((i,j))\n```\n\nThis sets up the starting queue for BFS. Should I proceed with processing the queue to simulate rotting?"
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect start! Yes, next, think about processing the queue level-by-level — each step represents 1 minute passing where rotten oranges infect adjacent fresh ones.\n\nQuestion: How will you track time increments and determine when no more fresh oranges can rot? Try writing the BFS loop to process neighbors and update the grid and queue.\n\nNext step: Implement the BFS loop that processes all rotten oranges in the current minute, spreading rot to adjacent fresh oranges, and enqueue their positions.\n\n[grade=partial; issue=The initial setup correctly identifies and enqueues rotten oranges, but the submission only contains the starting point for BFS without the full simulation logic needed to solve the problem.; next=[[2,1,1],[1,1,0],[0,1,1]]]"
+        },
+        {
+          "role": "user",
+          "content": "Okay, I'll write the BFS loop part where I process all rotten oranges in the current minute, spread rot to adjacent fresh ones, update the grid, and enqueue new rotten oranges.\n\nHere's my plan:\n- For each orange in the current queue size (current minute), pop it.\n- Check neighbors (up/down/left/right).\n- If neighbor is fresh, make it rotten, add to queue.\n- Increment minutes after processing all in current queue.\n\nLet me try coding it now."
+        },
+        {
+          "role": "assistant",
+          "content": "Excellent! While coding, remember to also count fresh oranges initially and decrease that count when they rot—this helps decide if all got rotten or some never will.\n\nNext step: Implement your BFS loop and track fresh count, minutes elapsed. After the BFS, if fresh > 0, return -1; else return minutes passed. Try coding this, then share your solution! Need help translating that to code?\n\n[grade=partial; issue=Your plan outlines the BFS approach well, but you have not provided the actual code implementation yet. Without code, it's impossible to verify correctness or test edge cases.; next=Start with a grid like [[2,1,1],[1,1,0],[0,1,1]] to verify spreading rot minute by minute.]"
+        },
+        {
+          "role": "user",
+          "content": "Got it! I’ll implement BFS now, keeping track of fresh count and minutes elapsed.\n\nPseudocode before coding:\n- Initialize queue with all rotten oranges positions\n- While queue not empty & fresh > 0:\n  - For each orange in queue (current minute):\n    - rot neighbors if fresh\n    - decrease fresh count\n    - add newly rotten to queue\n  - increment minutes\n\nAfter BFS:\n- if fresh > 0 return -1\n- else return minutes\n\nI’ll try this on [[2,1,1],[1,1,0],[0,1,1]] to check correctness. Coding it now. Will share code soon!"
+        },
+        {
+          "role": "assistant",
+          "content": "Your plan is solid and matches the BFS approach perfectly. Quick check: How will you handle cases where no fresh orange gets rotted in a minute to avoid infinite loops? Hint: Think about when to increment minutes and how to detect no spread occurred.\n\nNext step: Write the BFS code following your pseudocode and run it on your test grid to verify the minute-by-minute spread. Share your code for review!\n\n[grade=partial; issue=The submission only outlines the approach with pseudocode and lacks the actual implementation, so correctness of code cannot be assessed.; next=[[0,2]] (grid with one rotten orange and no fresh oranges)]"
+        },
+        {
+          "role": "user",
+          "content": "Thanks for the hint! I’ll track if any fresh orange rots in a given minute. If none do, I won’t increment the minute count and will exit the loop, ensuring no infinite loop occurs.\n\nHere’s my BFS implementation based on this:\n\n```python\nfrom collections import deque\n\ndef orangesRotting(grid):\n    rows, cols = len(grid), len(grid[0])\n    queue = deque()\n    fresh = 0\n    minutes = 0\n\n    # Add initial rotten oranges and count fresh ones\n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] == 2:\n                queue.append((r, c))\n            elif grid[r][c] == 1:\n                fresh +=1\n\n    directions = [(1,0), (-1,0), (0,1), (0,-1)]\n\n    while queue and fresh > 0:\n        size = len(queue)\n        rotted_this_min = False\n        for _ in range(size):\n            r, c = queue.popleft()\n\n            for dr"
+        },
+        {
+          "role": "assistant",
+          "content": "Great start! I see your BFS loop is cut off. What happens inside your inner loop to rot neighbors? Try completing the inner loops to:\n\n- Check neighbors within grid bounds,\n- If neighbor is fresh, rot it, decrease fresh count,\n- Add neighbor to queue,\n- Set rotted_this_min = True.\n\nThen, after the for-loop, increment minutes only if rotted_this_min is True.\n\nFinish the code and share it; I’ll help debug or optimize!\n\n[grade=partial; issue=The submission code is incomplete and truncated, especially in the BFS loop where it tries to process adjacent cells. Without the complete code, it's not possible to fully verify correctness or bugs. Also, the approach of tracking if any fresh orange rots per minute is correct in principle, but the snippet lacks the logic to mark oranges as rotten and decrement fresh count.; next=[[2,1,1],[1,1,0],[0,1,1]]]"
+        },
+        {
+          "role": "user",
+          "content": "Got it! Here’s my attempt finishing the BFS loop for rotting neighbors:\n\n```python\nfrom collections import deque\n\ndef orangesRotting(grid):\n    rows, cols = len(grid), len(grid[0])\n    queue = deque()\n    fresh = 0\n    \n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] == 2:\n                queue.append((r, c))\n            elif grid[r][c] == 1:\n                fresh += 1\n    \n    minutes = 0\n    directions = [(1,0), (-1,0), (0,1), (0,-1)]\n    \n    while queue and fresh > 0:\n        rotted_this_min = False\n        for _ in range(len(queue)):\n            r, c = queue.popleft()\n            for dr, dc in directions:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 1:\n                    grid[nr]["
+        },
+        {
+          "role": "assistant",
+          "content": "You’re very close! What should you do at `grid[nr][nc]` when you find a fresh orange to rot it and avoid re-processing? Think about these updates:\n\n- Change the fresh orange to rotten (2)\n- Decrement fresh count\n- Append `(nr, nc)` to the queue\n- Set `rotted_this_min = True`\n\nTry completing that part and then add code to increment `minutes` only if `rotted_this_min` is true. Give it a try!\n\n[grade=partial; issue=The BFS loop is incomplete; the code snippet ends abruptly while processing neighbors, so it does not fully implement the rotting spread or update the minute count and fresh orange count.; next=[[2,1,1],[1,1,0],[0,1,1]]]"
+        },
+        {
+          "role": "user",
+          "content": "Got it! So inside the BFS loop, when I find a fresh orange neighbor, I should:\n\n- Set grid[nr][nc] = 2 to rot it\n- Decrement fresh count by 1\n- Append (nr, nc) to the queue for the next round\n- Set rotted_this_min = True to indicate some orange rotted this minute\n\nThen after processing all neighbors, if rotted_this_min is True, increment minutes by 1.\n\nI’ll update my code to include these steps. Thanks!"
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly! By updating the grid and the queue, you simulate the rotting spread minute by minute. What will your function return when there are still fresh oranges after the BFS ends? Think about the problem’s requirement on unreachable fresh oranges. Next step: implement your updated BFS loop fully, then add the return statement to handle both cases (all rotted or some unreachable). Want help writing the return logic?\n\n[grade=correct; issue=The key issue addressed is correctly updating the grid to reflect newly rotted oranges, decrementing fresh orange count, queuing them for BFS expansion, and incrementing minute count accurately.; next=[[2,1,1],[1,1,0],[0,1,1]]]"
+        }
+      ]
+    },
+    {
+      "architecture": "multi_call",
+      "learner": "advanced",
+      "problem": "Longest Common Subsequence",
+      "outcomes": {
+        "mastered": true,
+        "turns": 4,
+        "failedAttempts": 1,
+        "hintsUsed": 0
+      },
+      "rubric": {
+        "pedagogy": 5,
+        "correctness": 5,
+        "flow": 5,
+        "motivation": 5,
+        "mastery_reliability": 5,
+        "summary": "The assistant uses a strong Socratic method by asking the user to explain concepts before proceeding, ensuring solid understanding. It provides correct definitions and confirms user input, helping reinforce learning. The turns are concise and clear, well suited for mobile, maintaining the user's engagement. Motivation is sustained through positive reinforcement and clear next steps. Mastery is reliably assessed through user correctness before proceeding, avoiding premature marking."
+      },
+      "transcript": [
+        {
+          "role": "user",
+          "content": "Can we practice Longest Common Subsequence?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! What do you understand by \"Longest Common Subsequence\" so far? Can you describe what a subsequence is, and how it differs from a substring? Let's start there to build a clear foundation.\n\n[grade=incorrect; issue=Submission does not contain any code or attempt to solve the problem.; next=Input:\nA = \"ABCBDAB\"\nB = \"BDCABB\"\nExpected Output:\n4]"
+        },
+        {
+          "role": "user",
+          "content": "A subsequence is a sequence that appears in the same relative order but not necessarily contiguously. For example, \"ABD\" is a subsequence of \"ABCBDAB\". A substring is contiguous, so \"BCD\" is a substring but not necessarily a subsequence.\n\nFor Longest Common Subsequence (LCS), we want the longest sequence present in both strings as subsequences.\n\nGiven the example:\nA = \"ABCBDAB\"\nB = \"BDCABB\"\nThe LCS length is 4.\n\nDoes that sound right so far?"
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect understanding! Yes, your explanation is spot on, and the LCS length of 4 for those strings is correct.\n\nNext, how about we write the base case for the DP table to start solving LCS? For two strings A and B, what would dp[0][j] and dp[i][0] represent and what should their values be?\n\n[grade=correct; issue=Explanation and example are correct for Longest Common Subsequence.; next=A = \"XMJYAUZ\"; B = \"MZJAWXU\"]"
+        }
+      ]
+    }
+  ]
+}
