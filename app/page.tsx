@@ -9,24 +9,20 @@ const CHAT_KEY = "l33tsp33k.chat.v2";
 const CODE_KEY = "l33tsp33k.code.v2";
 const TEXT_KEY = "l33tsp33k.text.v2";
 const ANON_ID_KEY = "l33tsp33k.anon-id.v1";
+const THEME_KEY = "l33tsp33k.theme.v1";
 
 type TargetField = "chat" | "code";
-type KeyboardMode = "alpha" | "symbols";
-type PanelTab = "problem" | "code";
+type ComposerMode = "chat" | "code";
+type ThemeMode = "light" | "dark";
 
 type Cursor = { start: number; end: number };
 
-const ALPHA_ROWS = [
-  ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
-  ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
-  ["z", "x", "c", "v", "b", "n", "m"],
-];
-
-const SYMBOL_ROWS = [
-  ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
-  ["(", ")", "[", "]", "{", "}", "=", ":", ",", "."],
-  ["+", "-", "*", "/", "%", "!", "<", ">", "_", "#"],
-  ["'", '"', "\\", "|", "&", "?", "@", "~", "^", ";"],
+const KEYBOARD_ROWS = [
+  ["1|!", "2|@", "3|#", "4|$", "5|%", "6|^", "7|&", "8|*", "9|(", "0|)", "-|_", "=|+"],
+  ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[|{", "]|}", "\\||"],
+  ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";|:", "'|\""],
+  ["z", "x", "c", "v", "b", "n", "m", ",|<", ".|>", "/|?", "`|~"],
+  ["TAB", "SPACE", "ENTER", "LEFT", "RIGHT", "BACKSPACE", "CLEAR"],
 ];
 
 function nowIso() {
@@ -67,7 +63,7 @@ function bootstrapIntro(problemId: number): ChatMessage[] {
         "Welcome to l33tsp33k.",
         `Current problem #${problem.id}: ${problem.title}`,
         problem.statement,
-        "Chat above. Problem + code live in the footer panel. I will track your progress conversationally.",
+        "Chat above. Problem lives in the collapsible header. Compose in chat/code mode with the custom keyboard.",
       ].join("\n\n"),
       "text",
     ),
@@ -128,11 +124,10 @@ export default function Home() {
   const [authUser, setAuthUser] = useState<{ id: string; email?: string | null } | null>(null);
   const [creditBalance, setCreditBalance] = useState<number>(0);
   const [purchaseLoading, setPurchaseLoading] = useState(false);
+  const [theme, setTheme] = useState<ThemeMode>("light");
 
-  const [panelOpen, setPanelOpen] = useState(true);
-  const [panelTab, setPanelTab] = useState<PanelTab>("problem");
-  const [keyboardMode, setKeyboardMode] = useState<KeyboardMode>("alpha");
-  const [targetField, setTargetField] = useState<TargetField>("chat");
+  const [problemOpen, setProblemOpen] = useState(false);
+  const [composerMode, setComposerMode] = useState<ComposerMode>("chat");
 
   const [chatCursor, setChatCursor] = useState<Cursor>({ start: 0, end: 0 });
   const [codeCursor, setCodeCursor] = useState<Cursor>({ start: 0, end: 0 });
@@ -146,6 +141,7 @@ export default function Home() {
     const chatRaw = localStorage.getItem(CHAT_KEY);
     const textRaw = localStorage.getItem(TEXT_KEY);
     const codeRaw = localStorage.getItem(CODE_KEY);
+    const themeRaw = localStorage.getItem(THEME_KEY);
 
     let loadedProfile: LocalProfile;
     if (profileRaw) {
@@ -180,6 +176,7 @@ export default function Home() {
 
     if (typeof textRaw === "string") setDraft(textRaw);
     if (typeof codeRaw === "string") setCode(codeRaw);
+    if (themeRaw === "dark" || themeRaw === "light") setTheme(themeRaw);
 
     const hydrate = async () => {
       try {
@@ -225,6 +222,10 @@ export default function Home() {
     localStorage.setItem(CODE_KEY, code);
   }, [code]);
 
+  useEffect(() => {
+    localStorage.setItem(THEME_KEY, theme);
+  }, [theme]);
+
   const activeProblem = useMemo(() => {
     if (!profile) return null;
     return getProblemById(profile.activeProblemId) ?? null;
@@ -239,12 +240,13 @@ export default function Home() {
     if (!profile || !activeProblem) return null;
     return profile.problems.find((p) => p.id === activeProblem.id) ?? null;
   }, [profile, activeProblem]);
+  const isDark = theme === "dark";
 
-  function focusTarget(target: TargetField) {
-    setTargetField(target);
+  function focusComposer(mode: ComposerMode) {
+    setComposerMode(mode);
     requestAnimationFrame(() => {
-      if (target === "chat") chatInputRef.current?.focus();
-      if (target === "code") codeInputRef.current?.focus();
+      if (mode === "chat") chatInputRef.current?.focus();
+      if (mode === "code") codeInputRef.current?.focus();
     });
   }
 
@@ -268,7 +270,10 @@ export default function Home() {
   }
 
   function pressKey(token: string) {
-    const target = targetField;
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      navigator.vibrate(6);
+    }
+    const target: TargetField = composerMode;
     const source = target === "chat" ? draft : code;
     const cursor = target === "chat" ? chatCursor : codeCursor;
 
@@ -319,8 +324,8 @@ export default function Home() {
     setCode("");
     setError("");
     setQuickActions(["Give me a short hint", "Review my approach", "Pick the next best problem for me"]);
-    setPanelTab("problem");
-    setPanelOpen(true);
+    setProblemOpen(false);
+    setComposerMode("chat");
     if (!authUser) {
       localStorage.removeItem(CHAT_KEY);
       localStorage.removeItem(PROFILE_KEY);
@@ -442,7 +447,8 @@ export default function Home() {
               "text",
             ),
           ]);
-          setPanelTab("problem");
+          setProblemOpen(true);
+          setComposerMode("chat");
           setCode("");
           setCodeCursor({ start: 0, end: 0 });
         }
@@ -461,16 +467,38 @@ export default function Home() {
     await sendTurn({ sendText: true, sendCode: false });
   }
 
+  function labelForKey(token: string) {
+    if (token === "TAB") return "tab";
+    if (token === "SPACE") return "space";
+    if (token === "ENTER") return "enter";
+    if (token === "LEFT") return "←";
+    if (token === "RIGHT") return "→";
+    if (token === "BACKSPACE") return "⌫";
+    if (token === "CLEAR") return "clear";
+    return token;
+  }
+
+  function cycleTheme() {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  }
+
   if (!profile || !activeProblem) {
-    return <main className="min-h-screen bg-[#f3f2ec] p-6 text-[#111]">Loading...</main>;
+    return <main className={`min-h-screen p-6 ${isDark ? "bg-[#0a0d12] text-[#e5e7eb]" : "bg-[#f3f2ec] text-[#111]"}`}>Loading...</main>;
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col bg-[#f3f2ec] text-[#141414]">
-      <header className="sticky top-0 z-20 border-b border-black/10 bg-[#f3f2ec]/95 px-4 py-3 backdrop-blur">
+    <main className={`mx-auto flex min-h-screen max-w-3xl flex-col ${isDark ? "bg-[#0a0d12] text-[#e5e7eb]" : "bg-[#f3f2ec] text-[#141414]"}`}>
+      <header className={`sticky top-0 z-20 border-b px-4 py-3 backdrop-blur ${isDark ? "border-white/15 bg-[#0a0d12]/95" : "border-black/10 bg-[#f3f2ec]/95"}`}>
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-bold tracking-tight">l33tsp33k</h1>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={cycleTheme}
+              className={`rounded-full border px-3 py-1 text-xs font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+            >
+              Theme: {theme}
+            </button>
             {authUser ? (
               <>
                 <button
@@ -478,47 +506,67 @@ export default function Home() {
                   onClick={() => {
                     void startCheckout();
                   }}
-                  className="rounded-full border border-black/15 px-3 py-1 text-xs font-semibold"
+                  className={`rounded-full border px-3 py-1 text-xs font-semibold ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
                 >
                   {purchaseLoading ? "..." : "Buy $10"}
                 </button>
-                <a href="/auth/sign-out" className="rounded-full border border-black/15 px-3 py-1 text-xs font-medium">
+                <a href="/auth/sign-out" className={`rounded-full border px-3 py-1 text-xs font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}>
                   Logout
                 </a>
               </>
             ) : (
-              <a href="/auth/sign-in?returnTo=/" className="rounded-full border border-black/15 px-3 py-1 text-xs font-medium">
+              <a href="/auth/sign-in?returnTo=/" className={`rounded-full border px-3 py-1 text-xs font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}>
                 Login
               </a>
             )}
             <button
               type="button"
               onClick={resetLocalState}
-              className="rounded-full border border-black/15 px-3 py-1 text-xs font-medium"
+              className={`rounded-full border px-3 py-1 text-xs font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
             >
               Reset
             </button>
           </div>
         </div>
-        <p className="mt-1 text-xs text-black/70">
+        <p className={`mt-1 text-xs ${isDark ? "text-white/65" : "text-black/70"}`}>
           Chat-first LC150 tutor · GPT-4.1-mini · {authUser ? "logged-in + DB credits" : "free anonymous mode"}
         </p>
-        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-black/10">
+        <div className={`mt-2 h-2 w-full overflow-hidden rounded-full ${isDark ? "bg-white/15" : "bg-black/10"}`}>
           <div className="h-full bg-[#1a7f52] transition-all" style={{ width: `${(masteredCount / 150) * 100}%` }} />
         </div>
         <p className="mt-1 text-xs font-medium">
           Mastered {masteredCount}/150 · Active #{activeProblem.id} · {activeProblem.title}
         </p>
-        {authUser ? <p className="text-xs text-black/65">Credits: ${creditBalance.toFixed(2)}</p> : null}
+        {authUser ? <p className={`text-xs ${isDark ? "text-white/65" : "text-black/65"}`}>Credits: ${creditBalance.toFixed(2)}</p> : null}
+        <button
+          type="button"
+          onClick={() => setProblemOpen((v) => !v)}
+          className={`mt-2 rounded-lg border px-2 py-1 text-xs font-semibold ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+        >
+          {problemOpen ? "Hide problem" : "Show problem"}
+        </button>
+        {problemOpen ? (
+          <div className={`mt-2 max-h-[30vh] overflow-y-auto rounded-xl border p-3 ${isDark ? "border-white/20 bg-[#121720]" : "border-black/15 bg-white/80"}`}>
+            <p className={`text-xs font-semibold uppercase tracking-wide ${isDark ? "text-white/60" : "text-black/60"}`}>
+              #{activeProblem.id} · {activeProblem.category} · {activeProblem.difficulty}
+            </p>
+            <h2 className="mt-1 text-sm font-semibold">{activeProblem.title}</h2>
+            <p className={`mt-2 text-sm leading-6 ${isDark ? "text-white/85" : "text-black/80"}`}>{activeProblem.statement}</p>
+            <p className={`mt-2 text-xs ${isDark ? "text-white/65" : "text-black/70"}`}>
+              Status: {currentProgress?.status ?? "unseen"} · Confidence: {currentProgress?.confidence ?? 0}% · Attempts:{" "}
+              {currentProgress?.attempts ?? 0}
+            </p>
+          </div>
+        ) : null}
       </header>
 
       <section className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="space-y-3 pb-36">
+        <div className="space-y-3 pb-72">
           {messages.map((message, index) => {
             const isAssistant = message.role === "assistant";
             const baseClass = isAssistant
-              ? "max-w-[92%] rounded-2xl rounded-tl-sm bg-white"
-              : "ml-auto max-w-[92%] rounded-2xl rounded-tr-sm bg-[#111827] text-white";
+              ? `max-w-[92%] rounded-2xl rounded-tl-sm ${isDark ? "bg-[#151b24]" : "bg-white"}`
+              : "ml-auto max-w-[92%] rounded-2xl rounded-tr-sm bg-[#1f334f] text-white";
 
             return (
               <article key={`${message.createdAt}-${index}`} className={`${baseClass} px-4 py-3 text-sm shadow-sm`}>
@@ -534,8 +582,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="sticky bottom-0 z-30 border-t border-black/10 bg-white/98 px-3 pt-2 backdrop-blur">
-        <div className="mb-2 flex gap-2 overflow-x-auto pb-1">
+      <section className={`sticky bottom-0 z-30 border-t px-3 pt-2 backdrop-blur ${isDark ? "border-white/15 bg-[#0f141d]/98" : "border-black/10 bg-white/98"}`}>
+        <div className="mb-1 flex gap-1 overflow-x-auto pb-1">
           {quickActions.map((action) => (
             <button
               key={action}
@@ -543,35 +591,70 @@ export default function Home() {
               onClick={() => {
                 void sendTurn({ sendText: true, sendCode: false, presetText: action });
               }}
-              className="shrink-0 rounded-full border border-black/15 px-3 py-1 text-xs font-medium"
+              className={`shrink-0 rounded-full border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white"}`}
             >
               {action}
             </button>
           ))}
         </div>
 
-        <form onSubmit={onSendText} className="mb-2 flex items-end gap-2">
-          <textarea
-            ref={chatInputRef}
-            value={draft}
-            readOnly
-            inputMode="none"
-            onFocus={() => setTargetField("chat")}
-            onClick={() => {
-              setTargetField("chat");
-              syncCursorFromDom("chat");
-            }}
-            onSelect={() => syncCursorFromDom("chat")}
-            rows={2}
-            placeholder="Compose chat text with the custom keyboard"
-            className="min-h-[56px] flex-1 resize-none rounded-xl border border-black/15 px-3 py-2 text-sm outline-none"
-          />
+        <div className={`mb-1 grid grid-cols-2 gap-px overflow-hidden rounded-lg border ${isDark ? "border-white/15 bg-white/10" : "border-black/15 bg-black/10"}`}>
           <button
-            type="submit"
-            disabled={isSending}
-            className="h-[56px] rounded-xl bg-[#0f172a] px-3 text-xs font-semibold text-white disabled:opacity-50"
+            type="button"
+            onClick={() => focusComposer("chat")}
+            className={`px-2 py-1 text-xs font-semibold ${composerMode === "chat" ? (isDark ? "bg-[#1c2430]" : "bg-white") : isDark ? "bg-[#101720]" : "bg-[#eceae2]"}`}
           >
-            Send text
+            Chat
+          </button>
+          <button
+            type="button"
+            onClick={() => focusComposer("code")}
+            className={`px-2 py-1 text-xs font-semibold ${composerMode === "code" ? (isDark ? "bg-[#1c2430]" : "bg-white") : isDark ? "bg-[#101720]" : "bg-[#eceae2]"}`}
+          >
+            Code
+          </button>
+        </div>
+
+        <form onSubmit={onSendText} className="mb-1 grid grid-cols-[1fr_auto_auto_auto] gap-px">
+          {composerMode === "chat" ? (
+            <textarea
+              ref={chatInputRef}
+              value={draft}
+              inputMode="none"
+              onKeyDown={(event) => event.preventDefault()}
+              onChange={() => {}}
+              onFocus={() => focusComposer("chat")}
+              onClick={() => syncCursorFromDom("chat")}
+              onSelect={() => syncCursorFromDom("chat")}
+              rows={3}
+              placeholder="Type message with keyboard below"
+              className={`min-h-[64px] resize-none rounded-l-lg border px-2 py-2 text-sm outline-none ${isDark ? "border-white/20 bg-[#151b24] text-[#e5e7eb] caret-[#e5e7eb]" : "border-black/15 bg-white caret-[#111]"}`}
+            />
+          ) : (
+            <textarea
+              ref={codeInputRef}
+              value={code}
+              inputMode="none"
+              onKeyDown={(event) => event.preventDefault()}
+              onChange={() => {}}
+              onFocus={() => focusComposer("code")}
+              onClick={() => syncCursorFromDom("code")}
+              onSelect={() => syncCursorFromDom("code")}
+              rows={3}
+              spellCheck={false}
+              placeholder="Type Python with keyboard below"
+              className={`min-h-[64px] resize-none rounded-l-lg border px-2 py-2 font-mono text-[13px] leading-5 outline-none ${isDark ? "border-white/20 bg-[#0e1117] text-[#e5e7eb] caret-[#e5e7eb]" : "border-black/15 bg-[#0e1117] text-[#e5e7eb] caret-[#e5e7eb]"}`}
+            />
+          )}
+          <button
+            type="button"
+            disabled={isSending || !draft.trim()}
+            onClick={() => {
+              void sendTurn({ sendText: true, sendCode: false });
+            }}
+            className={`h-[64px] border px-2 text-[11px] font-semibold text-white disabled:opacity-50 ${isDark ? "border-white/20 bg-[#1f334f]" : "border-black/15 bg-[#111827]"}`}
+          >
+            Text
           </button>
           <button
             type="button"
@@ -579,200 +662,81 @@ export default function Home() {
             onClick={() => {
               void sendTurn({ sendText: false, sendCode: true });
             }}
-            className="h-[56px] rounded-xl bg-[#1d4ed8] px-3 text-xs font-semibold text-white disabled:opacity-50"
+            className={`h-[64px] border px-2 text-[11px] font-semibold text-white disabled:opacity-50 ${isDark ? "border-white/20 bg-[#2259f3]" : "border-black/15 bg-[#1d4ed8]"}`}
           >
-            Send code
+            Code
           </button>
           <button
             type="button"
-            disabled={isSending || !code.trim() || !draft.trim()}
+            disabled={isSending || !draft.trim() || !code.trim()}
             onClick={() => {
               void sendTurn({ sendText: true, sendCode: true });
             }}
-            className="h-[56px] rounded-xl bg-[#14532d] px-3 text-xs font-semibold text-white disabled:opacity-50"
+            className={`h-[64px] rounded-r-lg border px-2 text-[11px] font-semibold text-white disabled:opacity-50 ${isDark ? "border-white/20 bg-[#1a6a38]" : "border-black/15 bg-[#14532d]"}`}
           >
             Both
           </button>
         </form>
 
-        <div className="mb-2 flex items-center justify-between rounded-xl border border-black/10 bg-[#f8f8f8] px-2 py-1">
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={() => setPanelTab("problem")}
-              className={`rounded-lg px-3 py-1 text-xs font-semibold ${panelTab === "problem" ? "bg-white" : "text-black/65"}`}
-            >
-              Problem
-            </button>
-            <button
-              type="button"
-              onClick={() => setPanelTab("code")}
-              className={`rounded-lg px-3 py-1 text-xs font-semibold ${panelTab === "code" ? "bg-white" : "text-black/65"}`}
-            >
-              Code
-            </button>
-          </div>
-          <button
-            type="button"
-            onClick={() => setPanelOpen((v) => !v)}
-            className="rounded-lg border border-black/10 px-3 py-1 text-xs font-semibold"
-          >
-            {panelOpen ? "Collapse" : "Expand"}
-          </button>
+        <div className={`mb-1 text-[11px] font-medium ${isDark ? "text-white/60" : "text-black/60"}`}>
+          Keyboard target: {composerMode === "chat" ? "chat" : "python code"} · swipe horizontally for full layout
         </div>
 
-        {panelOpen ? (
-          <div className="mb-2 max-h-[36vh] overflow-y-auto rounded-xl border border-black/10 bg-[#fafafa] p-3">
-            {panelTab === "problem" ? (
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-black/60">
-                  #{activeProblem.id} · {activeProblem.category} · {activeProblem.difficulty}
-                </p>
-                <h2 className="mt-1 text-sm font-semibold">{activeProblem.title}</h2>
-                <p className="mt-2 text-sm leading-6 text-black/80">{activeProblem.statement}</p>
-                <p className="mt-2 text-xs text-black/70">
-                  Status: {currentProgress?.status ?? "unseen"} · Confidence: {currentProgress?.confidence ?? 0}% · Attempts:{" "}
-                  {currentProgress?.attempts ?? 0}
-                </p>
-              </div>
-            ) : (
-              <div>
-                <p className="mb-2 text-xs font-semibold text-black/60">Python editor (OS keyboard disabled)</p>
-                <textarea
-                  ref={codeInputRef}
-                  value={code}
-                  readOnly
-                  inputMode="none"
-                  onFocus={() => setTargetField("code")}
-                  onClick={() => {
-                    setTargetField("code");
-                    syncCursorFromDom("code");
-                  }}
-                  onSelect={() => syncCursorFromDom("code")}
-                  rows={10}
-                  spellCheck={false}
-                  className="w-full resize-none rounded-xl border border-black/15 bg-[#0e1117] p-3 font-mono text-[13px] leading-5 text-[#e5e7eb]"
-                  placeholder="Use keyboard below to write Python"
-                />
-              </div>
-            )}
-          </div>
-        ) : null}
+        <div className={`overflow-x-auto rounded-lg border p-px ${isDark ? "border-white/20 bg-[#121720]" : "border-black/15 bg-[#eceae2]"}`}>
+          <div className="min-w-[780px] space-y-px">
+            {KEYBOARD_ROWS.map((row, rowIndex) => (
+              <div key={`row-${rowIndex}`} className="grid auto-cols-fr grid-flow-col gap-px">
+                {row.map((token) => {
+                  if (token.includes("|")) {
+                    const [left, right] = token.split("|");
+                    return (
+                      <div key={`${rowIndex}-${token}`} className="grid grid-cols-2 gap-px">
+                        <button
+                          type="button"
+                          onClick={() => pressKey(left)}
+                          className={`h-9 border px-1 text-center font-mono text-[11px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
+                        >
+                          {left}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => pressKey(right)}
+                          className={`h-9 border px-1 text-center font-mono text-[11px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
+                        >
+                          {right}
+                        </button>
+                      </div>
+                    );
+                  }
 
-        <div className="rounded-xl border border-black/10 bg-[#f8f8f8] p-2">
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <div className="flex gap-1">
-              <button
-                type="button"
-                onClick={() => {
-                  setKeyboardMode("alpha");
-                }}
-                className={`rounded-md px-2 py-1 text-xs font-semibold ${keyboardMode === "alpha" ? "bg-white" : "text-black/60"}`}
-              >
-                abc
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setKeyboardMode("symbols");
-                }}
-                className={`rounded-md px-2 py-1 text-xs font-semibold ${keyboardMode === "symbols" ? "bg-white" : "text-black/60"}`}
-              >
-                sym
-              </button>
-            </div>
-            <div className="flex gap-1">
-              <button
-                type="button"
-                onClick={() => focusTarget("chat")}
-                className={`rounded-md px-2 py-1 text-xs font-semibold ${targetField === "chat" ? "bg-white" : "text-black/60"}`}
-              >
-                Target: Chat
-              </button>
-              <button
-                type="button"
-                onClick={() => focusTarget("code")}
-                className={`rounded-md px-2 py-1 text-xs font-semibold ${targetField === "code" ? "bg-white" : "text-black/60"}`}
-              >
-                Code
-              </button>
-            </div>
-          </div>
+                  const isSpace = token === "SPACE";
+                  const isWide = token === "BACKSPACE" || token === "CLEAR";
 
-          <div className="space-y-1 overflow-x-auto pb-1">
-            {(keyboardMode === "alpha" ? ALPHA_ROWS : SYMBOL_ROWS).map((row, rowIndex) => (
-              <div key={`row-${rowIndex}`} className="flex gap-1">
-                {row.map((key) => (
-                  <button
-                    key={`${rowIndex}-${key}`}
-                    type="button"
-                    onClick={() => pressKey(key)}
-                    className="flex-1 rounded-md border border-black/15 bg-white px-2 py-2 text-center font-mono text-xs"
-                  >
-                    {key}
-                  </button>
-                ))}
+                  return (
+                    <button
+                      key={`${rowIndex}-${token}`}
+                      type="button"
+                      onClick={() => {
+                        if (token === "CLEAR") {
+                          clearField(composerMode);
+                        } else {
+                          pressKey(token);
+                        }
+                      }}
+                      className={`h-9 border px-1 text-center font-mono text-[11px] ${
+                        isSpace ? "col-span-4" : isWide ? "col-span-2" : ""
+                      } ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
+                    >
+                      {labelForKey(token)}
+                    </button>
+                  );
+                })}
               </div>
             ))}
-
-            <div className="flex gap-1">
-              <button
-                type="button"
-                onClick={() => pressKey("TAB")}
-                className="rounded-md border border-black/15 bg-white px-2 py-2 text-xs"
-              >
-                tab
-              </button>
-              <button
-                type="button"
-                onClick={() => pressKey("SPACE")}
-                className="flex-1 rounded-md border border-black/15 bg-white px-2 py-2 text-xs"
-              >
-                space
-              </button>
-              <button
-                type="button"
-                onClick={() => pressKey("ENTER")}
-                className="rounded-md border border-black/15 bg-white px-2 py-2 text-xs"
-              >
-                enter
-              </button>
-            </div>
-
-            <div className="flex gap-1">
-              <button
-                type="button"
-                onClick={() => pressKey("LEFT")}
-                className="rounded-md border border-black/15 bg-white px-2 py-2 text-xs"
-              >
-                ←
-              </button>
-              <button
-                type="button"
-                onClick={() => pressKey("RIGHT")}
-                className="rounded-md border border-black/15 bg-white px-2 py-2 text-xs"
-              >
-                →
-              </button>
-              <button
-                type="button"
-                onClick={() => pressKey("BACKSPACE")}
-                className="rounded-md border border-black/15 bg-white px-2 py-2 text-xs"
-              >
-                backspace
-              </button>
-              <button
-                type="button"
-                onClick={() => clearField(targetField)}
-                className="rounded-md border border-black/15 bg-white px-2 py-2 text-xs"
-              >
-                clear
-              </button>
-            </div>
           </div>
         </div>
 
-        {error ? <p className="py-2 text-xs text-[#b42318]">{error}</p> : null}
+        {error ? <p className={`py-2 text-xs ${isDark ? "text-[#ff8383]" : "text-[#b42318]"}`}>{error}</p> : null}
       </section>
     </main>
   );
