@@ -1,0 +1,752 @@
+[
+  {
+    "id": 1,
+    "title": "Merge Strings Alternately",
+    "difficulty": "Easy",
+    "category": "Array / String",
+    "statement": "You are given two strings word1 and word2. Merge the strings by adding letters in alternating order, starting with word1. If a string is longer than the other, append the additional letters onto the end of the merged string. Return the merged string.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Array_String/1768_merge_strings_alternately.py",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-strings-alternately/"
+  },
+  {
+    "id": 2,
+    "title": "Greatest Common Divisor of Strings",
+    "difficulty": "Easy",
+    "category": "Array / String",
+    "statement": "For two strings s and t, we say \"t divides s\" if and only if s = t + t + t + ... + t + t (i.e., t is concatenated with itself one or more times). Given two strings str1 and str2, return the largest string x such that x divides both str1 and str2. and the longer string made shorter by the number of letters in the shorter string.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Array_String/1071_greatest_common_divisor_of_strings.py",
+    "leetcodeUrl": "https://leetcode.com/problems/greatest-common-divisor-of-strings/"
+  },
+  {
+    "id": 3,
+    "title": "Kids With the Greatest Number of Candies",
+    "difficulty": "Easy",
+    "category": "Array / String",
+    "statement": "There are n kids with candies. You are given an integer array candies, where each candies[i] represents the number of candies the ith kid has, and an integer extraCandies, denoting the number of extra candies that you have. Return a boolean array result of length n, where result[i] is true if, after giving the ith kid all the extraCandies, they will have the greatest number of candies among all the kids, or false otherwise.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Array_String/1431_kids_with_the_greatest_number_of_candies.py",
+    "leetcodeUrl": "https://leetcode.com/problems/kids-with-the-greatest-number-of-candies/"
+  },
+  {
+    "id": 4,
+    "title": "Can Place Flowers",
+    "difficulty": "Easy",
+    "category": "Array / String",
+    "statement": "You have a long flowerbed in which some of the plots are planted, and some are not. However, flowers cannot be planted in adjacent plots. Given an integer array flowerbed containing 0's and 1's, where 0 means empty and 1 means not empty, and an integer n, return true if n new flowers can be planted in the flowerbed without violating the no-adjacent-flowers rule and false otherwise.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Array_String/605_can_place_flowers.py",
+    "leetcodeUrl": "https://leetcode.com/problems/can-place-flowers/"
+  },
+  {
+    "id": 5,
+    "title": "Reverse Vowels of a String",
+    "difficulty": "Easy",
+    "category": "Array / String",
+    "statement": "Given a string s, reverse only all the vowels in the string and return it. The vowels are 'a', 'e', 'i', 'o', and 'u', and they can appear in both lower and upper cases, more than once.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Array_String/345_reverse_vowels_of_a_string.py",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-vowels-of-a-string/"
+  },
+  {
+    "id": 6,
+    "title": "Reverse Words in a String",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "statement": "Given an input string s, reverse the order of the words. A word is defined as a sequence of non-space characters. The words in s will be separated by at least one space. Return a string of the words in reverse order concatenated by a single space.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Array_String/151_reverse_words_in_a_string.py",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-words-in-a-string/"
+  },
+  {
+    "id": 7,
+    "title": "Product of Array Except Self",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "statement": "Given an integer array nums, return an array answer such that answer[i] is equal to the product of all the elements of nums except nums[i]. The product of any prefix or suffix of nums is guaranteed to fit in a 32-bit integer. You must write an algorithm that runs in O(n) time and without using the division operation.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Array_String/238_product_of_array_except_self.py",
+    "leetcodeUrl": "https://leetcode.com/problems/product-of-array-except-self/"
+  },
+  {
+    "id": 8,
+    "title": "Increasing Triplet Subsequence",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "statement": "Given an integer array nums, return true if there exists a triple of indices (i, j, k) such that i < j < k and nums[i] < nums[j] < nums[k]. If no such indices exists, return false. should it qualify. If we find a third, we succeed (True), otherwise we fail (False).",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Array_String/334_increasing_triplet_subsequence.py",
+    "leetcodeUrl": "https://leetcode.com/problems/increasing-triplet-subsequence/"
+  },
+  {
+    "id": 9,
+    "title": "String Compression",
+    "difficulty": "Medium",
+    "category": "Array / String",
+    "statement": "Given an array of characters chars, compress it using the following algorithm: Begin with an empty string s. For each group of consecutive repeating characters in chars: If the group's length is 1, append the character to s.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Array_String/443_string_compression.py",
+    "leetcodeUrl": "https://leetcode.com/problems/string-compression/"
+  },
+  {
+    "id": 10,
+    "title": "Move Zeroes",
+    "difficulty": "Easy",
+    "category": "Two Pointers",
+    "statement": "Given an integer array nums, move all 0's to the end of it while maintaining the relative order of the non-zero elements. Note that you must do this in-place without making a copy of the array. Switch the values at pointers if fast value != 0 and slow value == 0",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Two_Pointers/283_move_zeros.py",
+    "leetcodeUrl": "https://leetcode.com/problems/move-zeroes/"
+  },
+  {
+    "id": 11,
+    "title": "Is Subsequence",
+    "difficulty": "Easy",
+    "category": "Two Pointers",
+    "statement": "Given two strings s and t, return true if s is a subsequence of t, or false otherwise. A subsequence of a string is a new string that is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (i.e., \"ace\" is a subsequence of \"abcde\" while \"aec\" is not).",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Two_Pointers/392_is_subsequence.py",
+    "leetcodeUrl": "https://leetcode.com/problems/is-subsequence/"
+  },
+  {
+    "id": 12,
+    "title": "Container With Most Water",
+    "difficulty": "Medium",
+    "category": "Two Pointers",
+    "statement": "You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]). Find two lines that together with the x-axis form a container, such that the container contains the most water. Return the maximum amount of water a container can store.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Two_Pointers/11_container_with_most_water.py",
+    "leetcodeUrl": "https://leetcode.com/problems/container-with-most-water/"
+  },
+  {
+    "id": 13,
+    "title": "Max Number of K-Sum Pairs",
+    "difficulty": "Medium",
+    "category": "Two Pointers",
+    "statement": "You are given an integer array nums and an integer k. In one operation, you can pick two numbers from the array whose sum equals k and remove them from the array. Return the maximum number of operations you can perform on the array.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Two_Pointers/1679_max_number_of_k-sum_pairs.py",
+    "leetcodeUrl": "https://leetcode.com/problems/max-number-of-k-sum-pairs/"
+  },
+  {
+    "id": 14,
+    "title": "Maximum Average Subarray I",
+    "difficulty": "Easy",
+    "category": "Sliding Window",
+    "statement": "You are given an integer array nums consisting of n elements, and an integer k. Find a contiguous subarray whose length is equal to k that has the maximum average value and return this value.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Sliding_Window/643_maximum_average_subarray_1.py",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-average-subarray-i/"
+  },
+  {
+    "id": 15,
+    "title": "Maximum Number of Vowels in a Substring of Given Length",
+    "difficulty": "Medium",
+    "category": "Sliding Window",
+    "statement": "Given a string s and an integer k, return the maximum number of vowel letters in any substring of s with length k. Vowel letters in English are 'a', 'e', 'i', 'o', and 'u'.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Sliding_Window/1456_maximum_number_of_vowels_in_a_substring.py",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/"
+  },
+  {
+    "id": 16,
+    "title": "Max Consecutive Ones III",
+    "difficulty": "Medium",
+    "category": "Sliding Window",
+    "statement": "Given a binary array nums and an integer k, return the maximum number of consecutive 1's in the array if you can flip at most k 0's.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Sliding_Window/1004_max_consecutive_ones_3.py",
+    "leetcodeUrl": "https://leetcode.com/problems/max-consecutive-ones-iii/"
+  },
+  {
+    "id": 17,
+    "title": "Longest Subarray of 1's After Deleting One Element",
+    "difficulty": "Medium",
+    "category": "Sliding Window",
+    "statement": "Given a binary array nums, you should delete one element from it. Return the size of the longest non-empty subarray containing only 1's in the resulting array. Return 0 if there is no such subarray.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Sliding_Window/1493_longest_subarray_of_1s_after_deleting_one_element.py",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-subarray-of-1-s-after-deleting-one-element/"
+  },
+  {
+    "id": 18,
+    "title": "Find the Highest Altitude",
+    "difficulty": "Easy",
+    "category": "Prefix Sum",
+    "statement": "There is a biker going on a road trip. The road trip consists of n + 1 points at different altitudes. The biker starts his trip on point 0 with altitude equal 0. You are given an integer array gain of length n where gain[i] is the net gain in altitude between points i​​​​​​ and i + 1 for all (0 <= i < n). Return the highest altitude of a point.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Prefix_Sum/1732_find_the_highest_altitude.py",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-highest-altitude/"
+  },
+  {
+    "id": 19,
+    "title": "Find Pivot Index",
+    "difficulty": "Easy",
+    "category": "Prefix Sum",
+    "statement": "Given an array of integers nums, calculate the pivot index of this array. The pivot index is the index where the sum of all the numbers strictly to the left of the index is equal to the sum of all the numbers strictly to the index's right. If the index is on the left edge of the array, then the left sum is 0 because there are no elements to the left. This also applies to the right edge of the array.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Prefix_Sum/724_find_pivot_index.py",
+    "leetcodeUrl": "https://leetcode.com/problems/find-pivot-index/"
+  },
+  {
+    "id": 20,
+    "title": "Find the Difference of Two Arrays",
+    "difficulty": "Easy",
+    "category": "Hash Map / Set",
+    "statement": "Given two 0-indexed integer arrays nums1 and nums2, return a list answer of size 2 where: answer[0] is a list of all distinct integers in nums1 which are not present in nums2. answer[1] is a list of all distinct integers in nums2 which are not present in nums1.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Hash_Map_or_Set/2215_find_the_difference_of_two_arrays.py",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-difference-of-two-arrays/"
+  },
+  {
+    "id": 21,
+    "title": "Unique Number of Occurrences",
+    "difficulty": "Easy",
+    "category": "Hash Map / Set",
+    "statement": "Given an array of integers arr, return true if the number of occurrences of each value in the array is unique or false otherwise.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Hash_Map_or_Set/1207_unique_number_of_occurrences.py",
+    "leetcodeUrl": "https://leetcode.com/problems/unique-number-of-occurrences/"
+  },
+  {
+    "id": 22,
+    "title": "Determine if Two Strings Are Close",
+    "difficulty": "Medium",
+    "category": "Hash Map / Set",
+    "statement": "Two strings are considered close if you can attain one from the other using the following operations: Operation 1: Swap any two existing characters. For example, abcde -> aecdb",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Hash_Map_or_Set/1657_determine_if_two_strings_are_close.py",
+    "leetcodeUrl": "https://leetcode.com/problems/determine-if-two-strings-are-close/"
+  },
+  {
+    "id": 23,
+    "title": "Equal Row and Column Pairs",
+    "difficulty": "Medium",
+    "category": "Hash Map / Set",
+    "statement": "Given an n x n integer matrix grid, return the number of pairs (ri, cj) such that row ri and column cj are equal. A row and column pair is considered equal if they contain the same elements",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Hash_Map_or_Set/2352_equal_row_and_column_pairs.py",
+    "leetcodeUrl": "https://leetcode.com/problems/equal-row-and-column-pairs/"
+  },
+  {
+    "id": 24,
+    "title": "Removing Stars From a String",
+    "difficulty": "Medium",
+    "category": "Stack",
+    "statement": "You are given a string s, which contains stars *. In one operation, you can: Choose a star in s.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Stack/2390_removing_stars_from_a_string.py",
+    "leetcodeUrl": "https://leetcode.com/problems/removing-stars-from-a-string/"
+  },
+  {
+    "id": 25,
+    "title": "Asteroid Collision",
+    "difficulty": "Medium",
+    "category": "Stack",
+    "statement": "We are given an array asteroids of integers representing asteroids in a row. For each asteroid, the absolute value represents its size, and the sign represents its direction (positive meaning right, negative meaning left). Each asteroid moves",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Stack/735_asteroid_collision.py",
+    "leetcodeUrl": "https://leetcode.com/problems/asteroid-collision/"
+  },
+  {
+    "id": 26,
+    "title": "Decode String",
+    "difficulty": "Medium",
+    "category": "Stack",
+    "statement": "Given an encoded string, return its decoded string. The encoding rule is: k[encoded_string], where the encoded_string inside the square brackets is being repeated exactly k times. Note that k is guaranteed to be a positive integer.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Stack/394_decode_string.py",
+    "leetcodeUrl": "https://leetcode.com/problems/decode-string/"
+  },
+  {
+    "id": 27,
+    "title": "Number of Recent Calls",
+    "difficulty": "Easy",
+    "category": "Queue",
+    "statement": "Practice Number of Recent Calls using queue patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Queue/933_number_of_recent_calls.py",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-recent-calls/"
+  },
+  {
+    "id": 28,
+    "title": "Dota2 Senate",
+    "difficulty": "Medium",
+    "category": "Queue",
+    "statement": "Practice Dota2 Senate using queue patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Queue/649_dota2_senate.py",
+    "leetcodeUrl": "https://leetcode.com/problems/dota2-senate/"
+  },
+  {
+    "id": 29,
+    "title": "Delete the Middle Node of a Linked List",
+    "difficulty": "Medium",
+    "category": "Linked List",
+    "statement": "Practice Delete the Middle Node of a Linked List using linked list patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Linked_List/2095_delete_the_middle_node_of_a_linked_list.py",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/"
+  },
+  {
+    "id": 30,
+    "title": "Odd Even Linked List",
+    "difficulty": "Medium",
+    "category": "Linked List",
+    "statement": "Practice Odd Even Linked List using linked list patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Linked_List/328_odd_even_linked_list.py",
+    "leetcodeUrl": "https://leetcode.com/problems/odd-even-linked-list/"
+  },
+  {
+    "id": 31,
+    "title": "Reverse Linked List",
+    "difficulty": "Easy",
+    "category": "Linked List",
+    "statement": "Practice Reverse Linked List using linked list patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Linked_List/206_reverse_linked_list.py",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-linked-list/"
+  },
+  {
+    "id": 32,
+    "title": "Maximum Twin Sum of a Linked List",
+    "difficulty": "Medium",
+    "category": "Linked List",
+    "statement": "Practice Maximum Twin Sum of a Linked List using linked list patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Linked_List/2130_maximum_twin_sum_of_a_linked_list.py",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-twin-sum-of-a-linked-list/"
+  },
+  {
+    "id": 33,
+    "title": "Maximum Depth of Binary Tree",
+    "difficulty": "Easy",
+    "category": "Binary Tree - DFS",
+    "statement": "Practice Maximum Depth of Binary Tree using binary tree - dfs patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "DFS/104_maximum_depth_of_binary_tree.py",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-depth-of-binary-tree/"
+  },
+  {
+    "id": 34,
+    "title": "Leaf-Similar Trees",
+    "difficulty": "Easy",
+    "category": "Binary Tree - DFS",
+    "statement": "Practice Leaf-Similar Trees using binary tree - dfs patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "DFS/872_leaf-similar_trees.py",
+    "leetcodeUrl": "https://leetcode.com/problems/leaf-similar-trees/"
+  },
+  {
+    "id": 35,
+    "title": "Count Good Nodes in Binary Tree",
+    "difficulty": "Medium",
+    "category": "Binary Tree - DFS",
+    "statement": "Definition for a binary tree node.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "DFS/1448_count_good_nodes_in_binary_tree.py",
+    "leetcodeUrl": "https://leetcode.com/problems/count-good-nodes-in-binary-tree/"
+  },
+  {
+    "id": 36,
+    "title": "Path Sum III",
+    "difficulty": "Medium",
+    "category": "Binary Tree - DFS",
+    "statement": "Practice Path Sum III using binary tree - dfs patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "DFS/437_path_sum_3.py",
+    "leetcodeUrl": "https://leetcode.com/problems/path-sum-iii/"
+  },
+  {
+    "id": 37,
+    "title": "Longest ZigZag Path in a Binary Tree",
+    "difficulty": "Medium",
+    "category": "Binary Tree - DFS",
+    "statement": "Practice Longest ZigZag Path in a Binary Tree using binary tree - dfs patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "DFS/1372_longest_zigzag_in_binary_tree.py",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-zigzag-path-in-a-binary-tree/"
+  },
+  {
+    "id": 38,
+    "title": "Lowest Common Ancestor of a Binary Tree",
+    "difficulty": "Medium",
+    "category": "Binary Tree - DFS",
+    "statement": "Practice Lowest Common Ancestor of a Binary Tree using binary tree - dfs patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "BFS/1161_maximum_level_sum_of_binary_tree.py",
+    "leetcodeUrl": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/"
+  },
+  {
+    "id": 39,
+    "title": "Binary Tree Right Side View",
+    "difficulty": "Medium",
+    "category": "Binary Tree - BFS",
+    "statement": "Practice Binary Tree Right Side View using binary tree - bfs patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "BFS/199_binary_tree_right_side_view.py",
+    "leetcodeUrl": "https://leetcode.com/problems/binary-tree-right-side-view/"
+  },
+  {
+    "id": 40,
+    "title": "Maximum Level Sum of a Binary Tree",
+    "difficulty": "Medium",
+    "category": "Binary Tree - BFS",
+    "statement": "Practice Maximum Level Sum of a Binary Tree using binary tree - bfs patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "BFS/1161_maximum_level_sum_of_binary_tree.py",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/"
+  },
+  {
+    "id": 41,
+    "title": "Search in a Binary Search Tree",
+    "difficulty": "Easy",
+    "category": "Binary Search Tree",
+    "statement": "Practice Search in a Binary Search Tree using binary search tree patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Binary_Search_Tree/search_in_binary_search_tree.py",
+    "leetcodeUrl": "https://leetcode.com/problems/search-in-a-binary-search-tree/"
+  },
+  {
+    "id": 42,
+    "title": "Delete Node in a BST",
+    "difficulty": "Medium",
+    "category": "Binary Search Tree",
+    "statement": "Practice Delete Node in a BST using binary search tree patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Binary_Search_Tree/delete_node_in_bst.py",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-node-in-a-bst/"
+  },
+  {
+    "id": 43,
+    "title": "Keys and Rooms",
+    "difficulty": "Medium",
+    "category": "Graphs - DFS",
+    "statement": "There are n rooms labeled from 0 to n - 1 and all the rooms are locked except for room 0. Your goal is to visit all the rooms. However, you cannot enter a locked room without having its key. When you visit a room, you may find a set of distinct keys in it.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Graphs_DFS/841_keys_and_rooms.py",
+    "leetcodeUrl": "https://leetcode.com/problems/keys-and-rooms/"
+  },
+  {
+    "id": 44,
+    "title": "Number of Provinces",
+    "difficulty": "Medium",
+    "category": "Graphs - DFS",
+    "statement": "There are n cities. Some of them are connected, while some are not. If city a is connected directly with city b, and city b is connected directly with city c, then city a is connected indirectly with city c.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Graphs_DFS/547_number_of_provinces.py",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-provinces/"
+  },
+  {
+    "id": 45,
+    "title": "Reorder Routes to Make All Paths Lead to the City Zero",
+    "difficulty": "Medium",
+    "category": "Graphs - DFS",
+    "statement": "Practice Reorder Routes to Make All Paths Lead to the City Zero using graphs - dfs patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Graphs_DFS/1466_reorder_routes_to_make_lead_to_zero.py",
+    "leetcodeUrl": "https://leetcode.com/problems/reorder-routes-to-make-all-paths-lead-to-the-city-zero/"
+  },
+  {
+    "id": 46,
+    "title": "Evaluate Division",
+    "difficulty": "Medium",
+    "category": "Graphs - DFS",
+    "statement": "Practice Evaluate Division using graphs - dfs patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Graphs_DFS/399_evaluate_division.py",
+    "leetcodeUrl": "https://leetcode.com/problems/evaluate-division/"
+  },
+  {
+    "id": 47,
+    "title": "Nearest Exit from Entrance in Maze",
+    "difficulty": "Medium",
+    "category": "Graphs - BFS",
+    "statement": "You are given an m x n matrix maze (0-indexed) with empty cells (represented as '.') and walls (represented as '+'). You are also given the entrance of the maze, where entrance = [entrancerow, entrancecol] denotes the row and column of the cell you are initially standing at.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Graphs_BFS/1926_nearest_exit_from_maze_entrance.py",
+    "leetcodeUrl": "https://leetcode.com/problems/nearest-exit-from-entrance-in-maze/"
+  },
+  {
+    "id": 48,
+    "title": "Rotting Oranges",
+    "difficulty": "Medium",
+    "category": "Graphs - BFS",
+    "statement": "You are given an m x n grid where each cell can have one of three values: 0 representing an empty cell, 1 representing a fresh orange, or",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Graphs_BFS/994_rotting_oranges.py",
+    "leetcodeUrl": "https://leetcode.com/problems/rotting-oranges/"
+  },
+  {
+    "id": 49,
+    "title": "Kth Largest Element in an Array",
+    "difficulty": "Medium",
+    "category": "Heap / Priority Queue",
+    "statement": "Practice Kth Largest Element in an Array using heap / priority queue patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Heap_or_Priority_Queue/215_Kth_largest_element_in_array.py",
+    "leetcodeUrl": "https://leetcode.com/problems/kth-largest-element-in-an-array/"
+  },
+  {
+    "id": 50,
+    "title": "Smallest Number in Infinite Set",
+    "difficulty": "Medium",
+    "category": "Heap / Priority Queue",
+    "statement": "Practice Smallest Number in Infinite Set using heap / priority queue patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Heap_or_Priority_Queue/2336_smalles_number_in_infiinite_set.py",
+    "leetcodeUrl": "https://leetcode.com/problems/smallest-number-in-infinite-set/"
+  },
+  {
+    "id": 51,
+    "title": "Maximum Subsequence Score",
+    "difficulty": "Medium",
+    "category": "Heap / Priority Queue",
+    "statement": "Practice Maximum Subsequence Score using heap / priority queue patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Heap_or_Priority_Queue/2542_maximum_subsequence_score.py",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-subsequence-score/"
+  },
+  {
+    "id": 52,
+    "title": "Total Cost to Hire K Workers",
+    "difficulty": "Medium",
+    "category": "Heap / Priority Queue",
+    "statement": "Practice Total Cost to Hire K Workers using heap / priority queue patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Heap_or_Priority_Queue/2462_total_cost_to_hire_K_workers.py",
+    "leetcodeUrl": "https://leetcode.com/problems/total-cost-to-hire-k-workers/"
+  },
+  {
+    "id": 53,
+    "title": "Guess Number Higher or Lower",
+    "difficulty": "Easy",
+    "category": "Binary Search",
+    "statement": "Practice Guess Number Higher or Lower using binary search patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Binary_Search/374_guess_number_higher_or_lower.py",
+    "leetcodeUrl": "https://leetcode.com/problems/guess-number-higher-or-lower/"
+  },
+  {
+    "id": 54,
+    "title": "Successful Pairs of Spells and Potions",
+    "difficulty": "Medium",
+    "category": "Binary Search",
+    "statement": "Practice Successful Pairs of Spells and Potions using binary search patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Binary_Search/2300_successful_pairs_of_spells_and_potions.py",
+    "leetcodeUrl": "https://leetcode.com/problems/successful-pairs-of-spells-and-potions/"
+  },
+  {
+    "id": 55,
+    "title": "Find Peak Element",
+    "difficulty": "Medium",
+    "category": "Binary Search",
+    "statement": "A peak element is an element that is strictly greater than its neighbors. Given a 0-indexed integer array nums, find a peak element, and return its index. If the array contains multiple peaks, return the index to any of the peaks. You may imagine that nums[-1] = nums[n] = -∞. In other words, an element is always considered to be strictly",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Binary_Search/162_find_peak_element.py",
+    "leetcodeUrl": "https://leetcode.com/problems/find-peak-element/"
+  },
+  {
+    "id": 56,
+    "title": "Koko Eating Bananas",
+    "difficulty": "Medium",
+    "category": "Binary Search",
+    "statement": "Practice Koko Eating Bananas using binary search patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Binary_Search/873_koko_eating_bananas.py",
+    "leetcodeUrl": "https://leetcode.com/problems/koko-eating-bananas/"
+  },
+  {
+    "id": 57,
+    "title": "Letter Combinations of a Phone Number",
+    "difficulty": "Medium",
+    "category": "Backtracking",
+    "statement": "Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order. The mapping of digits to letters is just like on telephone buttons. Note that 1 does not map to any letters.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Backtracking/17_letter_combinations_of_a_phone_number.py",
+    "leetcodeUrl": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/"
+  },
+  {
+    "id": 58,
+    "title": "Combination Sum III",
+    "difficulty": "Medium",
+    "category": "Backtracking",
+    "statement": "Practice Combination Sum III using backtracking patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Backtracking/216_combination_sum_3.py.py",
+    "leetcodeUrl": "https://leetcode.com/problems/combination-sum-iii/"
+  },
+  {
+    "id": 59,
+    "title": "N-th Tribonacci Number",
+    "difficulty": "Easy",
+    "category": "DP - 1D",
+    "statement": "Practice N-th Tribonacci Number using dp - 1d patterns.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "DP_1D/1137_Nth_tribonacci_number.py",
+    "leetcodeUrl": "https://leetcode.com/problems/n-th-tribonacci-number/"
+  },
+  {
+    "id": 60,
+    "title": "Min Cost Climbing Stairs",
+    "difficulty": "Easy",
+    "category": "DP - 1D",
+    "statement": "You are given an integer array cost where cost[i] is the cost of ith step on a staircase. Once you pay the cost, you can either climb one or two steps. You can either start from the step with index 0, or the step with index 1.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "DP_1D/746_min_cost_climbing_stairs.py",
+    "leetcodeUrl": "https://leetcode.com/problems/min-cost-climbing-stairs/"
+  },
+  {
+    "id": 61,
+    "title": "House Robber",
+    "difficulty": "Medium",
+    "category": "DP - 1D",
+    "statement": "You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "DP_1D/198_house_robber.py",
+    "leetcodeUrl": "https://leetcode.com/problems/house-robber/"
+  },
+  {
+    "id": 62,
+    "title": "Domino and Tromino Tiling",
+    "difficulty": "Medium",
+    "category": "DP - 1D",
+    "statement": "You have two types of tiles: a 2 x 1 domino shape and a tromino shape. You may rotate these shapes. Given an integer n, return the number of ways to tile an 2 x n board. Since the answer may be very large, return it modulo 109 + 7. In a tiling, every square must be covered by a tile. Two tilings are different if and only if there",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "DP_1D/790_domino_tromino_tiling.py",
+    "leetcodeUrl": "https://leetcode.com/problems/domino-and-tromino-tiling/"
+  },
+  {
+    "id": 63,
+    "title": "Unique Paths",
+    "difficulty": "Medium",
+    "category": "DP - Multidimensional",
+    "statement": "There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time. Given the two integers m and n, return the number of possible unique paths that the",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "DP_2D/62_unique_paths.py",
+    "leetcodeUrl": "https://leetcode.com/problems/unique-paths/"
+  },
+  {
+    "id": 64,
+    "title": "Longest Common Subsequence",
+    "difficulty": "Medium",
+    "category": "DP - Multidimensional",
+    "statement": "Given two strings text1 and text2, return the length of their longest common subsequence. If there is no common subsequence, return 0. A subsequence of a string is a new string generated from the original string with some characters (can be none) deleted without changing the relative order of the remaining characters.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "DP_2D/1143_longest_common_subsequence.py",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-common-subsequence/"
+  },
+  {
+    "id": 65,
+    "title": "Best Time to Buy and Sell Stock with Transaction Fee",
+    "difficulty": "Medium",
+    "category": "DP - Multidimensional",
+    "statement": "You are given an array prices where prices[i] is the price of a given stock on the ith day, and an integer fee representing a transaction fee. Find the maximum profit you can achieve. You may complete as many transactions as you like, but you need to pay the transaction fee for each transaction.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "DP_2D/714_best_time_to_buy_and_sell_stock.py",
+    "leetcodeUrl": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/"
+  },
+  {
+    "id": 66,
+    "title": "Edit Distance",
+    "difficulty": "Medium",
+    "category": "DP - Multidimensional",
+    "statement": "Given two strings word1 and word2, return the minimum number of operations required to convert word1 to word2. You have the following three operations permitted on a word: Insert a character",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "DP_2D/72_edit_distance.py",
+    "leetcodeUrl": "https://leetcode.com/problems/edit-distance/"
+  },
+  {
+    "id": 67,
+    "title": "Counting Bits",
+    "difficulty": "Easy",
+    "category": "Bit Manipulation",
+    "statement": "Given an integer n, return an array ans of length n + 1 such that for each i (0 <= i <= n), ans[i] is the number of 1's in the binary representation of i. is the same as the bit count for half the number (ie shift all digits left by one and add a zero).",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Bit_Manipulation/338_counting_bits.py",
+    "leetcodeUrl": "https://leetcode.com/problems/counting-bits/"
+  },
+  {
+    "id": 68,
+    "title": "Single Number",
+    "difficulty": "Easy",
+    "category": "Bit Manipulation",
+    "statement": "Given a non-empty array of integers nums, every element appears twice except for one. Find that single one. You must implement a solution with a linear runtime complexity and use only constant extra space.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Bit_Manipulation/136_single_number.py",
+    "leetcodeUrl": "https://leetcode.com/problems/single-number/"
+  },
+  {
+    "id": 69,
+    "title": "Minimum Flips to Make a OR b Equal to c",
+    "difficulty": "Medium",
+    "category": "Bit Manipulation",
+    "statement": "Given 3 positives numbers a, b and c. Return the minimum flips required in some bits of a and b to make ( a OR b == c ). (bitwise OR operation). Flip operation consists of change any single bit 1 to 0 or change the bit 0 to 1 in their binary representation. XOR: ^, OR: |, AND: &, NOT: ~",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Bit_Manipulation/1318_minimum_flips_to_make_a_or_b_equal_c.py",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-flips-to-make-a-or-b-equal-to-c/"
+  },
+  {
+    "id": 70,
+    "title": "Implement Trie (Prefix Tree)",
+    "difficulty": "Medium",
+    "category": "Trie",
+    "statement": "Trie or prefix tree stores strings one letter per node, with its children as all the potential next letters from stored words Implement the Trie class: Trie() Initializes the trie object.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Trie/208_implementing_trie.py",
+    "leetcodeUrl": "https://leetcode.com/problems/implement-trie/"
+  },
+  {
+    "id": 71,
+    "title": "Search Suggestions System",
+    "difficulty": "Medium",
+    "category": "Trie",
+    "statement": "You are given an array of strings products and a string searchWord. Design a system that suggests at most three product names from products after each character of searchWord is typed. Suggested products should have common prefix with searchWord. If there are more than three products with a common prefix",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Trie/1268_search_suggestions_system.py",
+    "leetcodeUrl": "https://leetcode.com/problems/search-suggestions-system/"
+  },
+  {
+    "id": 72,
+    "title": "Non-overlapping Intervals",
+    "difficulty": "Medium",
+    "category": "Intervals",
+    "statement": "Given an array of intervals intervals where intervals[i] = [starti, endi], return the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping. the interval overlaps update the end pointer to the smaller end value (ie remove interval with higher end value)",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Intervals/435_non_overlapping_intervals.py",
+    "leetcodeUrl": "https://leetcode.com/problems/non-overlapping-intervals/"
+  },
+  {
+    "id": 73,
+    "title": "Minimum Number of Arrows to Burst Balloons",
+    "difficulty": "Medium",
+    "category": "Intervals",
+    "statement": "There are some spherical balloons taped onto a flat wall that represents the XY-plane. The balloons are represented as a 2D integer array points where points[i] = [xstart, xend] denotes a balloon whose horizontal diameter stretches between xstart and xend. You do not know the exact y-coordinates of the balloons. Arrows can be shot up directly",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Intervals/452_minimum_number_of_arrows_to_burst_balloons.py",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/"
+  },
+  {
+    "id": 74,
+    "title": "Daily Temperatures",
+    "difficulty": "Medium",
+    "category": "Monotonic Stack",
+    "statement": "Given an array of integers temperatures represents the daily temperatures, return an array answer such that answer[i] is the number of days you have to wait after the ith day to get a warmer temperature. If there is no future day for which this is possible, keep answer[i] == 0 instead.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Monotonic_Stack/739_daily_temperatures.py",
+    "leetcodeUrl": "https://leetcode.com/problems/daily-temperatures/"
+  },
+  {
+    "id": 75,
+    "title": "Online Stock Span",
+    "difficulty": "Medium",
+    "category": "Monotonic Stack",
+    "statement": "Design an algorithm that collects daily price quotes for some stock and returns the span of that stock's price for the current day. The span of the stock's price in one day is the maximum number of consecutive days (starting from that day and going backward) for which the stock price was less than or equal to the price of that day.",
+    "sourceRepo": "https://github.com/brprojects/Leetcode_75",
+    "sourceFile": "Monotonic_Stack/901_online_stock_span.py",
+    "leetcodeUrl": "https://leetcode.com/problems/online-stock-span/"
+  }
+]

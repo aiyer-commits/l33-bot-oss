@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# l33tsp33k
 
-## Getting Started
+Mobile-first conversational LeetCode 75 practice app for Vercel, powered entirely by `gpt-4.1-mini`.
 
-First, run the development server:
+## What It Does
+
+- Uses a local LeetCode 75 dataset in strict order (`1 -> 75`)
+- Keeps a local learner profile in `localStorage` (no database)
+- Tracks progress conversationally from model outputs (no manual checkboxes)
+- Lets user practice via chat, pseudocode, and Python code
+- Includes a simple Python editor with a mobile key toolbar
+
+## Data Source
+
+LeetCode 75 list and problem statement seeds are derived from:
+- https://github.com/brprojects/Leetcode_75
+
+Dataset file:
+- `data/leetcode75.json`
+
+## Setup
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Add environment variables in `.env.local`:
+
+```bash
+OPENAI_API_KEY=your_openai_api_key
+```
+
+3. Run development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Vercel Deploy
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Import repo in Vercel.
+2. Set `OPENAI_API_KEY` in Project Environment Variables.
+3. Deploy.
 
-## Learn More
+## Key Files
 
-To learn more about Next.js, take a look at the following resources:
+- `app/page.tsx` - mobile UI, chat, editor, local profile state
+- `app/api/chat/route.ts` - `gpt-4.1-mini` orchestration with structured output
+- `data/leetcode75.json` - ordered LC75 curriculum data
+- `lib/types.ts` - profile/message/api types
+- `lib/leetcode75.ts` - data helpers + profile initializer
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- No remote persistence is used.
+- Progress is tied to browser storage on the user device.
+- Reset button clears local session/profile to restart from problem #1.
