@@ -36,6 +36,12 @@ function compactProfileSummary(input: ChatApiRequest): string {
   ].join("\n");
 }
 
+function compactCatalog() {
+  return leetcode75
+    .map((problem) => `${problem.id}. ${problem.title} | ${problem.difficulty} | ${problem.category}`)
+    .join("\n");
+}
+
 function schema() {
   return {
     type: "json_schema" as const,
@@ -112,6 +118,7 @@ export async function POST(request: Request) {
     "When user code is wrong, explain the key bug and give a targeted correction path.",
     "Only mark mastery when the learner demonstrates understanding and a viable solution.",
     "Set moveToProblemId > current id only when markMastered is true or user explicitly asks to move.",
+    "If the learner asks for a specific type (e.g. medium monotonic stack), choose the best matching problem id from the catalog.",
   ].join("\n");
 
   const userPrompt = [
@@ -121,6 +128,9 @@ export async function POST(request: Request) {
     `Statement: ${currentProblem.statement}`,
     `LeetCode URL: ${currentProblem.leetcodeUrl}`,
     nextProblem ? `Next problem in order: #${nextProblem.id} ${nextProblem.title}` : "",
+    "",
+    "Full LC75 catalog (id | title | difficulty | category):",
+    compactCatalog(),
     "",
     "Profile summary:",
     compactProfileSummary(body),

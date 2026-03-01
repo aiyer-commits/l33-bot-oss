@@ -32,6 +32,7 @@ export type LocalProfile = {
 export type ChatMessage = {
   role: "assistant" | "user";
   content: string;
+  kind: "text" | "code";
   createdAt: string;
 };
 
