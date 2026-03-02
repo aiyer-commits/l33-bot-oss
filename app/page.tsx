@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Delete } from "lucide-react";
 import { clampConfidence, createInitialProfile, getProblemById } from "@/lib/leetcode75";
 import type { ChatApiResponse, ChatMessage, LocalProfile } from "@/lib/types";
 
@@ -10,6 +11,31 @@ const CODE_KEY = "l33tsp33k.code.v2";
 const TEXT_KEY = "l33tsp33k.text.v2";
 const ANON_ID_KEY = "l33tsp33k.anon-id.v1";
 const THEME_KEY = "l33tsp33k.theme.v1";
+const HOLD_DELAY_MS = 320;
+const REPEAT_DELAY_MS = 260;
+const REPEAT_INTERVAL_MS = 42;
+
+const TAP_OUTPUT_MAP: Record<string, string> = {
+  "&": "and ",
+  "|": "or ",
+  "@": "@lru_cache(None)\ndef ",
+  for: "for ",
+  while: "while ",
+  if: "if ",
+  elif: "elif ",
+  else: "else ",
+  in: "in ",
+};
+
+const HOLD_OUTPUT_MAP: Record<string, string> = {
+  "&": "&",
+  "|": "|",
+  "<": "<<",
+  ">": ">>",
+  "1": "True",
+  "0": "False",
+  "@": "@",
+};
 
 type TargetField = "chat" | "code";
 type ComposerMode = "chat" | "code";
@@ -17,61 +43,73 @@ type ThemeMode = "light" | "dark";
 
 type Cursor = { start: number; end: number };
 
-type KeySpec = { token: string; units?: number; grow?: number; shrink?: number };
+type KeySpec = { token: string; units?: number };
 type KeyboardRow = { offsetUnits?: number; heightUnits?: number; keys: KeySpec[] };
-const BASE_KEY_HEIGHT = "clamp(44px, 9.6vw, 66px)";
-const DESIRED_ROW_UNITS = 10;
+const BASE_KEY_HEIGHT = "clamp(44px, 9.6vw, 58px)";
 
 const KEYBOARD_LAYOUT: KeyboardRow[] = [
   {
-    heightUnits: 0.9,
+    heightUnits: 0.92,
     keys: [
-      { token: "TAB", units: 1.5 },
-      { token: "LEFT", units: 1.2 },
-      { token: "UPDOWN", units: 1.2 },
-      { token: "RIGHT", units: 1.2 },
-      { token: "~" },
-      { token: "!" },
-      { token: "@" },
-      { token: "#" },
-      { token: "$" },
-      { token: "%" },
-      { token: "^" },
-      { token: "&" },
-      { token: "*" },
-      { token: "(" },
-      { token: ")" },
-      { token: "_" },
-      { token: "+" },
-      { token: "{" },
-      { token: "}" },
-      { token: "|" },
-    ],
-  },
-  {
-    heightUnits: 0.95,
-    keys: [
-      { token: "`" },
+      { token: "<" },
+      { token: ">" },
       { token: "1" },
       { token: "2" },
       { token: "3" },
+      { token: "for" },
+      { token: "while" },
+      { token: "if" },
+      { token: "^" },
+      { token: "~" },
+      { token: "#" },
+    ],
+  },
+  {
+    heightUnits: 0.92,
+    keys: [
+      { token: "[" },
+      { token: "]" },
       { token: "4" },
       { token: "5" },
       { token: "6" },
+      { token: "elif" },
+      { token: "else" },
+      { token: "in" },
+      { token: '"' },
+      { token: "?" },
+      { token: "@" },
+    ],
+  },
+  {
+    heightUnits: 0.92,
+    keys: [
+      { token: "{" },
+      { token: "}" },
       { token: "7" },
       { token: "8" },
       { token: "9" },
-      { token: "0" },
-      { token: "-" },
+      { token: "&" },
+      { token: "|" },
+      { token: "!" },
+      { token: "/" },
+      { token: "%" },
       { token: "=" },
-      { token: "[" },
-      { token: "]" },
-      { token: "\\" },
-      { token: ";" },
-      { token: "'" },
+    ],
+  },
+  {
+    heightUnits: 0.92,
+    keys: [
+      { token: "(" },
+      { token: ")" },
+      { token: "_" },
+      { token: "0" },
+      { token: ":" },
       { token: "," },
       { token: "." },
-      { token: "/" },
+      { token: "'" },
+      { token: "+" },
+      { token: "-" },
+      { token: "*" },
     ],
   },
   {
@@ -87,10 +125,10 @@ const KEYBOARD_LAYOUT: KeyboardRow[] = [
       { token: "i" },
       { token: "o" },
       { token: "p" },
-      { token: "BACKSPACE", units: 1.2, shrink: 1.5 },
     ],
   },
   {
+    offsetUnits: 0.5,
     heightUnits: 1.0,
     keys: [
       { token: "a" },
@@ -107,7 +145,7 @@ const KEYBOARD_LAYOUT: KeyboardRow[] = [
   {
     heightUnits: 1.0,
     keys: [
-      { token: "SHIFT", units: 1.56, shrink: 1.5 },
+      { token: "SHIFT", units: 1.5 },
       { token: "z" },
       { token: "x" },
       { token: "c" },
@@ -115,20 +153,16 @@ const KEYBOARD_LAYOUT: KeyboardRow[] = [
       { token: "b" },
       { token: "n" },
       { token: "m" },
-      { token: "SHIFT", units: 1.56, shrink: 1.5 },
+      { token: "BACKSPACE", units: 1.5 },
     ],
   },
   {
-    heightUnits: 1.2,
+    heightUnits: 1.08,
     keys: [
-      { token: ":" },
-      { token: '"' },
-      { token: "<" },
-      { token: ">" },
-      { token: "?" },
-      { token: "SPACE", units: 6 },
-      { token: "ENTER", units: 1.8 },
-      { token: "CLEAR", units: 1.5 },
+      { token: "TAB", units: 1.8 },
+      { token: "ARROWS", units: 1.8 },
+      { token: "SPACE", units: 4 },
+      { token: "ENTER", units: 3.6 },
     ],
   },
 ];
@@ -165,6 +199,28 @@ function formatProblemStatement(raw: string) {
   );
 }
 
+function splitProblemSections(statementText: string) {
+  const lines = statementText.split("\n");
+  const sections: string[] = [];
+  let current: string[] = [];
+
+  const isSectionBoundary = (line: string) =>
+    /^Example \d+:/i.test(line) || /^Constraints:/i.test(line) || /^Follow[ -]?up:/i.test(line);
+
+  for (const line of lines) {
+    if (isSectionBoundary(line.trim()) && current.join("\n").trim().length > 0) {
+      sections.push(current.join("\n").trim());
+      current = [line];
+      continue;
+    }
+    current.push(line);
+  }
+
+  const tail = current.join("\n").trim();
+  if (tail) sections.push(tail);
+  return sections;
+}
+
 function looksLikeHtmlMarkup(value: string) {
   return /<\/?(p|pre|code|strong|em|ul|ol|li|br|h[1-6]|div|span)\b/i.test(value) || /&nbsp;|&lt;|&gt;|&amp;/.test(value);
 }
@@ -196,6 +252,13 @@ function normalizeMessages(raw: unknown): ChatMessage[] {
       if (data.role !== "assistant" && data.role !== "user") return null;
       if (typeof data.content !== "string") return null;
       const kind = data.kind === "code" ? "code" : "text";
+      if (
+        data.role === "assistant" &&
+        kind === "text" &&
+        (/Current problem #\d+:/.test(data.content) || /Switched to #\d+:/.test(data.content))
+      ) {
+        return null;
+      }
       return {
         role: data.role,
         content: data.content,
@@ -209,20 +272,27 @@ function normalizeMessages(raw: unknown): ChatMessage[] {
 function bootstrapIntro(problemId: number): ChatMessage[] {
   const problem = getProblemById(problemId);
   if (!problem) return [asMessage("assistant", "Session started. Problem data is missing.", "text")];
-  const problemText = formatProblemStatement(problem.statement);
+  return [asMessage("assistant", "Welcome to l33tsp33k.", "text"), ...buildProblemMessages(problem.id)];
+}
 
-  return [
-    asMessage(
-      "assistant",
-      [
-        "Welcome to l33tsp33k.",
-        `Current problem #${problem.id}: ${problem.title}`,
-        problemText,
-        "Chat above. Problem is pinned in the header. Compose in chat/code mode with the custom keyboard.",
-      ].join("\n\n"),
-      "text",
-    ),
+function buildProblemMessages(problemId: number): ChatMessage[] {
+  const problem = getProblemById(problemId);
+  if (!problem) return [];
+  const statementSections = splitProblemSections(formatProblemStatement(problem.statement));
+  const messages: ChatMessage[] = [
+    asMessage("assistant", `Problem #${problem.id}: ${problem.title}\n\n${statementSections[0] ?? ""}`.trim(), "text"),
   ];
+  for (let i = 1; i < statementSections.length; i += 1) {
+    messages.push(asMessage("assistant", statementSections[i], "text"));
+  }
+  return messages;
+}
+
+function extractProblemMessageId(message: ChatMessage): number | null {
+  if (message.role !== "assistant" || message.kind !== "text") return null;
+  const currentMatch = message.content.match(/Problem #(\d+):/);
+  if (currentMatch) return Number(currentMatch[1]);
+  return null;
 }
 
 function updateProblem(
@@ -310,11 +380,20 @@ export default function Home() {
 
   const [composerMode, setComposerMode] = useState<ComposerMode>("chat");
   const [shiftOn, setShiftOn] = useState(false);
+  const [capsOn, setCapsOn] = useState(false);
 
   const [chatCursor, setChatCursor] = useState<Cursor>({ start: 0, end: 0 });
   const [codeCursor, setCodeCursor] = useState<Cursor>({ start: 0, end: 0 });
 
   const chatBottomRef = useRef<HTMLDivElement | null>(null);
+  const activeProblemMessageRef = useRef<HTMLElement | null>(null);
+  const headerRef = useRef<HTMLElement | null>(null);
+  const chatScrollRef = useRef<HTMLElement | null>(null);
+  const repeatTimeoutRef = useRef<number | null>(null);
+  const repeatIntervalRef = useRef<number | null>(null);
+  const holdTimeoutRef = useRef<number | null>(null);
+  const holdTriggeredRef = useRef(false);
+  const lastShiftTapRef = useRef<number>(0);
   const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
   const codeInputRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -397,6 +476,13 @@ export default function Home() {
   }, [messages]);
 
   useEffect(() => {
+    if (!profile || messages.length === 0) return;
+    const hasProblemMessages = messages.some((message) => extractProblemMessageId(message) === profile.activeProblemId);
+    if (hasProblemMessages) return;
+    setMessages((prev) => [...prev, ...buildProblemMessages(profile.activeProblemId)]);
+  }, [profile, messages]);
+
+  useEffect(() => {
     localStorage.setItem(TEXT_KEY, draft);
   }, [draft]);
 
@@ -415,10 +501,22 @@ export default function Home() {
     });
   }, [composerMode]);
 
+  useEffect(() => () => {
+    stopKeyRepeat();
+    clearHoldTimer();
+  }, []);
+
   const activeProblem = useMemo(() => {
     if (!profile) return null;
     return getProblemById(profile.activeProblemId) ?? null;
   }, [profile]);
+  const activeProblemMessageIndex = useMemo(() => {
+    if (!activeProblem) return -1;
+    for (let i = messages.length - 1; i >= 0; i -= 1) {
+      if (extractProblemMessageId(messages[i]) === activeProblem.id) return i;
+    }
+    return -1;
+  }, [messages, activeProblem]);
 
   const isDark = theme === "dark";
 
@@ -454,6 +552,14 @@ export default function Home() {
       navigator.vibrate(6);
     }
     if (token === "SHIFT") {
+      const now = Date.now();
+      if (now - lastShiftTapRef.current <= 320) {
+        setCapsOn((v) => !v);
+        setShiftOn(false);
+        lastShiftTapRef.current = 0;
+        return;
+      }
+      lastShiftTapRef.current = now;
       setShiftOn((v) => !v);
       return;
     }
@@ -482,7 +588,7 @@ export default function Home() {
     } else {
       const isLetter = /^[a-z]$/i.test(token);
       if (isLetter) {
-        const upper = shiftOn;
+        const upper = capsOn ? !shiftOn : shiftOn;
         result = applyInsert(source, cursor, upper ? token.toUpperCase() : token.toLowerCase());
         if (shiftOn) setShiftOn(false);
       } else {
@@ -615,14 +721,7 @@ export default function Home() {
       if (moved) {
         const movedProblem = getProblemById(nextProblemId);
         if (movedProblem) {
-          setMessages((prev) => [
-            ...prev,
-            asMessage(
-              "assistant",
-              `Switched to #${movedProblem.id}: ${movedProblem.title}\n\n${formatProblemStatement(movedProblem.statement)}`,
-              "text",
-            ),
-          ]);
+          setMessages((prev) => [...prev, ...buildProblemMessages(movedProblem.id)]);
           setComposerMode("chat");
           setCode("");
           setCodeCursor({ start: 0, end: 0 });
@@ -642,11 +741,15 @@ export default function Home() {
     if (token === "TAB") return "tab";
     if (token === "SPACE") return "space";
     if (token === "ENTER") return "enter";
-    if (token === "UP") return "↑";
-    if (token === "DOWN") return "↓";
-    if (token === "LEFT") return "←";
-    if (token === "RIGHT") return "→";
-    if (token === "BACKSPACE") return "⌫";
+    if (token === "UP") return "";
+    if (token === "DOWN") return "";
+    if (token === "LEFT") return "";
+    if (token === "RIGHT") return "";
+    if (token === "ARROWS") return "";
+    if (token === "BACKSPACE") return "";
+    if (token === "&") return "and";
+    if (token === "|") return "or";
+    if (token === "@") return "lru";
     if (token === "CLEAR") return "clear";
     return token;
   }
@@ -655,35 +758,116 @@ export default function Home() {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   }
 
+  function stopKeyRepeat() {
+    if (repeatTimeoutRef.current != null) {
+      window.clearTimeout(repeatTimeoutRef.current);
+      repeatTimeoutRef.current = null;
+    }
+    if (repeatIntervalRef.current != null) {
+      window.clearInterval(repeatIntervalRef.current);
+      repeatIntervalRef.current = null;
+    }
+  }
+
+  function clearHoldTimer() {
+    if (holdTimeoutRef.current != null) {
+      window.clearTimeout(holdTimeoutRef.current);
+      holdTimeoutRef.current = null;
+    }
+  }
+
+  function isRepeatableToken(token: string) {
+    return token === "BACKSPACE" || token === "LEFT" || token === "RIGHT" || token === "UP" || token === "DOWN";
+  }
+
+  function resolveKeyOutput(token: string, mode: "tap" | "hold") {
+    if (mode === "hold" && HOLD_OUTPUT_MAP[token]) return HOLD_OUTPUT_MAP[token];
+    if (mode === "tap" && TAP_OUTPUT_MAP[token]) return TAP_OUTPUT_MAP[token];
+    return token;
+  }
+
+  function triggerKey(token: string) {
+    if (token === "CLEAR") {
+      clearField(composerMode);
+      return;
+    }
+    pressKey(token);
+  }
+
+  function startKeyRepeat(token: string) {
+    triggerKey(token);
+    const repeatable = isRepeatableToken(token);
+    if (!repeatable || typeof window === "undefined") return;
+
+    stopKeyRepeat();
+    repeatTimeoutRef.current = window.setTimeout(() => {
+      repeatIntervalRef.current = window.setInterval(() => {
+        triggerKey(token);
+      }, REPEAT_INTERVAL_MS);
+    }, REPEAT_DELAY_MS);
+  }
+
+  function startKeyPress(token: string) {
+    if (isRepeatableToken(token)) {
+      startKeyRepeat(token);
+      return;
+    }
+
+    holdTriggeredRef.current = false;
+    clearHoldTimer();
+    if (typeof window === "undefined" || !HOLD_OUTPUT_MAP[token]) return;
+
+    holdTimeoutRef.current = window.setTimeout(() => {
+      holdTriggeredRef.current = true;
+      triggerKey(resolveKeyOutput(token, "hold"));
+    }, HOLD_DELAY_MS);
+  }
+
+  function endKeyPress(token: string) {
+    if (isRepeatableToken(token)) {
+      stopKeyRepeat();
+      return;
+    }
+    clearHoldTimer();
+    if (!holdTriggeredRef.current) {
+      triggerKey(resolveKeyOutput(token, "tap"));
+    }
+    holdTriggeredRef.current = false;
+  }
+
+  function cancelKeyPress(token: string) {
+    if (isRepeatableToken(token)) {
+      stopKeyRepeat();
+      return;
+    }
+    clearHoldTimer();
+    holdTriggeredRef.current = false;
+  }
+
+  function scrollToActiveProblemMessage() {
+    const target = activeProblemMessageRef.current;
+    const scroller = chatScrollRef.current;
+    if (!target || !scroller) return;
+    const scrollerRect = scroller.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const delta = targetRect.top - scrollerRect.top;
+    const targetTop = scroller.scrollTop + delta - 8;
+    scroller.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
+  }
+
   function keyUnits(key: KeySpec) {
     return key.units ?? 1;
   }
 
-  function rowComputedUnits(row: KeyboardRow) {
-    const baseFactors = row.keys.map((key) => keyUnits(key));
-    const requested = baseFactors.reduce((sum, width) => sum + width, 0);
-    const available = DESIRED_ROW_UNITS;
-
-    if (requested <= available) {
-      const additional = available - requested;
-      const growSum = row.keys.reduce((sum, key) => sum + (key.grow ?? 0), 0);
-      return baseFactors.map((width, index) => {
-        if (growSum > 0) {
-          return width + additional * ((row.keys[index].grow ?? 0) / growSum);
-        }
-        if (index === 0 || index === row.keys.length - 1) {
-          return width + additional / 2;
-        }
-        return width;
-      });
+  function rowTemplateColumns(row: KeyboardRow) {
+    const parts: string[] = [];
+    const sideOffset = row.offsetUnits ?? 0;
+    if (sideOffset > 0) parts.push(`${sideOffset}fr`);
+    for (const key of row.keys) {
+      parts.push(`${keyUnits(key)}fr`);
     }
-
-    const clipping = requested - available;
-    const shrinkSum = row.keys.reduce((sum, key) => sum + (key.shrink ?? 1), 0);
-    return baseFactors.map((width, index) => {
-      const shrinkWeight = row.keys[index].shrink ?? 1;
-      return Math.max(0.35, width - clipping * (shrinkWeight / shrinkSum));
-    });
+    if (sideOffset > 0) parts.push(`${sideOffset}fr`);
+    return parts.join(" ");
   }
 
   function rowHeightPx(row: KeyboardRow) {
@@ -702,11 +886,21 @@ export default function Home() {
   }
 
   return (
-    <main className={`mx-auto flex min-h-screen max-w-3xl flex-col ${isDark ? "bg-[#0a0d12] text-[#e5e7eb]" : "bg-[#f3f2ec] text-[#141414]"}`}>
-      <header className={`sticky top-0 z-20 border-b px-3 py-2 backdrop-blur ${isDark ? "border-white/15 bg-[#0a0d12]/95" : "border-black/10 bg-[#f3f2ec]/95"}`}>
+    <main className={`flex h-[100dvh] w-full flex-col overflow-hidden ${isDark ? "bg-[#0a0d12] text-[#e5e7eb]" : "bg-[#f3f2ec] text-[#141414]"}`}>
+      <header
+        ref={headerRef}
+        className={`z-20 border-b px-3 py-2 backdrop-blur ${isDark ? "border-white/15 bg-[#0a0d12]/95" : "border-black/10 bg-[#f3f2ec]/95"}`}
+      >
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="truncate text-[13px] font-semibold leading-4">#{activeProblem.id} · {activeProblem.title}</p>
+            <button
+              type="button"
+              onClick={scrollToActiveProblemMessage}
+              className="max-w-full truncate text-left text-[13px] font-semibold leading-4 underline-offset-2 hover:underline"
+              title="Jump to problem statement in chat"
+            >
+              #{activeProblem.id} · {activeProblem.title}
+            </button>
             <div className="mt-0.5 flex items-center gap-1">
               <span className={`h-2 w-2 rounded-full ${difficultyDotColor(activeProblem.difficulty)}`} />
               <span className={`text-[10px] font-medium ${isDark ? "text-white/70" : "text-black/70"}`}>{activeProblem.difficulty}</span>
@@ -752,13 +946,10 @@ export default function Home() {
             )}
           </div>
         </div>
-        <p className={`mt-1 text-[11px] leading-4 ${isDark ? "text-white/70" : "text-black/70"}`}>
-          Full statement is in chat.
-        </p>
       </header>
 
-      <section className="flex-1 overflow-y-auto px-3 py-3">
-        <div className="space-y-2 pb-[360px]">
+      <section ref={chatScrollRef} className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+        <div className="space-y-2">
           {messages.map((message, index) => {
             const isAssistant = message.role === "assistant";
             const baseClass = isAssistant
@@ -766,7 +957,13 @@ export default function Home() {
               : "ml-auto max-w-[94%] rounded-xl rounded-br-none bg-[#1f334f] text-white";
 
             return (
-              <article key={`${message.createdAt}-${index}`} className={`${baseClass} relative px-3 py-2 text-sm shadow-sm`}>
+              <article
+                key={`${message.createdAt}-${index}`}
+                ref={index === activeProblemMessageIndex ? (node) => {
+                  activeProblemMessageRef.current = node;
+                } : undefined}
+                className={`${baseClass} relative px-3 py-2 text-sm shadow-sm`}
+              >
                 {message.kind === "code" ? (
                   <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-[12px] leading-5">{message.content}</pre>
                 ) : isAssistant && looksLikeHtmlMarkup(message.content) ? (
@@ -840,40 +1037,133 @@ export default function Home() {
         </div>
       </section>
 
-      <section className={`sticky bottom-0 z-30 border-t px-2 pt-1 pb-2 backdrop-blur ${isDark ? "border-white/15 bg-[#0f141d]/98" : "border-black/10 bg-white/98"}`}>
-        <div className="mx-auto w-full max-w-[540px]">
-        <div className={`rounded-md border p-px ${isDark ? "border-white/20 bg-[#121720]" : "border-black/15 bg-[#eceae2]"}`}>
+      <section className={`z-30 border-t px-2 pt-1 pb-2 backdrop-blur ${isDark ? "border-white/15 bg-[#121720]" : "border-black/10 bg-[#eceae2]"}`}>
+        <div className="w-full [text-size-adjust:100%]">
           <div className="space-y-px">
             {KEYBOARD_LAYOUT.map((row, rowIndex) => {
-              const computedUnits = rowComputedUnits(row);
-              const totalUnits = computedUnits.reduce((sum, unit) => sum + unit, 0);
               const rowHeight = rowHeightPx(row);
               return (
-              <div key={`row-${rowIndex}`} className="flex gap-px" style={{ height: rowHeight }}>
+              <div
+                key={`row-${rowIndex}`}
+                className="grid gap-px"
+                style={{ minHeight: rowHeight, gridTemplateColumns: rowTemplateColumns(row) }}
+              >
+                {(row.offsetUnits ?? 0) > 0 ? <div /> : null}
                 {row.keys.map((key, keyIndex) => {
                   const token = key.token;
-                  const widthPct = ((computedUnits[keyIndex] / totalUnits) * 100).toFixed(4);
+                  const keyBaseClass = `h-full w-full select-none overflow-hidden rounded-[10px] border px-1 text-center font-mono text-[11px] leading-[1] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition active:translate-y-[1px] [touch-action:manipulation] [-webkit-touch-callout:none]`;
+                  const arrowCircleClass = `mx-auto flex h-[80%] w-auto aspect-square items-center justify-center rounded-full border text-[11px] leading-none shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition active:translate-y-[1px] [touch-action:manipulation] [-webkit-touch-callout:none]`;
+                  const keyToneClass =
+                    token === "SHIFT" && (shiftOn || capsOn)
+                      ? "border-[#7aa2ff] bg-[#22407a] text-white"
+                      : isDark
+                        ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]"
+                        : "border-black/10 bg-white text-black";
+
                   if (token === "UPDOWN") {
                     return (
                       <div
                         key={`${rowIndex}-${keyIndex}-${token}`}
-                        className="shrink-0 grid grid-rows-2 gap-px"
-                        style={{ width: `${widthPct}%` }}
+                        className="grid grid-rows-2 gap-px"
                       >
                         <button
                           type="button"
-                          onClick={() => pressKey("UP")}
-                          className={`h-full border px-0.5 text-center font-mono text-[12px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
+                          onPointerDown={(event) => {
+                            event.preventDefault();
+                            startKeyRepeat("UP");
+                          }}
+                          onPointerUp={stopKeyRepeat}
+                          onPointerLeave={stopKeyRepeat}
+                          onPointerCancel={stopKeyRepeat}
+                          onContextMenu={(event) => event.preventDefault()}
+                          className={`${arrowCircleClass} ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white text-black"}`}
                         >
-                          ↑
+                          <ArrowUp size={13} strokeWidth={2.4} />
                         </button>
                         <button
                           type="button"
-                          onClick={() => pressKey("DOWN")}
-                          className={`h-full border px-0.5 text-center font-mono text-[12px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
+                          onPointerDown={(event) => {
+                            event.preventDefault();
+                            startKeyRepeat("DOWN");
+                          }}
+                          onPointerUp={stopKeyRepeat}
+                          onPointerLeave={stopKeyRepeat}
+                          onPointerCancel={stopKeyRepeat}
+                          onContextMenu={(event) => event.preventDefault()}
+                          className={`${arrowCircleClass} ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white text-black"}`}
                         >
-                          ↓
+                          <ArrowDown size={13} strokeWidth={2.4} />
                         </button>
+                      </div>
+                    );
+                  }
+
+                  if (token === "ARROWS") {
+                    const arrowToneClass = isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white text-black";
+                    const dpadButtonClass = `absolute flex h-[38%] w-[38%] items-center justify-center rounded-full border shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition active:translate-y-[1px] [touch-action:manipulation] [-webkit-touch-callout:none] ${arrowToneClass}`;
+                    return (
+                      <div
+                        key={`${rowIndex}-${keyIndex}-${token}`}
+                        className="flex h-full w-full items-center justify-center"
+                      >
+                        <div className="relative h-[88%] w-auto aspect-square">
+                          <button
+                            type="button"
+                            onPointerDown={(event) => {
+                              event.preventDefault();
+                              startKeyRepeat("LEFT");
+                            }}
+                            onPointerUp={stopKeyRepeat}
+                            onPointerLeave={stopKeyRepeat}
+                            onPointerCancel={stopKeyRepeat}
+                            onContextMenu={(event) => event.preventDefault()}
+                            className={`${dpadButtonClass} left-0 top-1/2 -translate-x-0 -translate-y-1/2`}
+                          >
+                            <ArrowLeft size={13} strokeWidth={2.4} />
+                          </button>
+                          <button
+                            type="button"
+                            onPointerDown={(event) => {
+                              event.preventDefault();
+                              startKeyRepeat("UP");
+                            }}
+                            onPointerUp={stopKeyRepeat}
+                            onPointerLeave={stopKeyRepeat}
+                            onPointerCancel={stopKeyRepeat}
+                            onContextMenu={(event) => event.preventDefault()}
+                            className={`${dpadButtonClass} left-1/2 top-0 -translate-x-1/2 -translate-y-0`}
+                          >
+                            <ArrowUp size={13} strokeWidth={2.4} />
+                          </button>
+                          <button
+                            type="button"
+                            onPointerDown={(event) => {
+                              event.preventDefault();
+                              startKeyRepeat("DOWN");
+                            }}
+                            onPointerUp={stopKeyRepeat}
+                            onPointerLeave={stopKeyRepeat}
+                            onPointerCancel={stopKeyRepeat}
+                            onContextMenu={(event) => event.preventDefault()}
+                            className={`${dpadButtonClass} left-1/2 bottom-0 -translate-x-1/2 translate-y-0`}
+                          >
+                            <ArrowDown size={13} strokeWidth={2.4} />
+                          </button>
+                          <button
+                            type="button"
+                            onPointerDown={(event) => {
+                              event.preventDefault();
+                              startKeyRepeat("RIGHT");
+                            }}
+                            onPointerUp={stopKeyRepeat}
+                            onPointerLeave={stopKeyRepeat}
+                            onPointerCancel={stopKeyRepeat}
+                            onContextMenu={(event) => event.preventDefault()}
+                            className={`${dpadButtonClass} right-0 top-1/2 translate-x-0 -translate-y-1/2`}
+                          >
+                            <ArrowRight size={13} strokeWidth={2.4} />
+                          </button>
+                        </div>
                       </div>
                     );
                   }
@@ -882,30 +1172,33 @@ export default function Home() {
                     <button
                       key={`${rowIndex}-${keyIndex}-${token}`}
                       type="button"
-                      onClick={() => {
-                        if (token === "CLEAR") {
-                          clearField(composerMode);
-                        } else {
-                          pressKey(token);
-                        }
+                      onPointerDown={(event) => {
+                        event.preventDefault();
+                        startKeyPress(token);
                       }}
-                      style={{ width: `${widthPct}%` }}
-                      className={`h-full shrink-0 border px-1 text-center font-mono text-[12px] ${
-                        token === "SHIFT" && shiftOn
-                          ? "border-[#7aa2ff] bg-[#22407a] text-white"
-                          : isDark
-                            ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]"
-                            : "border-black/10 bg-white"
-                      }`}
+                      onPointerUp={(event) => {
+                        event.preventDefault();
+                        endKeyPress(token);
+                      }}
+                      onPointerLeave={() => cancelKeyPress(token)}
+                      onPointerCancel={() => cancelKeyPress(token)}
+                      onContextMenu={(event) => event.preventDefault()}
+                      className={`${keyBaseClass} ${keyToneClass}`}
                     >
-                      {/^[a-z]$/.test(token) ? (shiftOn ? token.toUpperCase() : token.toLowerCase()) : labelForKey(token)}
+                      {token === "BACKSPACE" ? (
+                        <Delete size={13} strokeWidth={2.2} className="mx-auto" />
+                      ) : /^[a-z]$/.test(token) ? (
+                        (capsOn ? !shiftOn : shiftOn) ? token.toUpperCase() : token.toLowerCase()
+                      ) : (
+                        labelForKey(token)
+                      )}
                     </button>
                   );
                 })}
+                {(row.offsetUnits ?? 0) > 0 ? <div /> : null}
               </div>
             )})}
           </div>
-        </div>
         </div>
 
         {error ? <p className={`pt-1 text-[11px] ${isDark ? "text-[#ff8383]" : "text-[#b42318]"}`}>{error}</p> : null}
