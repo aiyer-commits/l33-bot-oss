@@ -9,6 +9,7 @@ import {
   deductCredits,
   ensureLearnerProfile,
   getCurriculumProgressSummary,
+  getCurriculumSequenceContext,
   getCurriculumProblemIds,
   getFirstProblemForCurriculum,
   getOrCreateSession,
@@ -17,7 +18,6 @@ import {
   getRecentMessages,
   hasPaidAccess,
   listCurriculums,
-  listProblemsCompact,
   logUsage,
   searchProblems,
   setActiveCurriculum,
@@ -54,6 +54,21 @@ function plainStatement(raw: string) {
       .replace(/\n{3,}/g, '\n\n')
       .trim(),
   );
+}
+
+function formatRecentHistory(
+  rows: Array<Record<string, unknown>>,
+  limit = 10,
+) {
+  return rows
+    .slice(-limit)
+    .map((r) => {
+      const role = String(r.role ?? 'unknown');
+      const kind = String(r.kind ?? 'text');
+      const content = String(r.content ?? '').replace(/\s+/g, ' ').trim().slice(0, 220);
+      return `${role}/${kind}: ${content}`;
+    })
+    .join('\n');
 }
 
 function parseJson<T>(value: string): T {
@@ -130,7 +145,18 @@ async function resolveSelectionWithFunctions(
           {
             type: 'input_text',
             text:
-              'You route learners to the right l33 curriculum/problem. Use tools to inspect catalog/curriculum context. Keep current selection unless user intent requests switching by plan/topic/difficulty/order. Return JSON {"activeProblemId": number, "activeCurriculumKey": string, "reason": string}.',
+              [
+                'You are the l33 curriculum router. Output only routing decisions.',
+                'Goal: choose activeCurriculumKey and activeProblemId correctly.',
+                'Always use tools before deciding.',
+                'Decision policy:',
+                '- If user asks next/new/another/different problem: move to a different problem in current/requested curriculum; call get_curriculum_sequence and prefer nextProblemId when no extra constraints are given.',
+                '- If user asks to switch curriculum (l33/l75/l150/lall): switch to that curriculum, then choose a valid problem inside it (prefer curriculum nextProblemId or firstProblemId).',
+                '- If user asks by topic/difficulty/pattern: call search_problems and select best fit in allowed curricula.',
+                '- If no switching/selecting intent: keep current curriculum/problem.',
+                '- Never output a problem outside chosen curriculum.',
+                'Return strict JSON: {"activeProblemId": number, "activeCurriculumKey": string, "reason": string}.',
+              ].join(' '),
           },
         ],
       },
@@ -164,10 +190,18 @@ async function resolveSelectionWithFunctions(
       },
       {
         type: 'function',
-        name: 'list_catalog',
-        description: 'List compact catalog to reason about order and titles',
+        name: 'get_curriculum_sequence',
+        description: 'Get current index and neighboring problem IDs in curriculum order',
         strict: true,
-        parameters: { type: 'object', additionalProperties: false, required: [], properties: {} },
+        parameters: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['curriculumKey', 'currentProblemId'],
+          properties: {
+            curriculumKey: { type: 'string' },
+            currentProblemId: { type: 'number' },
+          },
+        },
       },
       {
         type: 'function',
@@ -233,6 +267,15 @@ async function resolveSelectionWithFunctions(
           call_id: call.call_id,
           output: JSON.stringify(rows.filter((r) => context.allowedCurriculumKeys.includes(r.key))),
         });
+      } else if (call.name === 'get_curriculum_sequence') {
+        const curriculumKey =
+          typeof args.curriculumKey === 'string' && context.allowedCurriculumKeys.includes(args.curriculumKey)
+            ? args.curriculumKey
+            : context.activeCurriculumKey;
+        const currentProblemId =
+          Number.isFinite(args.currentProblemId) && args.currentProblemId > 0 ? Number(args.currentProblemId) : context.activeProblemId;
+        const sequence = await getCurriculumSequenceContext(curriculumKey, currentProblemId);
+        outputs.push({ type: 'function_call_output', call_id: call.call_id, output: JSON.stringify(sequence) });
       } else if (call.name === 'get_curriculum_progress') {
         const curriculumKey =
           typeof args.curriculumKey === 'string' && context.allowedCurriculumKeys.includes(args.curriculumKey)
@@ -240,9 +283,6 @@ async function resolveSelectionWithFunctions(
             : context.activeCurriculumKey;
         const progress = await getCurriculumProgressSummary(context.learnerId, curriculumKey);
         outputs.push({ type: 'function_call_output', call_id: call.call_id, output: JSON.stringify({ curriculumKey, ...progress }) });
-      } else if (call.name === 'list_catalog') {
-        const rows = await listProblemsCompact();
-        outputs.push({ type: 'function_call_output', call_id: call.call_id, output: JSON.stringify(rows.slice(0, 500)) });
       } else {
         outputs.push({ type: 'function_call_output', call_id: call.call_id, output: JSON.stringify({ error: 'unknown tool' }) });
       }
@@ -316,6 +356,8 @@ export async function POST(request: Request) {
   if (message) userMessages.push({ role: 'user', kind: 'text', content: message, createdAt: new Date().toISOString() });
   if (code) userMessages.push({ role: 'user', kind: 'code', content: code, createdAt: new Date().toISOString() });
   await appendMessages(sessionId, userMessages);
+  const historyRows = await getRecentMessages(sessionId, 20);
+  const compactHistory = formatRecentHistory([...historyRows].reverse(), 12);
 
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -327,8 +369,9 @@ export async function POST(request: Request) {
       `Current active problem: ${currentActiveProblemId}`,
       `Available curriculums: ${availableCurriculums.map((c) => `${c.key}${c.is_premium ? ' (paid)' : ' (free)'}`).join(', ')}`,
       `Current curriculum progress: ${curriculumProgress.mastered}/${curriculumProgress.total} mastered. Next suggested id: ${curriculumProgress.nextProblemId ?? 'none'}`,
-      `Latest message: ${message}`,
-      `Latest code present: ${code.length > 0}`,
+      `Latest user text: ${message || '(none)'}`,
+      `Latest user code present: ${code.length > 0 ? 'yes' : 'no'}`,
+      `Recent history:\n${compactHistory || '(none)'}`,
       'Respect access gating: free users can only use free curriculums.',
     ].join('\n'),
     {
@@ -360,7 +403,8 @@ export async function POST(request: Request) {
 
   const progress = await getProgressForProblem(learner.learner_id, activeProblemId);
   const mastered = await countMastered(learner.learner_id);
-  const historyRows = await getRecentMessages(sessionId, 16);
+  const historyRowsForCoach = historyRows;
+  const compactHistoryForCoach = formatRecentHistory(historyRowsForCoach, 10);
   const problemStatement = plainStatement(activeProblem.statement ?? '');
 
   const prompt = [
@@ -377,7 +421,7 @@ export async function POST(request: Request) {
     `Allowed curriculums: ${Array.from(allowedCurriculumKeys).join(', ')}`,
     `Current progress: ${JSON.stringify(progress ?? {})}`,
     `Selection reason: ${selection.reason}`,
-    `Recent chat history: ${JSON.stringify(historyRows.reverse())}`,
+    `Recent chat history:\n${compactHistoryForCoach || '(none)'}`,
     `Latest user message: ${message || '(none)'}`,
     `Latest user code: ${code || '(none)'}`,
     'Return strict JSON schema output.',
@@ -392,7 +436,14 @@ export async function POST(request: Request) {
           {
             type: 'input_text',
             text:
-              'You are l33.bot interviewer-coach for coding interviews. Default mode is strict interviewer: do NOT provide hints, solution ideas, or next steps unless the user explicitly asks for help/hint/explanation. In interviewer mode, ask concise probing questions, evaluate correctness/TLE/edge cases, and request clarifications/tests. If the user explicitly asks for help, switch to tutor mode and teach clearly; when giving guidance beyond realistic interview hints, state a short realism note such as \"Interview realism note: this is more guidance than a typical interviewer would provide.\" Keep responses concise and practical. You must honor curriculum planning intent: users may ask for l33, l75, l150, or lall, and to follow that set order. Set moveToCurriculumKey when changing plan, and set moveToProblemId to a valid id inside the chosen curriculum.',
+              [
+                'You are l33.bot interviewer-coach for coding interviews.',
+                'Primary mode: strict interviewer. Do not reveal solution strategy/hints unless user explicitly asks for help/hint/explanation.',
+                'In interviewer mode: ask concise probing questions, evaluate correctness/TLE/edge cases, and request concrete tests.',
+                'If user explicitly asks for help: switch to tutor mode and teach clearly. If guidance exceeds normal interview realism, include a brief realism note.',
+                'Honor curriculum intent (l33/l75/l150/lall). When changing curriculum set moveToCurriculumKey; set moveToProblemId to a valid id in that curriculum.',
+                'Prefer concise responses and actionable next step.',
+              ].join(' '),
           },
         ],
       },

@@ -33,3 +33,33 @@ input {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+@keyframes l33-divider-wave {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+.l33-divider-wave {
+  stroke-dasharray: 12 6;
+  animation: l33-divider-wave 0.95s linear infinite;
+}
+
+@keyframes l33-fab-flash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(125, 176, 255, 0.0), 0 0 0 0 rgba(125, 176, 255, 0.0);
+  }
+  20% {
+    box-shadow: 0 0 0 1px rgba(125, 176, 255, 0.95), 0 0 0 4px rgba(125, 176, 255, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 1px rgba(125, 176, 255, 0.0), 0 0 0 8px rgba(125, 176, 255, 0.0);
+  }
+}
+
+.l33-fab-flash {
+  animation: l33-fab-flash 0.9s ease-out;
+}

@@ -214,6 +214,45 @@ export async function getCurriculumProgressSummary(learnerId: string, curriculum
   };
 }
 
+export async function getCurriculumSequenceContext(curriculumKey: string, currentProblemId: number) {
+  const sql = getSql();
+  const rows = (await sql`
+    SELECT problem_id, position
+    FROM curriculum_problems
+    WHERE curriculum_key = ${curriculumKey}
+    ORDER BY position ASC
+  `) as { problem_id: number; position: number }[];
+
+  if (rows.length === 0) {
+    return {
+      curriculumKey,
+      total: 0,
+      currentProblemId,
+      currentIndex: -1,
+      previousProblemId: null as number | null,
+      nextProblemId: null as number | null,
+      firstProblemId: null as number | null,
+      lastProblemId: null as number | null,
+    };
+  }
+
+  const idx = rows.findIndex((r) => r.problem_id === currentProblemId);
+  const currentIndex = idx >= 0 ? idx : 0;
+  const prevIndex = (currentIndex - 1 + rows.length) % rows.length;
+  const nextIndex = (currentIndex + 1) % rows.length;
+
+  return {
+    curriculumKey,
+    total: rows.length,
+    currentProblemId: rows[currentIndex].problem_id,
+    currentIndex,
+    previousProblemId: rows[prevIndex].problem_id,
+    nextProblemId: rows[nextIndex].problem_id,
+    firstProblemId: rows[0].problem_id,
+    lastProblemId: rows[rows.length - 1].problem_id,
+  };
+}
+
 export async function getProgressForProblem(learnerId: string, problemId: number) {
   const sql = getSql();
   const rows = await sql`

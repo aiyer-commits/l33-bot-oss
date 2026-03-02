@@ -470,6 +470,8 @@ export default function Home() {
   const [userHasMore, setUserHasMore] = useState(false);
   const [assistantHasPrev, setAssistantHasPrev] = useState(false);
   const [userHasPrev, setUserHasPrev] = useState(false);
+  const [assistantFabFlash, setAssistantFabFlash] = useState(false);
+  const [userFabFlash, setUserFabFlash] = useState(false);
   const [assistantActiveIndex, setAssistantActiveIndex] = useState(0);
   const [userActiveIndex, setUserActiveIndex] = useState(0);
 
@@ -492,6 +494,13 @@ export default function Home() {
   const userFabActionHandledRef = useRef(false);
   const assistantScrollRafRef = useRef<number | null>(null);
   const userScrollRafRef = useRef<number | null>(null);
+  const assistantFlashTimeoutRef = useRef<number | null>(null);
+  const userFlashTimeoutRef = useRef<number | null>(null);
+  const prevAssistantCountRef = useRef<number>(0);
+  const prevUserCountRef = useRef<number>(0);
+  const didInitMessageCountsRef = useRef(false);
+  const userPrevScrollWidthRef = useRef<number>(0);
+  const userWasPinnedRightRef = useRef<boolean>(false);
   const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
   const codeInputRef = useRef<HTMLTextAreaElement | null>(null);
   const fuzzyKeyMapRef = useRef<Map<string, FuzzyKeyMeta>>(new Map());
@@ -605,6 +614,8 @@ export default function Home() {
     clearHoldTimer();
     if (assistantScrollRafRef.current != null) window.cancelAnimationFrame(assistantScrollRafRef.current);
     if (userScrollRafRef.current != null) window.cancelAnimationFrame(userScrollRafRef.current);
+    if (assistantFlashTimeoutRef.current != null) window.clearTimeout(assistantFlashTimeoutRef.current);
+    if (userFlashTimeoutRef.current != null) window.clearTimeout(userFlashTimeoutRef.current);
   }, []);
 
   useEffect(() => {
@@ -701,12 +712,47 @@ export default function Home() {
     return () => window.removeEventListener("resize", tick);
   }, []);
 
+  useEffect(() => {
+    const scroller = userScrollRef.current;
+    if (!scroller) return;
+    const prevWidth = userPrevScrollWidthRef.current;
+    const newWidth = scroller.scrollWidth;
+    if (userWasPinnedRightRef.current && newWidth > prevWidth) {
+      scroller.scrollLeft += newWidth - prevWidth;
+    }
+    userPrevScrollWidthRef.current = newWidth;
+  }, [messages]);
+
   const activeProblem = useMemo(() => {
     if (!profile) return null;
     return getProblemById(profile.activeProblemId) ?? null;
   }, [profile]);
   const assistantMessages = useMemo(() => messages.filter((msg) => msg.role === "assistant"), [messages]);
   const userMessages = useMemo(() => messages.filter((msg) => msg.role === "user"), [messages]);
+
+  useEffect(() => {
+    const nextAssistantCount = assistantMessages.length;
+    const nextUserCount = userMessages.length;
+    if (!didInitMessageCountsRef.current) {
+      prevAssistantCountRef.current = nextAssistantCount;
+      prevUserCountRef.current = nextUserCount;
+      didInitMessageCountsRef.current = true;
+      return;
+    }
+
+    if (nextAssistantCount > prevAssistantCountRef.current) {
+      setAssistantFabFlash(true);
+      if (assistantFlashTimeoutRef.current != null) window.clearTimeout(assistantFlashTimeoutRef.current);
+      assistantFlashTimeoutRef.current = window.setTimeout(() => setAssistantFabFlash(false), 900);
+    }
+    if (nextUserCount > prevUserCountRef.current) {
+      setUserFabFlash(true);
+      if (userFlashTimeoutRef.current != null) window.clearTimeout(userFlashTimeoutRef.current);
+      userFlashTimeoutRef.current = window.setTimeout(() => setUserFabFlash(false), 900);
+    }
+    prevAssistantCountRef.current = nextAssistantCount;
+    prevUserCountRef.current = nextUserCount;
+  }, [assistantMessages.length, userMessages.length]);
 
   const activeProblemMessageIndex = useMemo(() => {
     if (!activeProblem) return -1;
@@ -869,6 +915,13 @@ export default function Home() {
     if (includeCode) outgoingMessages.push(asMessage("user", codeToSend, "code"));
 
     const nextMessages = [...messages, ...outgoingMessages];
+    const userScroller = userScrollRef.current;
+    if (userScroller) {
+      const remaining = userScroller.scrollWidth - userScroller.scrollLeft - userScroller.clientWidth;
+      userWasPinnedRightRef.current = remaining <= 16;
+    } else {
+      userWasPinnedRightRef.current = false;
+    }
     setMessages(nextMessages);
     setError("");
     setIsSending(true);
@@ -1375,7 +1428,20 @@ export default function Home() {
       </header>
 
       <section className="min-h-0 flex-1 overflow-hidden">
-        <div className="grid h-full grid-rows-2">
+        <div className="relative grid h-full grid-rows-2">
+          {isSending ? (
+            <div className="pointer-events-none absolute inset-x-0 top-1/2 z-20 -translate-y-1/2">
+              <svg viewBox="0 0 400 4" preserveAspectRatio="none" className="h-[2px] w-full">
+                <path
+                  d="M0 2 Q 5 0.8 10 2 T 20 2 T 30 2 T 40 2 T 50 2 T 60 2 T 70 2 T 80 2 T 90 2 T 100 2 T 110 2 T 120 2 T 130 2 T 140 2 T 150 2 T 160 2 T 170 2 T 180 2 T 190 2 T 200 2 T 210 2 T 220 2 T 230 2 T 240 2 T 250 2 T 260 2 T 270 2 T 280 2 T 290 2 T 300 2 T 310 2 T 320 2 T 330 2 T 340 2 T 350 2 T 360 2 T 370 2 T 380 2 T 390 2 T 400 2"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.15"
+                  className={`l33-divider-wave ${isDark ? "text-[#7fb2ff]" : "text-[#1d4ed8]"}`}
+                />
+              </svg>
+            </div>
+          ) : null}
           <section className="relative min-h-0 overflow-hidden">
             <div ref={assistantScrollRef} className="no-scrollbar h-full overflow-x-auto overflow-y-hidden px-3 py-3">
               <div className="flex h-full items-stretch gap-2 pr-12">
@@ -1410,7 +1476,9 @@ export default function Home() {
                 onPointerUp={() => endFabHold("assistant", "prev")}
                 onPointerCancel={() => endFabHold("assistant", "prev")}
                 onPointerLeave={() => endFabHold("assistant", "prev")}
-                className="absolute bottom-2 left-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow"
+                className={`absolute bottom-2 left-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow ${
+                  assistantFabFlash ? "l33-fab-flash" : ""
+                }`}
                 title="Previous assistant message (hold to start)"
               >
                 ←
@@ -1423,7 +1491,9 @@ export default function Home() {
                 onPointerUp={() => endFabHold("assistant", "next")}
                 onPointerCancel={() => endFabHold("assistant", "next")}
                 onPointerLeave={() => endFabHold("assistant", "next")}
-                className="absolute bottom-2 right-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow"
+                className={`absolute bottom-2 right-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow ${
+                  assistantFabFlash ? "l33-fab-flash" : ""
+                }`}
                 title="Next assistant message (hold to end)"
               >
                 →
@@ -1437,7 +1507,9 @@ export default function Home() {
                 {userMessages.map((message, index) => (
                   <article
                     key={`${message.createdAt}-u-${index}`}
-                    className="flex h-full min-h-full max-w-[96%] shrink-0 self-stretch flex-col rounded-xl rounded-br-none bg-[#1f334f] px-3 py-2 text-sm text-white shadow-sm"
+                    className={`flex h-full min-h-full max-w-[96%] shrink-0 self-stretch flex-col rounded-xl rounded-br-none px-3 py-2 text-sm shadow-sm ${
+                      isDark ? "bg-[#dbeafe] text-[#0b1220]" : "bg-[#eff6ff] text-[#0b1220]"
+                    }`}
                   >
                     <div className="no-scrollbar h-full min-h-0 flex-1 overflow-auto">
                       {message.kind === "code" ? (
@@ -1449,7 +1521,7 @@ export default function Home() {
                   </article>
                 ))}
 
-                <div className="relative ml-auto h-full min-w-0 flex-1 shrink-0 pl-8">
+                <div className="relative ml-auto h-full w-[94%] min-w-[94%] shrink-0 pl-8">
                   <button
                     type="button"
                     onClick={() => {
@@ -1503,7 +1575,9 @@ export default function Home() {
                 onPointerUp={() => endFabHold("user", "prev")}
                 onPointerCancel={() => endFabHold("user", "prev")}
                 onPointerLeave={() => endFabHold("user", "prev")}
-                className="absolute bottom-2 left-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow"
+                className={`absolute bottom-2 left-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow ${
+                  userFabFlash ? "l33-fab-flash" : ""
+                }`}
                 title="Previous user message (hold to start)"
               >
                 ←
@@ -1516,7 +1590,9 @@ export default function Home() {
                 onPointerUp={() => endFabHold("user", "next")}
                 onPointerCancel={() => endFabHold("user", "next")}
                 onPointerLeave={() => endFabHold("user", "next")}
-                className="absolute bottom-2 right-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow"
+                className={`absolute bottom-2 right-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow ${
+                  userFabFlash ? "l33-fab-flash" : ""
+                }`}
                 title="Next user message (hold to end)"
               >
                 →
