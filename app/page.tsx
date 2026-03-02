@@ -48,6 +48,7 @@ type Cursor = { start: number; end: number };
 
 type KeySpec = { token: string; units?: number };
 type KeyboardRow = { offsetUnits?: number; heightUnits?: number; keys: KeySpec[] };
+type FuzzyKeyMeta = { token: string; rowIndex: number; keyIndex: number; el: HTMLButtonElement };
 const BASE_KEY_HEIGHT = "clamp(44px, 9.6vw, 58px)";
 
 const KEYBOARD_LAYOUT: KeyboardRow[] = [
@@ -493,6 +494,8 @@ export default function Home() {
   const userScrollRafRef = useRef<number | null>(null);
   const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
   const codeInputRef = useRef<HTMLTextAreaElement | null>(null);
+  const fuzzyKeyMapRef = useRef<Map<string, FuzzyKeyMeta>>(new Map());
+  const activeFuzzyPointerRef = useRef<{ pointerId: number; token: string; rowIndex: number; x: number; y: number } | null>(null);
 
   useEffect(() => {
     const profileRaw = localStorage.getItem(PROFILE_KEY);
@@ -974,6 +977,71 @@ export default function Home() {
 
   function isRepeatableToken(token: string) {
     return token === "BACKSPACE" || token === "LEFT" || token === "RIGHT" || token === "UP" || token === "DOWN";
+  }
+
+  function shouldUseFuzzyResolution(token: string) {
+    return !isRepeatableToken(token) && token !== "ENTER" && token !== "SHIFT" && token !== "TAB" && token !== "SPACE";
+  }
+
+  function registerFuzzyKey(id: string, meta: Omit<FuzzyKeyMeta, "el">, el: HTMLButtonElement | null) {
+    if (!el) {
+      fuzzyKeyMapRef.current.delete(id);
+      return;
+    }
+    fuzzyKeyMapRef.current.set(id, { ...meta, el });
+  }
+
+  function beginFuzzyPointer(pointerId: number, token: string, rowIndex: number, x: number, y: number) {
+    activeFuzzyPointerRef.current = { pointerId, token, rowIndex, x, y };
+  }
+
+  function updateFuzzyPointer(pointerId: number, x: number, y: number) {
+    const active = activeFuzzyPointerRef.current;
+    if (!active || active.pointerId !== pointerId) return;
+    activeFuzzyPointerRef.current = { ...active, x, y };
+  }
+
+  function clearFuzzyPointer(pointerId: number) {
+    const active = activeFuzzyPointerRef.current;
+    if (!active || active.pointerId !== pointerId) return;
+    activeFuzzyPointerRef.current = null;
+  }
+
+  function resolveFuzzyToken(pointerId: number, fallbackToken: string, fallbackRowIndex: number, x: number, y: number) {
+    const active = activeFuzzyPointerRef.current;
+    if (!active || active.pointerId !== pointerId || !shouldUseFuzzyResolution(fallbackToken)) return fallbackToken;
+    const sourceRow = active.rowIndex;
+    const candidates = Array.from(fuzzyKeyMapRef.current.values()).filter((candidate) => Math.abs(candidate.rowIndex - sourceRow) <= 1);
+    if (candidates.length === 0) return fallbackToken;
+
+    let bestToken = fallbackToken;
+    let bestScore = Number.POSITIVE_INFINITY;
+    let bestDistance = Number.POSITIVE_INFINITY;
+    let fallbackScore = Number.POSITIVE_INFINITY;
+
+    for (const candidate of candidates) {
+      const rect = candidate.el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = x - cx;
+      const dy = y - cy;
+      const distance = Math.hypot(dx, dy);
+      const rowPenalty = Math.abs(candidate.rowIndex - sourceRow) * 28;
+      const score = distance + rowPenalty;
+      if (candidate.token === fallbackToken && candidate.rowIndex === fallbackRowIndex) {
+        fallbackScore = score;
+      }
+      if (score < bestScore) {
+        bestScore = score;
+        bestDistance = distance;
+        bestToken = candidate.token;
+      }
+    }
+
+    const thresholdPx = 54;
+    if (bestDistance > thresholdPx) return fallbackToken;
+    if (fallbackScore < Number.POSITIVE_INFINITY && bestScore > fallbackScore + 18) return fallbackToken;
+    return bestToken;
   }
 
   function capturePointer(target: EventTarget & Element, pointerId: number) {
@@ -1602,20 +1670,31 @@ export default function Home() {
                     <button
                       key={`${rowIndex}-${keyIndex}-${token}`}
                       type="button"
+                      ref={(el) => registerFuzzyKey(`k-${rowIndex}-${keyIndex}`, { token, rowIndex, keyIndex }, el)}
                       onPointerDown={(event) => {
                         event.preventDefault();
                         capturePointer(event.currentTarget, event.pointerId);
+                        beginFuzzyPointer(event.pointerId, token, rowIndex, event.clientX, event.clientY);
                         startKeyPress(token);
+                      }}
+                      onPointerMove={(event) => {
+                        updateFuzzyPointer(event.pointerId, event.clientX, event.clientY);
                       }}
                       onPointerUp={(event) => {
                         event.preventDefault();
+                        updateFuzzyPointer(event.pointerId, event.clientX, event.clientY);
                         releasePointer(event.currentTarget, event.pointerId);
-                        endKeyPress(token);
+                        const resolvedToken = resolveFuzzyToken(event.pointerId, token, rowIndex, event.clientX, event.clientY);
+                        endKeyPress(resolvedToken);
+                        clearFuzzyPointer(event.pointerId);
                       }}
                       onPointerLeave={() => {
                         // pointer capture keeps press active during slight finger drift
                       }}
-                      onPointerCancel={() => cancelKeyPress(token)}
+                      onPointerCancel={(event) => {
+                        clearFuzzyPointer(event.pointerId);
+                        cancelKeyPress(token);
+                      }}
                       onContextMenu={(event) => event.preventDefault()}
                       className={`${keyBaseClass} ${keyToneClass}`}
                     >
