@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { clampConfidence, createInitialProfile, getProblemById } from "@/lib/leetcode75";
-import type { ChatApiResponse, ChatMessage, LocalProfile, ProblemProgress } from "@/lib/types";
+import type { ChatApiResponse, ChatMessage, LocalProfile } from "@/lib/types";
 
 const PROFILE_KEY = "l33tsp33k.profile.v2";
 const CHAT_KEY = "l33tsp33k.chat.v2";
@@ -18,11 +18,12 @@ type ThemeMode = "light" | "dark";
 type Cursor = { start: number; end: number };
 
 const KEYBOARD_ROWS = [
-  ["`|~", "1|!", "2|@", "3|#", "4|$", "5|%", "6|^", "7|&", "8|*", "9|(", "0|)", "-|_", "=|+", "BACKSPACE"],
-  ["TAB", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[|{", "]|}", "\\||"],
-  ["CAPS", "a", "s", "d", "f", "g", "h", "j", "k", "l", ";|:", "'|\"", "ENTER"],
-  ["SHIFT", "z", "x", "c", "v", "b", "n", "m", ",|<", ".|>", "/|?", "SHIFT"],
-  ["LEFT", "UPDOWN", "RIGHT", "SPACE", "CLEAR"],
+  ["LEFT", "UPDOWN", "RIGHT", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+", "{", "}", "|"],
+  ["`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "[", "]", "\\", ";", "'", ",", ".", "/", "BACKSPACE"],
+  ["TAB", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+  ["CAPS", "a", "s", "d", "f", "g", "h", "j", "k", "l", "ENTER"],
+  ["SHIFT", "z", "x", "c", "v", "b", "n", "m", "SHIFT"],
+  [":", '"', "<", ">", "?", "SPACE", "CLEAR"],
 ];
 
 function nowIso() {
@@ -70,7 +71,11 @@ function bootstrapIntro(problemId: number): ChatMessage[] {
   ];
 }
 
-function updateProblem(existing: ProblemProgress, data: ChatApiResponse["assessment"], code: string): ProblemProgress {
+function updateProblem(
+  existing: LocalProfile["problems"][number],
+  data: ChatApiResponse["assessment"],
+  code: string,
+): LocalProfile["problems"][number] {
   const nextStatus = data.markMastered ? "mastered" : data.status;
   return {
     ...existing,
@@ -149,7 +154,6 @@ export default function Home() {
   const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [theme, setTheme] = useState<ThemeMode>("light");
 
-  const [headerExpanded, setHeaderExpanded] = useState(false);
   const [composerMode, setComposerMode] = useState<ComposerMode>("chat");
   const [shiftOn, setShiftOn] = useState(false);
   const [capsOn, setCapsOn] = useState(false);
@@ -263,15 +267,6 @@ export default function Home() {
     return getProblemById(profile.activeProblemId) ?? null;
   }, [profile]);
 
-  const masteredCount = useMemo(() => {
-    if (!profile) return 0;
-    return profile.problems.filter((p) => p.status === "mastered").length;
-  }, [profile]);
-
-  const currentProgress = useMemo(() => {
-    if (!profile || !activeProblem) return null;
-    return profile.problems.find((p) => p.id === activeProblem.id) ?? null;
-  }, [profile, activeProblem]);
   const isDark = theme === "dark";
 
   function focusComposer(mode: ComposerMode) {
@@ -335,10 +330,6 @@ export default function Home() {
       result = applyInsert(source, cursor, "\n");
     } else if (token === "TAB") {
       result = applyInsert(source, cursor, "    ");
-    } else if (token.includes("|")) {
-      const [left, right] = token.split("|");
-      result = applyInsert(source, cursor, shiftOn ? right : left);
-      if (shiftOn) setShiftOn(false);
     } else {
       const isLetter = /^[a-z]$/i.test(token);
       if (isLetter) {
@@ -376,7 +367,6 @@ export default function Home() {
     setDraft("");
     setCode("");
     setError("");
-    setHeaderExpanded(false);
     setComposerMode("chat");
     if (!authUser) {
       localStorage.removeItem(CHAT_KEY);
@@ -498,7 +488,6 @@ export default function Home() {
               "text",
             ),
           ]);
-          setHeaderExpanded(true);
           setComposerMode("chat");
           setCode("");
           setCodeCursor({ start: 0, end: 0 });
@@ -546,9 +535,9 @@ export default function Home() {
   }
 
   function rowPadding(rowIndex: number) {
-    if (rowIndex === 1) return "px-[1.5%]";
-    if (rowIndex === 2) return "px-[3.5%]";
-    if (rowIndex === 3) return "px-[1%]";
+    if (rowIndex === 2) return "px-[4%]";
+    if (rowIndex === 3) return "px-[8%]";
+    if (rowIndex === 4) return "px-[3%]";
     return "";
   }
 
@@ -566,98 +555,65 @@ export default function Home() {
   return (
     <main className={`mx-auto flex min-h-screen max-w-3xl flex-col ${isDark ? "bg-[#0a0d12] text-[#e5e7eb]" : "bg-[#f3f2ec] text-[#141414]"}`}>
       <header className={`sticky top-0 z-20 border-b px-3 py-2 backdrop-blur ${isDark ? "border-white/15 bg-[#0a0d12]/95" : "border-black/10 bg-[#f3f2ec]/95"}`}>
-        <div
-          className={`cursor-pointer rounded-md px-1 py-0.5 ${isDark ? "hover:bg-white/5" : "hover:bg-black/5"}`}
-          onClick={() => setHeaderExpanded((v) => !v)}
-        >
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-[13px] font-semibold leading-4">#{activeProblem.id} · {activeProblem.title}</p>
-            <div className="flex items-center gap-1">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="truncate text-[13px] font-semibold leading-4">#{activeProblem.id} · {activeProblem.title}</p>
+            <div className="mt-0.5 flex items-center gap-1">
               <span className={`h-2 w-2 rounded-full ${difficultyDotColor(activeProblem.difficulty)}`} />
               <span className={`text-[10px] font-medium ${isDark ? "text-white/70" : "text-black/70"}`}>{activeProblem.difficulty}</span>
             </div>
           </div>
-        </div>
-        <p
-          className={`mt-2 whitespace-pre-wrap ${
-            headerExpanded ? "text-sm leading-5" : "text-[11px] leading-4"
-          } ${isDark ? "text-white/85" : "text-black/85"}`}
-        >
-          {activeProblem.statement}
-        </p>
-
-        {headerExpanded ? (
-          <div className="mt-2 space-y-2">
-            <div className="flex flex-wrap items-center gap-1">
-              <button
-                type="button"
-                onClick={cycleTheme}
-                className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
-                title="Cycle theme"
-              >
-                ◐
-              </button>
-              {authUser ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      void startCheckout();
-                    }}
-                    className={`rounded-md border px-2 py-1 text-[11px] font-semibold ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
-                    title="Buy $10 credits"
-                  >
-                    {purchaseLoading ? "…" : "$"}
-                  </button>
-                  <a
-                    href="/auth/sign-out"
-                    title="Logout"
-                    className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
-                  >
-                    ⇥
-                  </a>
-                </>
-              ) : (
+          <div className="flex shrink-0 items-center gap-1">
+            <button
+              type="button"
+              onClick={cycleTheme}
+              className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+              title="Cycle theme"
+            >
+              ◐
+            </button>
+            {authUser ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    void startCheckout();
+                  }}
+                  className={`rounded-md border px-2 py-1 text-[11px] font-semibold ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+                  title={`Buy credits${authUser ? ` (bal $${creditBalance.toFixed(2)})` : ""}`}
+                >
+                  {purchaseLoading ? "…" : "$"}
+                </button>
                 <a
-                  href="/auth/sign-in?returnTo=/"
-                  title="Login"
+                  href="/auth/sign-out"
+                  title="Logout"
                   className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
                 >
-                  ⇤
+                  ⇥
                 </a>
-              )}
-              <button
-                type="button"
-                onClick={resetLocalState}
+              </>
+            ) : (
+              <a
+                href="/auth/sign-in?returnTo=/"
+                title="Login"
                 className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
-                title="Reset local progress"
               >
-                ↺
-              </button>
-              <details className="group">
-                <summary
-                  className={`list-none cursor-pointer rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
-                  title="Show details"
-                >
-                  ⋯
-                </summary>
-                <div className={`mt-2 space-y-2 rounded-md border p-2 text-[11px] ${isDark ? "border-white/15 bg-white/5 text-white/70" : "border-black/10 bg-white/70 text-black/70"}`}>
-                  <p>Topic: {activeProblem.category} · Difficulty: {activeProblem.difficulty}</p>
-                  <div className={`h-2 w-full overflow-hidden rounded-full ${isDark ? "bg-white/15" : "bg-black/10"}`}>
-                    <div className="h-full bg-[#1a7f52] transition-all" style={{ width: `${(masteredCount / 150) * 100}%` }} />
-                  </div>
-                  <p>
-                    Mastered {masteredCount}/150 · Status {currentProgress?.status ?? "unseen"} · Confidence{" "}
-                    {currentProgress?.confidence ?? 0}% · Attempts {currentProgress?.attempts ?? 0}
-                  </p>
-                  <p>
-                    {authUser ? `Credits $${creditBalance.toFixed(2)}` : "Anonymous mode"}
-                  </p>
-                </div>
-              </details>
-            </div>
+                ⇤
+              </a>
+            )}
+            <button
+              type="button"
+              onClick={resetLocalState}
+              className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+              title="Reset local progress"
+            >
+              ↺
+            </button>
           </div>
-        ) : null}
+        </div>
+        <p className={`mt-1 whitespace-pre-wrap text-[11px] leading-4 ${isDark ? "text-white/85" : "text-black/85"}`}>
+          {activeProblem.statement}
+        </p>
       </header>
 
       <section className="flex-1 overflow-y-auto px-3 py-3">
@@ -669,7 +625,15 @@ export default function Home() {
               : "ml-auto max-w-[94%] rounded-xl rounded-tr-sm bg-[#1f334f] text-white";
 
             return (
-              <article key={`${message.createdAt}-${index}`} className={`${baseClass} px-3 py-2 text-sm shadow-sm`}>
+              <article key={`${message.createdAt}-${index}`} className={`${baseClass} relative px-3 py-2 text-sm shadow-sm`}>
+                <span
+                  aria-hidden
+                  className={`absolute bottom-1 h-2.5 w-2.5 rotate-45 ${
+                    isAssistant
+                      ? `${isDark ? "bg-[#151b24]" : "bg-white"} -left-1`
+                      : "right-[-5px] bg-[#1f334f]"
+                  }`}
+                />
                 {message.kind === "code" ? (
                   <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-[12px] leading-5">{message.content}</pre>
                 ) : (
@@ -678,57 +642,66 @@ export default function Home() {
               </article>
             );
           })}
-          <div className={`grid grid-cols-[1fr_auto] gap-px overflow-hidden rounded-lg border ${isDark ? "border-white/20 bg-white/10" : "border-black/15 bg-black/10"}`}>
-            <textarea
-              ref={chatInputRef}
-              value={draft}
-              inputMode="none"
-              onKeyDown={(event) => event.preventDefault()}
-              onChange={(event) => setDraft(event.target.value)}
-              onFocus={() => focusComposer("chat")}
-              onClick={() => syncCursorFromDom("chat")}
-              onSelect={() => syncCursorFromDom("chat")}
-              rows={2}
-              placeholder="message bubble"
-              className={`resize-none border-0 px-2 py-2 text-sm outline-none ${isDark ? "bg-[#151b24] text-[#e5e7eb] caret-[#e5e7eb]" : "bg-white text-[#111] caret-[#111]"}`}
-            />
+          <div className="relative ml-auto w-full max-w-[88%] pl-8">
             <button
               type="button"
               disabled={isSending || !draft.trim()}
               onClick={() => {
                 void sendTurn({ sendText: true, sendCode: false });
               }}
-              className="w-10 border-l border-black/10 bg-[#1f334f] text-sm font-bold text-white disabled:opacity-50"
+              className="absolute left-0 top-1/2 h-7 w-7 -translate-y-1/2 rounded-full bg-[#1f334f] text-sm font-bold text-white disabled:opacity-50"
             >
               ✓
             </button>
+            <div className={`relative overflow-hidden rounded-2xl rounded-tr-sm border ${isDark ? "border-white/20 bg-[#151b24]" : "border-black/15 bg-white"}`}>
+              <span
+                aria-hidden
+                className={`absolute bottom-1 right-[-5px] h-2.5 w-2.5 rotate-45 ${isDark ? "bg-[#151b24]" : "bg-white"}`}
+              />
+              <textarea
+                ref={chatInputRef}
+                value={draft}
+                inputMode="none"
+                onKeyDown={(event) => event.preventDefault()}
+                onChange={(event) => setDraft(event.target.value)}
+                onFocus={() => focusComposer("chat")}
+                onClick={() => syncCursorFromDom("chat")}
+                onSelect={() => syncCursorFromDom("chat")}
+                rows={2}
+                placeholder="message bubble"
+                className={`w-full resize-none border-0 bg-transparent px-3 py-2 text-sm outline-none ${isDark ? "text-[#e5e7eb] caret-[#e5e7eb]" : "text-[#111] caret-[#111]"}`}
+              />
+            </div>
           </div>
 
-          <div className={`grid grid-cols-[1fr_auto] gap-px overflow-hidden rounded-lg border ${isDark ? "border-white/20 bg-white/10" : "border-black/15 bg-black/10"}`}>
-            <textarea
-              ref={codeInputRef}
-              value={code}
-              inputMode="none"
-              spellCheck={false}
-              onKeyDown={(event) => event.preventDefault()}
-              onChange={(event) => setCode(event.target.value)}
-              onFocus={() => focusComposer("code")}
-              onClick={() => syncCursorFromDom("code")}
-              onSelect={() => syncCursorFromDom("code")}
-              rows={4}
-              placeholder="pinned code bubble"
-              className="resize-none border-0 bg-[#0e1117] px-2 py-2 font-mono text-[12px] leading-5 text-[#e5e7eb] caret-[#e5e7eb] outline-none"
-            />
+          <div className="relative ml-auto w-full max-w-[92%] pl-8">
             <button
               type="button"
               disabled={isSending || !code.trim()}
               onClick={() => {
                 void sendTurn({ sendText: false, sendCode: true });
               }}
-              className="w-10 border-l border-black/10 bg-[#2259f3] text-sm font-bold text-white disabled:opacity-50"
+              className="absolute left-0 top-1/2 h-7 w-7 -translate-y-1/2 rounded-full bg-[#2259f3] text-sm font-bold text-white disabled:opacity-50"
             >
               ✓
             </button>
+            <div className="relative overflow-hidden rounded-2xl rounded-tr-sm border border-white/20 bg-[#0e1117]">
+              <span aria-hidden className="absolute bottom-1 right-[-5px] h-2.5 w-2.5 rotate-45 bg-[#0e1117]" />
+              <textarea
+                ref={codeInputRef}
+                value={code}
+                inputMode="none"
+                spellCheck={false}
+                onKeyDown={(event) => event.preventDefault()}
+                onChange={(event) => setCode(event.target.value)}
+                onFocus={() => focusComposer("code")}
+                onClick={() => syncCursorFromDom("code")}
+                onSelect={() => syncCursorFromDom("code")}
+                rows={4}
+                placeholder="pinned code bubble"
+                className="w-full resize-none border-0 bg-[#0e1117] px-3 py-2 font-mono text-[12px] leading-5 text-[#e5e7eb] caret-[#e5e7eb] outline-none"
+              />
+            </div>
           </div>
           <div ref={chatBottomRef} />
         </div>
@@ -746,37 +719,16 @@ export default function Home() {
                         <button
                           type="button"
                           onClick={() => pressKey("UP")}
-                          className={`h-4 border px-0.5 text-center font-mono text-[9px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
+                          className={`h-[22px] border px-0.5 text-center font-mono text-[10px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
                         >
                           ↑
                         </button>
                         <button
                           type="button"
                           onClick={() => pressKey("DOWN")}
-                          className={`h-4 border px-0.5 text-center font-mono text-[9px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
+                          className={`h-[22px] border px-0.5 text-center font-mono text-[10px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
                         >
                           ↓
-                        </button>
-                      </div>
-                    );
-                  }
-                  if (token.includes("|")) {
-                    const [left, right] = token.split("|");
-                    return (
-                      <div key={`${rowIndex}-${token}`} className={`grid grid-cols-2 gap-px ${keyFlex(token)}`}>
-                        <button
-                          type="button"
-                          onClick={() => pressKey(left)}
-                          className={`h-8 border px-0.5 text-center font-mono text-[9px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
-                        >
-                          {left}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => pressKey(right)}
-                          className={`h-8 border px-0.5 text-center font-mono text-[9px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
-                        >
-                          {right}
                         </button>
                       </div>
                     );
@@ -793,7 +745,7 @@ export default function Home() {
                           pressKey(token);
                         }
                       }}
-                      className={`h-8 border px-0.5 text-center font-mono text-[10px] ${keyFlex(token)} ${
+                      className={`h-11 border px-1 text-center font-mono text-[12px] ${keyFlex(token)} ${
                         token === "SHIFT" && shiftOn
                           ? "border-[#7aa2ff] bg-[#22407a] text-white"
                           : token === "CAPS" && capsOn
