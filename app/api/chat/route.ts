@@ -8,13 +8,19 @@ import {
   countMastered,
   deductCredits,
   ensureLearnerProfile,
+  getCurriculumProgressSummary,
+  getCurriculumProblemIds,
+  getFirstProblemForCurriculum,
   getOrCreateSession,
   getProblemById,
   getProgressForProblem,
   getRecentMessages,
+  hasPaidAccess,
+  listCurriculums,
   listProblemsCompact,
   logUsage,
   searchProblems,
+  setActiveCurriculum,
   setActiveProblem,
   upsertProblemProgress,
 } from '@/lib/db/repo';
@@ -79,6 +85,7 @@ function responseSchema() {
             'attemptsDelta',
             'markMastered',
             'moveToProblemId',
+            'moveToCurriculumKey',
             'summaryNote',
             'nextStep',
           ],
@@ -87,7 +94,8 @@ function responseSchema() {
             confidence: { type: 'integer', minimum: 0, maximum: 100 },
             attemptsDelta: { type: 'integer', minimum: 0, maximum: 2 },
             markMastered: { type: 'boolean' },
-            moveToProblemId: { type: 'integer', minimum: 1, maximum: 150 },
+            moveToProblemId: { type: 'integer', minimum: 1, maximum: 1000000 },
+            moveToCurriculumKey: { type: ['string', 'null'] },
             summaryNote: { type: 'string' },
             nextStep: { type: 'string' },
           },
@@ -103,7 +111,16 @@ function responseSchema() {
   };
 }
 
-async function resolveSelectionWithFunctions(client: OpenAI, prompt: string, activeProblemId: number) {
+async function resolveSelectionWithFunctions(
+  client: OpenAI,
+  prompt: string,
+  context: {
+    activeProblemId: number;
+    activeCurriculumKey: string;
+    allowedCurriculumKeys: string[];
+    learnerId: string;
+  },
+) {
   let response = await client.responses.create({
     model: MODEL,
     input: [
@@ -113,7 +130,7 @@ async function resolveSelectionWithFunctions(client: OpenAI, prompt: string, act
           {
             type: 'input_text',
             text:
-              'You route learners to the right LeetCode problem. Use tools to search/select. If user does not request a switch, keep current problem. Return JSON {"activeProblemId": number, "reason": string}.',
+              'You route learners to the right l33 curriculum/problem. Use tools to inspect catalog/curriculum context. Keep current selection unless user intent requests switching by plan/topic/difficulty/order. Return JSON {"activeProblemId": number, "activeCurriculumKey": string, "reason": string}.',
           },
         ],
       },
@@ -128,19 +145,20 @@ async function resolveSelectionWithFunctions(client: OpenAI, prompt: string, act
         parameters: {
           type: 'object',
           additionalProperties: false,
-          required: ['query', 'difficulty', 'category', 'limit'],
+          required: ['query', 'difficulty', 'category', 'limit', 'curriculumKey'],
           properties: {
             query: { type: ['string', 'null'] },
             difficulty: { type: ['string', 'null'] },
             category: { type: ['string', 'null'] },
             limit: { type: ['number', 'null'] },
+            curriculumKey: { type: ['string', 'null'] },
           },
         },
       },
       {
         type: 'function',
-        name: 'get_active_problem',
-        description: 'Get current active problem id and basic metadata',
+        name: 'get_active_context',
+        description: 'Get current active problem and curriculum context',
         strict: true,
         parameters: { type: 'object', additionalProperties: false, required: [], properties: {} },
       },
@@ -150,6 +168,25 @@ async function resolveSelectionWithFunctions(client: OpenAI, prompt: string, act
         description: 'List compact catalog to reason about order and titles',
         strict: true,
         parameters: { type: 'object', additionalProperties: false, required: [], properties: {} },
+      },
+      {
+        type: 'function',
+        name: 'list_curriculums',
+        description: 'List available curriculums and accessibility',
+        strict: true,
+        parameters: { type: 'object', additionalProperties: false, required: [], properties: {} },
+      },
+      {
+        type: 'function',
+        name: 'get_curriculum_progress',
+        description: 'Get mastered/total and next problem for a curriculum',
+        strict: true,
+        parameters: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['curriculumKey'],
+          properties: { curriculumKey: { type: 'string' } },
+        },
       },
     ],
     tool_choice: 'auto',
@@ -171,14 +208,41 @@ async function resolveSelectionWithFunctions(client: OpenAI, prompt: string, act
           difficulty: args.difficulty,
           category: args.category,
           limit: args.limit,
+          curriculumKey:
+            typeof args.curriculumKey === 'string' && context.allowedCurriculumKeys.includes(args.curriculumKey)
+              ? args.curriculumKey
+              : context.activeCurriculumKey,
         });
         outputs.push({ type: 'function_call_output', call_id: call.call_id, output: JSON.stringify(rows) });
-      } else if (call.name === 'get_active_problem') {
-        const row = await getProblemById(activeProblemId);
-        outputs.push({ type: 'function_call_output', call_id: call.call_id, output: JSON.stringify(row) });
+      } else if (call.name === 'get_active_context') {
+        const row = await getProblemById(context.activeProblemId);
+        outputs.push({
+          type: 'function_call_output',
+          call_id: call.call_id,
+          output: JSON.stringify({
+            activeProblemId: context.activeProblemId,
+            activeCurriculumKey: context.activeCurriculumKey,
+            activeProblem: row,
+            allowedCurriculumKeys: context.allowedCurriculumKeys,
+          }),
+        });
+      } else if (call.name === 'list_curriculums') {
+        const rows = await listCurriculums(true);
+        outputs.push({
+          type: 'function_call_output',
+          call_id: call.call_id,
+          output: JSON.stringify(rows.filter((r) => context.allowedCurriculumKeys.includes(r.key))),
+        });
+      } else if (call.name === 'get_curriculum_progress') {
+        const curriculumKey =
+          typeof args.curriculumKey === 'string' && context.allowedCurriculumKeys.includes(args.curriculumKey)
+            ? args.curriculumKey
+            : context.activeCurriculumKey;
+        const progress = await getCurriculumProgressSummary(context.learnerId, curriculumKey);
+        outputs.push({ type: 'function_call_output', call_id: call.call_id, output: JSON.stringify({ curriculumKey, ...progress }) });
       } else if (call.name === 'list_catalog') {
         const rows = await listProblemsCompact();
-        outputs.push({ type: 'function_call_output', call_id: call.call_id, output: JSON.stringify(rows.slice(0, 150)) });
+        outputs.push({ type: 'function_call_output', call_id: call.call_id, output: JSON.stringify(rows.slice(0, 500)) });
       } else {
         outputs.push({ type: 'function_call_output', call_id: call.call_id, output: JSON.stringify({ error: 'unknown tool' }) });
       }
@@ -192,12 +256,16 @@ async function resolveSelectionWithFunctions(client: OpenAI, prompt: string, act
     });
   }
 
-  const selected = parseJson<{ activeProblemId: number; reason: string }>(response.output_text || '{}');
+  const selected = parseJson<{ activeProblemId: number; activeCurriculumKey: string; reason: string }>(response.output_text || '{}');
   return {
     activeProblemId:
-      Number.isFinite(selected.activeProblemId) && selected.activeProblemId >= 1 && selected.activeProblemId <= 150
+      Number.isFinite(selected.activeProblemId) && selected.activeProblemId >= 1
         ? selected.activeProblemId
-        : activeProblemId,
+        : context.activeProblemId,
+    activeCurriculumKey:
+      typeof selected.activeCurriculumKey === 'string' && context.allowedCurriculumKeys.includes(selected.activeCurriculumKey)
+        ? selected.activeCurriculumKey
+        : context.activeCurriculumKey,
     reason: selected.reason || 'No change',
   };
 }
@@ -221,6 +289,26 @@ export async function POST(request: Request) {
     email: user?.email ?? null,
     anonId: body.anonId ?? null,
   });
+  const paidAccess = user ? await hasPaidAccess(learner.learner_id) : false;
+  const availableCurriculums = await listCurriculums(paidAccess);
+  const allowedCurriculumKeys = new Set(availableCurriculums.map((c) => String(c.key)));
+
+  let activeCurriculumKey = learner.active_curriculum_key;
+  if (!allowedCurriculumKeys.has(activeCurriculumKey)) {
+    activeCurriculumKey = 'l33';
+    await setActiveCurriculum(learner.learner_id, activeCurriculumKey);
+  }
+
+  let activeCurriculumProblemIds = await getCurriculumProblemIds(activeCurriculumKey);
+  if (activeCurriculumProblemIds.length === 0) {
+    return NextResponse.json({ error: `Curriculum ${activeCurriculumKey} has no mapped problems` }, { status: 500 });
+  }
+
+  let currentActiveProblemId = learner.active_problem_id;
+  if (!activeCurriculumProblemIds.includes(currentActiveProblemId)) {
+    currentActiveProblemId = activeCurriculumProblemIds[0];
+    await setActiveProblem(learner.learner_id, currentActiveProblemId);
+  }
 
   const sessionId = await getOrCreateSession(learner.learner_id, body.sessionId ?? null);
 
@@ -231,17 +319,40 @@ export async function POST(request: Request) {
 
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+  const curriculumProgress = await getCurriculumProgressSummary(learner.learner_id, activeCurriculumKey);
   const selection = await resolveSelectionWithFunctions(
     client,
-    `Current active problem: ${learner.active_problem_id}. Latest message: ${message}. Latest code present: ${code.length > 0}`,
-    learner.active_problem_id,
+    [
+      `Current active curriculum: ${activeCurriculumKey}`,
+      `Current active problem: ${currentActiveProblemId}`,
+      `Available curriculums: ${availableCurriculums.map((c) => `${c.key}${c.is_premium ? ' (paid)' : ' (free)'}`).join(', ')}`,
+      `Current curriculum progress: ${curriculumProgress.mastered}/${curriculumProgress.total} mastered. Next suggested id: ${curriculumProgress.nextProblemId ?? 'none'}`,
+      `Latest message: ${message}`,
+      `Latest code present: ${code.length > 0}`,
+      'Respect access gating: free users can only use free curriculums.',
+    ].join('\n'),
+    {
+      activeProblemId: currentActiveProblemId,
+      activeCurriculumKey,
+      allowedCurriculumKeys: Array.from(allowedCurriculumKeys),
+      learnerId: learner.learner_id,
+    },
   );
 
-  if (selection.activeProblemId !== learner.active_problem_id) {
-    await setActiveProblem(learner.learner_id, selection.activeProblemId);
+  if (selection.activeCurriculumKey !== activeCurriculumKey) {
+    activeCurriculumKey = selection.activeCurriculumKey;
+    await setActiveCurriculum(learner.learner_id, activeCurriculumKey);
+    activeCurriculumProblemIds = await getCurriculumProblemIds(activeCurriculumKey);
   }
 
-  const activeProblemId = selection.activeProblemId;
+  let activeProblemId = selection.activeProblemId;
+  if (!activeCurriculumProblemIds.includes(activeProblemId)) {
+    activeProblemId = activeCurriculumProblemIds[0];
+  }
+  if (activeProblemId !== currentActiveProblemId) {
+    await setActiveProblem(learner.learner_id, activeProblemId);
+  }
+
   const activeProblem = await getProblemById(activeProblemId);
   if (!activeProblem) {
     return NextResponse.json({ error: 'Active problem not found in DB' }, { status: 500 });
@@ -260,7 +371,10 @@ export async function POST(request: Request) {
     `Statement: ${problemStatement}`,
     `Semantic tags: ${(activeProblem.tags ?? []).join(', ')}`,
     `Test cases blob: ${activeProblem.test_cases_blob_url ?? 'none'}`,
-    `Mastered count: ${mastered}/150`,
+    `Curriculum: ${activeCurriculumKey}`,
+    `Curriculum progress: ${curriculumProgress.mastered}/${curriculumProgress.total} mastered`,
+    `Mastered count (all): ${mastered}`,
+    `Allowed curriculums: ${Array.from(allowedCurriculumKeys).join(', ')}`,
     `Current progress: ${JSON.stringify(progress ?? {})}`,
     `Selection reason: ${selection.reason}`,
     `Recent chat history: ${JSON.stringify(historyRows.reverse())}`,
@@ -278,7 +392,7 @@ export async function POST(request: Request) {
           {
             type: 'input_text',
             text:
-              'You are l33.bot interviewer-coach for coding interviews. Default mode is strict interviewer: do NOT provide hints, solution ideas, or next steps unless the user explicitly asks for help/hint/explanation. In interviewer mode, ask concise probing questions, evaluate correctness/TLE/edge cases, and request clarifications/tests. If the user explicitly asks for help, switch to tutor mode and teach clearly; when giving guidance beyond realistic interview hints, state a short realism note such as \"Interview realism note: this is more guidance than a typical interviewer would provide.\" Keep responses concise and practical. If user asks for a specific topic/difficulty, moveToProblemId can jump to that semantic match.',
+              'You are l33.bot interviewer-coach for coding interviews. Default mode is strict interviewer: do NOT provide hints, solution ideas, or next steps unless the user explicitly asks for help/hint/explanation. In interviewer mode, ask concise probing questions, evaluate correctness/TLE/edge cases, and request clarifications/tests. If the user explicitly asks for help, switch to tutor mode and teach clearly; when giving guidance beyond realistic interview hints, state a short realism note such as \"Interview realism note: this is more guidance than a typical interviewer would provide.\" Keep responses concise and practical. You must honor curriculum planning intent: users may ask for l33, l75, l150, or lall, and to follow that set order. Set moveToCurriculumKey when changing plan, and set moveToProblemId to a valid id inside the chosen curriculum.',
           },
         ],
       },
@@ -289,7 +403,22 @@ export async function POST(request: Request) {
   });
 
   const parsed = parseJson<ChatApiResponse>(response.output_text || '{}');
-  const moveToProblemId = Math.max(1, Math.min(150, parsed.assessment.moveToProblemId || activeProblemId));
+  const requestedCurriculumKey =
+    typeof parsed.assessment.moveToCurriculumKey === 'string' && allowedCurriculumKeys.has(parsed.assessment.moveToCurriculumKey)
+      ? parsed.assessment.moveToCurriculumKey
+      : activeCurriculumKey;
+
+  if (requestedCurriculumKey !== activeCurriculumKey) {
+    activeCurriculumKey = requestedCurriculumKey;
+    await setActiveCurriculum(learner.learner_id, activeCurriculumKey);
+    activeCurriculumProblemIds = await getCurriculumProblemIds(activeCurriculumKey);
+  }
+
+  let moveToProblemId = Number.isFinite(parsed.assessment.moveToProblemId) ? parsed.assessment.moveToProblemId : activeProblemId;
+  if (!activeCurriculumProblemIds.includes(moveToProblemId)) {
+    const suggested = await getCurriculumProgressSummary(learner.learner_id, activeCurriculumKey);
+    moveToProblemId = suggested.nextProblemId ?? (await getFirstProblemForCurriculum(activeCurriculumKey)) ?? activeProblemId;
+  }
 
   if (moveToProblemId !== activeProblemId) {
     await setActiveProblem(learner.learner_id, moveToProblemId);
@@ -380,6 +509,7 @@ export async function POST(request: Request) {
     ...parsed,
     sessionId,
     activeProblemId: moveToProblemId,
+    activeCurriculumKey,
     usage: {
       chargedFemtodollars: (user ? charge : BigInt(0)).toString(),
       chargedDollars: femtodollarsToDollars(user ? charge : BigInt(0)),

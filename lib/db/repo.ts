@@ -14,6 +14,7 @@ export type LearnerProfileRow = {
   user_id: string | null;
   anon_id: string | null;
   email: string | null;
+  active_curriculum_key: string;
   active_problem_id: number;
 };
 
@@ -25,8 +26,8 @@ export async function ensureLearnerProfile(key: LearnerKey): Promise<LearnerProf
   }
 
   const existing = (key.userId
-    ? await sql`SELECT learner_id, user_id, anon_id, email, active_problem_id FROM learner_profiles WHERE user_id = ${key.userId} LIMIT 1`
-    : await sql`SELECT learner_id, user_id, anon_id, email, active_problem_id FROM learner_profiles WHERE anon_id = ${key.anonId ?? ''} LIMIT 1`) as LearnerProfileRow[];
+    ? await sql`SELECT learner_id, user_id, anon_id, email, active_curriculum_key, active_problem_id FROM learner_profiles WHERE user_id = ${key.userId} LIMIT 1`
+    : await sql`SELECT learner_id, user_id, anon_id, email, active_curriculum_key, active_problem_id FROM learner_profiles WHERE anon_id = ${key.anonId ?? ''} LIMIT 1`) as LearnerProfileRow[];
 
   if (existing.length > 0) return existing[0];
 
@@ -34,9 +35,9 @@ export async function ensureLearnerProfile(key: LearnerKey): Promise<LearnerProf
   const anonId = key.userId ? null : key.anonId ?? randomUUID();
 
   const inserted = (await sql`
-    INSERT INTO learner_profiles (learner_id, user_id, anon_id, email, active_problem_id)
-    VALUES (${learnerId}, ${key.userId ?? null}, ${anonId}, ${key.email ?? null}, 1)
-    RETURNING learner_id, user_id, anon_id, email, active_problem_id
+    INSERT INTO learner_profiles (learner_id, user_id, anon_id, email, active_curriculum_key, active_problem_id)
+    VALUES (${learnerId}, ${key.userId ?? null}, ${anonId}, ${key.email ?? null}, 'l33', 1)
+    RETURNING learner_id, user_id, anon_id, email, active_curriculum_key, active_problem_id
   `) as LearnerProfileRow[];
 
   await sql`
@@ -75,21 +76,26 @@ export async function listProblemsCompact() {
   `;
 }
 
-export async function searchProblems(params: { query?: string; difficulty?: string; category?: string; limit?: number }) {
+export async function searchProblems(params: { query?: string; difficulty?: string; category?: string; limit?: number; curriculumKey?: string }) {
   const sql = getSql();
   const limit = Math.min(20, Math.max(1, params.limit ?? 8));
   const q = `%${(params.query ?? '').toLowerCase()}%`;
   const d = (params.difficulty ?? '').toLowerCase();
   const c = (params.category ?? '').toLowerCase();
+  const curriculumKey = (params.curriculumKey ?? '').toLowerCase();
 
   return sql`
-    SELECT id, title, difficulty, category, tags
-    FROM problems
+    SELECT p.id, p.title, p.difficulty, p.category, p.tags
+    FROM problems p
+    LEFT JOIN curriculum_problems cp
+      ON cp.problem_id = p.id
+      AND (${curriculumKey} <> '' AND cp.curriculum_key = ${curriculumKey})
     WHERE
-      (${q} = '%%' OR lower(title) LIKE ${q} OR lower(category) LIKE ${q} OR EXISTS (SELECT 1 FROM unnest(tags) t WHERE lower(t) LIKE ${q}))
-      AND (${d} = '' OR lower(difficulty) = ${d})
-      AND (${c} = '' OR lower(category) LIKE ${`%${c}%`})
-    ORDER BY id ASC
+      (${q} = '%%' OR lower(p.title) LIKE ${q} OR lower(p.category) LIKE ${q} OR EXISTS (SELECT 1 FROM unnest(p.tags) t WHERE lower(t) LIKE ${q}))
+      AND (${d} = '' OR lower(p.difficulty) = ${d})
+      AND (${c} = '' OR lower(p.category) LIKE ${`%${c}%`})
+      AND (${curriculumKey} = '' OR cp.curriculum_key = ${curriculumKey})
+    ORDER BY p.id ASC
     LIMIT ${limit}
   `;
 }
@@ -97,6 +103,115 @@ export async function searchProblems(params: { query?: string; difficulty?: stri
 export async function setActiveProblem(learnerId: string, problemId: number) {
   const sql = getSql();
   await sql`UPDATE learner_profiles SET active_problem_id = ${problemId} WHERE learner_id = ${learnerId}`;
+}
+
+export async function setActiveCurriculum(learnerId: string, curriculumKey: string) {
+  const sql = getSql();
+  await sql`UPDATE learner_profiles SET active_curriculum_key = ${curriculumKey} WHERE learner_id = ${learnerId}`;
+}
+
+export async function getCurriculum(curriculumKey: string) {
+  const sql = getSql();
+  const rows = await sql`
+    SELECT key, name, description, is_premium, total_count
+    FROM curriculums
+    WHERE key = ${curriculumKey}
+    LIMIT 1
+  `;
+  return rows[0] ?? null;
+}
+
+export async function listCurriculums(includePremium: boolean) {
+  const sql = getSql();
+  return sql`
+    SELECT key, name, description, is_premium, total_count
+    FROM curriculums
+    WHERE is_premium = FALSE OR ${includePremium}
+    ORDER BY CASE key WHEN 'l33' THEN 1 WHEN 'l75' THEN 2 WHEN 'l150' THEN 3 WHEN 'lall' THEN 4 ELSE 99 END, key
+  `;
+}
+
+export async function hasPaidAccess(learnerId: string) {
+  const sql = getSql();
+  const rows = (await sql`
+    SELECT EXISTS (
+      SELECT 1
+      FROM credit_transactions
+      WHERE learner_id = ${learnerId}
+        AND type = 'purchase'
+        AND amount_femtodollars > 0
+    ) AS paid
+  `) as { paid: boolean }[];
+  return Boolean(rows[0]?.paid);
+}
+
+export async function getCurriculumProblemIds(curriculumKey: string) {
+  const sql = getSql();
+  const rows = (await sql`
+    SELECT problem_id
+    FROM curriculum_problems
+    WHERE curriculum_key = ${curriculumKey}
+    ORDER BY position ASC
+  `) as { problem_id: number }[];
+  return rows.map((r) => r.problem_id);
+}
+
+export async function getFirstProblemForCurriculum(curriculumKey: string) {
+  const sql = getSql();
+  const rows = (await sql`
+    SELECT problem_id
+    FROM curriculum_problems
+    WHERE curriculum_key = ${curriculumKey}
+    ORDER BY position ASC
+    LIMIT 1
+  `) as { problem_id: number }[];
+  return rows[0]?.problem_id ?? null;
+}
+
+export async function getCurriculumProgressSummary(learnerId: string, curriculumKey: string) {
+  const sql = getSql();
+  const rows = (await sql`
+    WITH scoped AS (
+      SELECT cp.problem_id, cp.position
+      FROM curriculum_problems cp
+      WHERE cp.curriculum_key = ${curriculumKey}
+    )
+    SELECT
+      COUNT(*)::int AS total,
+      COUNT(*) FILTER (WHERE pp.status = 'mastered')::int AS mastered
+    FROM scoped s
+    LEFT JOIN problem_progress pp
+      ON pp.learner_id = ${learnerId} AND pp.problem_id = s.problem_id
+  `) as { total: number; mastered: number }[];
+
+  const nextRows = (await sql`
+    WITH scoped AS (
+      SELECT cp.problem_id, cp.position
+      FROM curriculum_problems cp
+      WHERE cp.curriculum_key = ${curriculumKey}
+    )
+    SELECT s.problem_id
+    FROM scoped s
+    LEFT JOIN problem_progress pp
+      ON pp.learner_id = ${learnerId} AND pp.problem_id = s.problem_id
+    WHERE COALESCE(pp.status, 'unseen') <> 'mastered'
+    ORDER BY s.position ASC
+    LIMIT 1
+  `) as { problem_id: number }[];
+
+  const fallbackRows = (await sql`
+    SELECT problem_id
+    FROM curriculum_problems
+    WHERE curriculum_key = ${curriculumKey}
+    ORDER BY position ASC
+    LIMIT 1
+  `) as { problem_id: number }[];
+
+  return {
+    total: rows[0]?.total ?? 0,
+    mastered: rows[0]?.mastered ?? 0,
+    nextProblemId: nextRows[0]?.problem_id ?? fallbackRows[0]?.problem_id ?? null,
+  };
 }
 
 export async function getProgressForProblem(learnerId: string, problemId: number) {

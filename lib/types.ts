@@ -55,12 +55,14 @@ export type ChatApiResponse = {
   assistantMessage: string;
   sessionId?: string;
   activeProblemId?: number;
+  activeCurriculumKey?: string;
   assessment: {
     status: Exclude<ProblemLearningStatus, "unseen">;
     confidence: number;
     attemptsDelta: number;
     markMastered: boolean;
     moveToProblemId: number;
+    moveToCurriculumKey?: string | null;
     summaryNote: string;
     nextStep: string;
   };

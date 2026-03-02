@@ -25,12 +25,34 @@ CREATE TABLE IF NOT EXISTS learner_profiles (
   user_id TEXT,
   anon_id TEXT,
   email TEXT,
+  active_curriculum_key TEXT NOT NULL DEFAULT 'l33',
   active_problem_id INTEGER NOT NULL DEFAULT 1 REFERENCES problems(id),
   started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE(user_id),
   UNIQUE(anon_id)
 );
+ALTER TABLE learner_profiles ADD COLUMN IF NOT EXISTS active_curriculum_key TEXT NOT NULL DEFAULT 'l33';
+
+CREATE TABLE IF NOT EXISTS curriculums (
+  key TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  is_premium BOOLEAN NOT NULL DEFAULT FALSE,
+  total_count INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS curriculum_problems (
+  curriculum_key TEXT NOT NULL REFERENCES curriculums(key) ON DELETE CASCADE,
+  problem_id INTEGER NOT NULL REFERENCES problems(id) ON DELETE CASCADE,
+  position INTEGER NOT NULL,
+  PRIMARY KEY (curriculum_key, problem_id),
+  UNIQUE (curriculum_key, position)
+);
+
+CREATE INDEX IF NOT EXISTS idx_curriculum_problems_key_pos ON curriculum_problems(curriculum_key, position);
 
 CREATE TABLE IF NOT EXISTS problem_progress (
   learner_id TEXT NOT NULL REFERENCES learner_profiles(learner_id) ON DELETE CASCADE,
@@ -118,6 +140,8 @@ DROP TRIGGER IF EXISTS trg_problems_updated ON problems;
 CREATE TRIGGER trg_problems_updated BEFORE UPDATE ON problems FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 DROP TRIGGER IF EXISTS trg_profiles_updated ON learner_profiles;
 CREATE TRIGGER trg_profiles_updated BEFORE UPDATE ON learner_profiles FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+DROP TRIGGER IF EXISTS trg_curriculums_updated ON curriculums;
+CREATE TRIGGER trg_curriculums_updated BEFORE UPDATE ON curriculums FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 DROP TRIGGER IF EXISTS trg_credit_balances_updated ON credit_balances;
 CREATE TRIGGER trg_credit_balances_updated BEFORE UPDATE ON credit_balances FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 DROP TRIGGER IF EXISTS trg_chat_sessions_updated ON chat_sessions;

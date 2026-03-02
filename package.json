@@ -9,6 +9,8 @@
     "lint": "eslint",
     "db:migrate": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f db/schema.sql",
     "db:seed:lc150": "node scripts/seed-lc150.mjs",
+    "db:build:catalog": "node scripts/build-catalog-and-curricula.mjs",
+    "db:seed:catalog": "node scripts/seed-catalog-curriculums.mjs",
     "data:gen:lc150": "node scripts/generate-lc150.mjs"
   },
   "dependencies": {
