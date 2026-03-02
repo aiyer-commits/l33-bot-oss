@@ -17,9 +17,10 @@ type ThemeMode = "light" | "dark";
 
 type Cursor = { start: number; end: number };
 
-type KeySpec = { token: string; units?: number };
+type KeySpec = { token: string; units?: number; grow?: number; shrink?: number };
 type KeyboardRow = { offsetUnits?: number; heightUnits?: number; keys: KeySpec[] };
 const BASE_KEY_HEIGHT = "clamp(44px, 9.6vw, 66px)";
+const DESIRED_ROW_UNITS = 10;
 
 const KEYBOARD_LAYOUT: KeyboardRow[] = [
   {
@@ -74,7 +75,6 @@ const KEYBOARD_LAYOUT: KeyboardRow[] = [
     ],
   },
   {
-    offsetUnits: 0,
     heightUnits: 1.0,
     keys: [
       { token: "q" },
@@ -87,11 +87,10 @@ const KEYBOARD_LAYOUT: KeyboardRow[] = [
       { token: "i" },
       { token: "o" },
       { token: "p" },
-      { token: "BACKSPACE", units: 1.1 },
+      { token: "BACKSPACE", units: 1.2, shrink: 1.5 },
     ],
   },
   {
-    offsetUnits: 0.5,
     heightUnits: 1.0,
     keys: [
       { token: "a" },
@@ -106,10 +105,9 @@ const KEYBOARD_LAYOUT: KeyboardRow[] = [
     ],
   },
   {
-    offsetUnits: 1.0,
     heightUnits: 1.0,
     keys: [
-      { token: "SHIFT", units: 1.25 },
+      { token: "SHIFT", units: 1.56, shrink: 1.5 },
       { token: "z" },
       { token: "x" },
       { token: "c" },
@@ -117,7 +115,7 @@ const KEYBOARD_LAYOUT: KeyboardRow[] = [
       { token: "b" },
       { token: "n" },
       { token: "m" },
-      { token: "SHIFT", units: 1.25 },
+      { token: "SHIFT", units: 1.56, shrink: 1.5 },
     ],
   },
   {
@@ -137,6 +135,52 @@ const KEYBOARD_LAYOUT: KeyboardRow[] = [
 
 function nowIso() {
   return new Date().toISOString();
+}
+
+function decodeHtmlEntities(value: string) {
+  return value
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'");
+}
+
+function formatProblemStatement(raw: string) {
+  return decodeHtmlEntities(
+    raw
+      .replace(/\r/g, "")
+      .replace(/<\s*br\s*\/?>/gi, "\n")
+      .replace(/<\s*\/p\s*>/gi, "\n\n")
+      .replace(/<\s*p[^>]*>/gi, "")
+      .replace(/<\s*\/pre\s*>/gi, "\n\n")
+      .replace(/<\s*pre[^>]*>/gi, "\n")
+      .replace(/<\s*li[^>]*>/gi, "- ")
+      .replace(/<\s*\/li\s*>/gi, "\n")
+      .replace(/<\s*\/?(ul|ol)[^>]*>/gi, "\n")
+      .replace(/<[^>]+>/g, "")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim(),
+  );
+}
+
+function looksLikeHtmlMarkup(value: string) {
+  return /<\/?(p|pre|code|strong|em|ul|ol|li|br|h[1-6]|div|span)\b/i.test(value) || /&nbsp;|&lt;|&gt;|&amp;/.test(value);
+}
+
+function sanitizeHtmlForRender(raw: string) {
+  const allowed = new Set(["p", "pre", "code", "strong", "em", "ul", "ol", "li", "br", "u"]);
+  return raw
+    .replace(/<\s*(script|style|iframe|object|embed)[\s\S]*?<\s*\/\s*\1\s*>/gi, "")
+    .replace(/<\s*(\/?)\s*([a-z0-9]+)([^>]*)>/gi, (_, slash: string, tag: string) => {
+      const normalized = String(tag).toLowerCase();
+      if (!allowed.has(normalized)) return "";
+      return `<${slash ? "/" : ""}${normalized}>`;
+    })
+    .replace(/\son\w+\s*=\s*"[^"]*"/gi, "")
+    .replace(/\son\w+\s*=\s*'[^']*'/gi, "")
+    .replace(/javascript:/gi, "");
 }
 
 function asMessage(role: "assistant" | "user", content: string, kind: "text" | "code"): ChatMessage {
@@ -165,6 +209,7 @@ function normalizeMessages(raw: unknown): ChatMessage[] {
 function bootstrapIntro(problemId: number): ChatMessage[] {
   const problem = getProblemById(problemId);
   if (!problem) return [asMessage("assistant", "Session started. Problem data is missing.", "text")];
+  const problemText = formatProblemStatement(problem.statement);
 
   return [
     asMessage(
@@ -172,8 +217,8 @@ function bootstrapIntro(problemId: number): ChatMessage[] {
       [
         "Welcome to l33tsp33k.",
         `Current problem #${problem.id}: ${problem.title}`,
-        problem.statement,
-        "Chat above. Problem lives in the collapsible header. Compose in chat/code mode with the custom keyboard.",
+        problemText,
+        "Chat above. Problem is pinned in the header. Compose in chat/code mode with the custom keyboard.",
       ].join("\n\n"),
       "text",
     ),
@@ -574,7 +619,7 @@ export default function Home() {
             ...prev,
             asMessage(
               "assistant",
-              `Switched to #${movedProblem.id}: ${movedProblem.title}\n\n${movedProblem.statement}`,
+              `Switched to #${movedProblem.id}: ${movedProblem.title}\n\n${formatProblemStatement(movedProblem.statement)}`,
               "text",
             ),
           ]);
@@ -614,9 +659,31 @@ export default function Home() {
     return key.units ?? 1;
   }
 
-  function rowUnits(row: KeyboardRow) {
-    const offset = row.offsetUnits ?? 0;
-    return row.keys.reduce((sum, key) => sum + keyUnits(key), offset);
+  function rowComputedUnits(row: KeyboardRow) {
+    const baseFactors = row.keys.map((key) => keyUnits(key));
+    const requested = baseFactors.reduce((sum, width) => sum + width, 0);
+    const available = DESIRED_ROW_UNITS;
+
+    if (requested <= available) {
+      const additional = available - requested;
+      const growSum = row.keys.reduce((sum, key) => sum + (key.grow ?? 0), 0);
+      return baseFactors.map((width, index) => {
+        if (growSum > 0) {
+          return width + additional * ((row.keys[index].grow ?? 0) / growSum);
+        }
+        if (index === 0 || index === row.keys.length - 1) {
+          return width + additional / 2;
+        }
+        return width;
+      });
+    }
+
+    const clipping = requested - available;
+    const shrinkSum = row.keys.reduce((sum, key) => sum + (key.shrink ?? 1), 0);
+    return baseFactors.map((width, index) => {
+      const shrinkWeight = row.keys[index].shrink ?? 1;
+      return Math.max(0.35, width - clipping * (shrinkWeight / shrinkSum));
+    });
   }
 
   function rowHeightPx(row: KeyboardRow) {
@@ -685,8 +752,8 @@ export default function Home() {
             )}
           </div>
         </div>
-        <p className={`mt-1 whitespace-pre-wrap text-[11px] leading-4 ${isDark ? "text-white/85" : "text-black/85"}`}>
-          {activeProblem.statement}
+        <p className={`mt-1 text-[11px] leading-4 ${isDark ? "text-white/70" : "text-black/70"}`}>
+          Full statement is in chat.
         </p>
       </header>
 
@@ -695,21 +762,18 @@ export default function Home() {
           {messages.map((message, index) => {
             const isAssistant = message.role === "assistant";
             const baseClass = isAssistant
-              ? `max-w-[94%] rounded-xl rounded-tl-sm ${isDark ? "bg-[#151b24]" : "bg-white"}`
-              : "ml-auto max-w-[94%] rounded-xl rounded-tr-sm bg-[#1f334f] text-white";
+              ? `max-w-[94%] rounded-xl rounded-bl-none ${isDark ? "bg-[#151b24]" : "bg-white"}`
+              : "ml-auto max-w-[94%] rounded-xl rounded-br-none bg-[#1f334f] text-white";
 
             return (
               <article key={`${message.createdAt}-${index}`} className={`${baseClass} relative px-3 py-2 text-sm shadow-sm`}>
-                <span
-                  aria-hidden
-                  className={`absolute bottom-1 h-2.5 w-2.5 rotate-45 ${
-                    isAssistant
-                      ? `${isDark ? "bg-[#151b24]" : "bg-white"} -left-1`
-                      : "right-[-5px] bg-[#1f334f]"
-                  }`}
-                />
                 {message.kind === "code" ? (
                   <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-[12px] leading-5">{message.content}</pre>
+                ) : isAssistant && looksLikeHtmlMarkup(message.content) ? (
+                  <div
+                    className="space-y-2 text-[13px] leading-5 [&_code]:rounded [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[12px] [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:rounded-md [&_pre]:p-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtmlForRender(message.content) }}
+                  />
                 ) : (
                   <p className="whitespace-pre-wrap leading-5">{message.content}</p>
                 )}
@@ -727,11 +791,7 @@ export default function Home() {
             >
               ✓
             </button>
-            <div className={`relative overflow-hidden rounded-2xl rounded-tr-sm border ${isDark ? "border-white/20 bg-[#151b24]" : "border-black/15 bg-white"}`}>
-              <span
-                aria-hidden
-                className={`absolute bottom-1 right-[-5px] h-2.5 w-2.5 rotate-45 ${isDark ? "bg-[#151b24]" : "bg-white"}`}
-              />
+            <div className={`relative overflow-hidden rounded-2xl rounded-br-none border ${isDark ? "border-white/20 bg-[#151b24]" : "border-black/15 bg-white"}`}>
               <textarea
                 ref={chatInputRef}
                 value={draft}
@@ -759,8 +819,7 @@ export default function Home() {
             >
               ✓
             </button>
-            <div className="relative overflow-hidden rounded-2xl rounded-tr-sm border border-white/20 bg-[#0e1117]">
-              <span aria-hidden className="absolute bottom-1 right-[-5px] h-2.5 w-2.5 rotate-45 bg-[#0e1117]" />
+            <div className="relative overflow-hidden rounded-2xl rounded-br-none border border-white/20 bg-[#0e1117]">
               <textarea
                 ref={codeInputRef}
                 value={code}
@@ -782,18 +841,18 @@ export default function Home() {
       </section>
 
       <section className={`sticky bottom-0 z-30 border-t px-2 pt-1 pb-2 backdrop-blur ${isDark ? "border-white/15 bg-[#0f141d]/98" : "border-black/10 bg-white/98"}`}>
+        <div className="mx-auto w-full max-w-[540px]">
         <div className={`rounded-md border p-px ${isDark ? "border-white/20 bg-[#121720]" : "border-black/15 bg-[#eceae2]"}`}>
           <div className="space-y-px">
             {KEYBOARD_LAYOUT.map((row, rowIndex) => {
-              const totalUnits = rowUnits(row);
-              const leftOffsetPct = (((row.offsetUnits ?? 0) / totalUnits) * 100).toFixed(4);
+              const computedUnits = rowComputedUnits(row);
+              const totalUnits = computedUnits.reduce((sum, unit) => sum + unit, 0);
               const rowHeight = rowHeightPx(row);
               return (
               <div key={`row-${rowIndex}`} className="flex gap-px" style={{ height: rowHeight }}>
-                {(row.offsetUnits ?? 0) > 0 ? <div style={{ width: `${leftOffsetPct}%` }} className="shrink-0" /> : null}
                 {row.keys.map((key, keyIndex) => {
                   const token = key.token;
-                  const widthPct = ((keyUnits(key) / totalUnits) * 100).toFixed(4);
+                  const widthPct = ((computedUnits[keyIndex] / totalUnits) * 100).toFixed(4);
                   if (token === "UPDOWN") {
                     return (
                       <div
@@ -846,6 +905,7 @@ export default function Home() {
               </div>
             )})}
           </div>
+        </div>
         </div>
 
         {error ? <p className={`pt-1 text-[11px] ${isDark ? "text-[#ff8383]" : "text-[#b42318]"}`}>{error}</p> : null}

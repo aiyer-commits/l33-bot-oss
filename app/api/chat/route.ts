@@ -22,6 +22,34 @@ import { applyMargin, calculateResponseCostFemtodollars, femtodollarsToDollars }
 
 const MODEL = 'gpt-4.1-mini';
 
+function decodeHtmlEntities(value: string) {
+  return value
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'");
+}
+
+function plainStatement(raw: string) {
+  return decodeHtmlEntities(
+    raw
+      .replace(/\r/g, '')
+      .replace(/<\s*br\s*\/?>/gi, '\n')
+      .replace(/<\s*\/p\s*>/gi, '\n\n')
+      .replace(/<\s*p[^>]*>/gi, '')
+      .replace(/<\s*\/pre\s*>/gi, '\n\n')
+      .replace(/<\s*pre[^>]*>/gi, '\n')
+      .replace(/<\s*li[^>]*>/gi, '- ')
+      .replace(/<\s*\/li\s*>/gi, '\n')
+      .replace(/<\s*\/?(ul|ol)[^>]*>/gi, '\n')
+      .replace(/<[^>]+>/g, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim(),
+  );
+}
+
 function parseJson<T>(value: string): T {
   const fenced = value.match(/```json\s*([\s\S]*?)```/i);
   const raw = fenced ? fenced[1] : value;
@@ -221,13 +249,14 @@ export async function POST(request: Request) {
   const progress = await getProgressForProblem(learner.learner_id, activeProblemId);
   const mastered = await countMastered(learner.learner_id);
   const historyRows = await getRecentMessages(sessionId, 16);
+  const problemStatement = plainStatement(activeProblem.statement ?? '');
 
   const prompt = [
     `Learner mode: ${user ? 'logged_in' : 'anonymous_free'}`,
     `Problem #${activeProblem.id}: ${activeProblem.title}`,
     `Difficulty: ${activeProblem.difficulty}`,
     `Category: ${activeProblem.category}`,
-    `Statement: ${activeProblem.statement}`,
+    `Statement: ${problemStatement}`,
     `Semantic tags: ${(activeProblem.tags ?? []).join(', ')}`,
     `Test cases blob: ${activeProblem.test_cases_blob_url ?? 'none'}`,
     `Mastered count: ${mastered}/150`,
