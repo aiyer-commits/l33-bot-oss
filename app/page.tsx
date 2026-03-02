@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { clampConfidence, createInitialProfile, getProblemById } from "@/lib/leetcode75";
 import type { ChatApiResponse, ChatMessage, LocalProfile, ProblemProgress } from "@/lib/types";
 
@@ -18,11 +18,12 @@ type ThemeMode = "light" | "dark";
 type Cursor = { start: number; end: number };
 
 const KEYBOARD_ROWS = [
-  ["1|!", "2|@", "3|#", "4|$", "5|%", "6|^", "7|&", "8|*", "9|(", "0|)", "-|_", "=|+"],
-  ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[|{", "]|}", "\\||"],
-  ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";|:", "'|\""],
-  ["z", "x", "c", "v", "b", "n", "m", ",|<", ".|>", "/|?", "`|~"],
-  ["TAB", "SPACE", "ENTER", "LEFT", "RIGHT", "BACKSPACE", "CLEAR"],
+  ["1|!", "2|@", "3|#", "4|$", "5|%", "6|^", "7|&", "8|*", "9|(", "0|)"],
+  ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+  ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";|:"],
+  ["z", "x", "c", "v", "b", "n", "m", ",|<", ".|>", "/|?"],
+  ["[|{", "]|}", "\\||", "-|_", "=|+", "'|\"", "`|~", "LEFT", "RIGHT", "BACKSPACE"],
+  ["TAB", "SPACE", "ENTER", "CLEAR"],
 ];
 
 function nowIso() {
@@ -112,11 +113,6 @@ export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [code, setCode] = useState("");
-  const [quickActions, setQuickActions] = useState<string[]>([
-    "Give me a short hint",
-    "Review my approach",
-    "Pick the next best problem for me",
-  ]);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
   const [sessionId, setSessionId] = useState<string>("");
@@ -126,7 +122,7 @@ export default function Home() {
   const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [theme, setTheme] = useState<ThemeMode>("light");
 
-  const [problemOpen, setProblemOpen] = useState(false);
+  const [headerExpanded, setHeaderExpanded] = useState(false);
   const [composerMode, setComposerMode] = useState<ComposerMode>("chat");
 
   const [chatCursor, setChatCursor] = useState<Cursor>({ start: 0, end: 0 });
@@ -323,8 +319,7 @@ export default function Home() {
     setDraft("");
     setCode("");
     setError("");
-    setQuickActions(["Give me a short hint", "Review my approach", "Pick the next best problem for me"]);
-    setProblemOpen(false);
+    setHeaderExpanded(false);
     setComposerMode("chat");
     if (!authUser) {
       localStorage.removeItem(CHAT_KEY);
@@ -415,7 +410,6 @@ export default function Home() {
         return [...prev, asMessage("assistant", `${payload.assistantMessage}\n\n${tail}`.trim(), "text")];
       });
 
-      setQuickActions(payload.quickActions);
 
       const nextProblemId = payload.activeProblemId ?? payload.assessment.moveToProblemId;
       const moved = nextProblemId !== profile.activeProblemId;
@@ -447,7 +441,7 @@ export default function Home() {
               "text",
             ),
           ]);
-          setProblemOpen(true);
+          setHeaderExpanded(true);
           setComposerMode("chat");
           setCode("");
           setCodeCursor({ start: 0, end: 0 });
@@ -460,11 +454,6 @@ export default function Home() {
     } finally {
       setIsSending(false);
     }
-  }
-
-  async function onSendText(event: FormEvent) {
-    event.preventDefault();
-    await sendTurn({ sendText: true, sendCode: false });
   }
 
   function labelForKey(token: string) {
@@ -482,98 +471,102 @@ export default function Home() {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   }
 
+  function keyFlex(token: string) {
+    if (token === "SPACE") return "flex-[4]";
+    if (token === "BACKSPACE" || token === "ENTER") return "flex-[1.8]";
+    if (token === "CLEAR") return "flex-[1.4]";
+    return "flex-1";
+  }
+
   if (!profile || !activeProblem) {
     return <main className={`min-h-screen p-6 ${isDark ? "bg-[#0a0d12] text-[#e5e7eb]" : "bg-[#f3f2ec] text-[#111]"}`}>Loading...</main>;
   }
 
   return (
     <main className={`mx-auto flex min-h-screen max-w-3xl flex-col ${isDark ? "bg-[#0a0d12] text-[#e5e7eb]" : "bg-[#f3f2ec] text-[#141414]"}`}>
-      <header className={`sticky top-0 z-20 border-b px-4 py-3 backdrop-blur ${isDark ? "border-white/15 bg-[#0a0d12]/95" : "border-black/10 bg-[#f3f2ec]/95"}`}>
-        <div className="flex items-center justify-between">
-          <h1 className="text-lg font-bold tracking-tight">l33tsp33k</h1>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={cycleTheme}
-              className={`rounded-full border px-3 py-1 text-xs font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
-            >
-              Theme: {theme}
-            </button>
-            {authUser ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => {
-                    void startCheckout();
-                  }}
-                  className={`rounded-full border px-3 py-1 text-xs font-semibold ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
-                >
-                  {purchaseLoading ? "..." : "Buy $10"}
-                </button>
-                <a href="/auth/sign-out" className={`rounded-full border px-3 py-1 text-xs font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}>
-                  Logout
-                </a>
-              </>
-            ) : (
-              <a href="/auth/sign-in?returnTo=/" className={`rounded-full border px-3 py-1 text-xs font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}>
-                Login
-              </a>
-            )}
-            <button
-              type="button"
-              onClick={resetLocalState}
-              className={`rounded-full border px-3 py-1 text-xs font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
-            >
-              Reset
-            </button>
+      <header className={`sticky top-0 z-20 border-b px-3 py-2 backdrop-blur ${isDark ? "border-white/15 bg-[#0a0d12]/95" : "border-black/10 bg-[#f3f2ec]/95"}`}>
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <p className="text-sm font-semibold">#{activeProblem.id} · {activeProblem.title}</p>
+            <p className={`text-[11px] ${isDark ? "text-white/65" : "text-black/65"}`}>{activeProblem.category} · {activeProblem.difficulty}</p>
           </div>
+          <button
+            type="button"
+            onClick={() => setHeaderExpanded((v) => !v)}
+            className={`rounded-md border px-2 py-1 text-[11px] font-semibold ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+          >
+            {headerExpanded ? "Collapse" : "Expand"}
+          </button>
         </div>
-        <p className={`mt-1 text-xs ${isDark ? "text-white/65" : "text-black/70"}`}>
-          Chat-first LC150 tutor · GPT-4.1-mini · {authUser ? "logged-in + DB credits" : "free anonymous mode"}
+        <p className={`mt-2 max-h-[24vh] overflow-y-auto whitespace-pre-wrap text-sm leading-5 ${isDark ? "text-white/85" : "text-black/85"}`}>
+          {activeProblem.statement}
         </p>
-        <div className={`mt-2 h-2 w-full overflow-hidden rounded-full ${isDark ? "bg-white/15" : "bg-black/10"}`}>
-          <div className="h-full bg-[#1a7f52] transition-all" style={{ width: `${(masteredCount / 150) * 100}%` }} />
-        </div>
-        <p className="mt-1 text-xs font-medium">
-          Mastered {masteredCount}/150 · Active #{activeProblem.id} · {activeProblem.title}
-        </p>
-        {authUser ? <p className={`text-xs ${isDark ? "text-white/65" : "text-black/65"}`}>Credits: ${creditBalance.toFixed(2)}</p> : null}
-        <button
-          type="button"
-          onClick={() => setProblemOpen((v) => !v)}
-          className={`mt-2 rounded-lg border px-2 py-1 text-xs font-semibold ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
-        >
-          {problemOpen ? "Hide problem" : "Show problem"}
-        </button>
-        {problemOpen ? (
-          <div className={`mt-2 max-h-[30vh] overflow-y-auto rounded-xl border p-3 ${isDark ? "border-white/20 bg-[#121720]" : "border-black/15 bg-white/80"}`}>
-            <p className={`text-xs font-semibold uppercase tracking-wide ${isDark ? "text-white/60" : "text-black/60"}`}>
-              #{activeProblem.id} · {activeProblem.category} · {activeProblem.difficulty}
+
+        {headerExpanded ? (
+          <div className="mt-2 space-y-2">
+            <div className="flex flex-wrap items-center gap-1">
+              <button
+                type="button"
+                onClick={cycleTheme}
+                className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+              >
+                Theme: {theme}
+              </button>
+              {authUser ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void startCheckout();
+                    }}
+                    className={`rounded-md border px-2 py-1 text-[11px] font-semibold ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+                  >
+                    {purchaseLoading ? "..." : "Buy $10"}
+                  </button>
+                  <a href="/auth/sign-out" className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}>
+                    Logout
+                  </a>
+                </>
+              ) : (
+                <a href="/auth/sign-in?returnTo=/" className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}>
+                  Login
+                </a>
+              )}
+              <button
+                type="button"
+                onClick={resetLocalState}
+                className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+              >
+                Reset
+              </button>
+            </div>
+            <div className={`h-2 w-full overflow-hidden rounded-full ${isDark ? "bg-white/15" : "bg-black/10"}`}>
+              <div className="h-full bg-[#1a7f52] transition-all" style={{ width: `${(masteredCount / 150) * 100}%` }} />
+            </div>
+            <p className={`text-[11px] ${isDark ? "text-white/65" : "text-black/70"}`}>
+              Mastered {masteredCount}/150 · Status {currentProgress?.status ?? "unseen"} · Confidence {currentProgress?.confidence ?? 0}% · Attempts {currentProgress?.attempts ?? 0}
             </p>
-            <h2 className="mt-1 text-sm font-semibold">{activeProblem.title}</h2>
-            <p className={`mt-2 text-sm leading-6 ${isDark ? "text-white/85" : "text-black/80"}`}>{activeProblem.statement}</p>
-            <p className={`mt-2 text-xs ${isDark ? "text-white/65" : "text-black/70"}`}>
-              Status: {currentProgress?.status ?? "unseen"} · Confidence: {currentProgress?.confidence ?? 0}% · Attempts:{" "}
-              {currentProgress?.attempts ?? 0}
+            <p className={`text-[11px] ${isDark ? "text-white/65" : "text-black/70"}`}>
+              GPT-4.1-mini · {authUser ? "logged-in + DB credits" : "free anonymous mode"}{authUser ? ` · Credits $${creditBalance.toFixed(2)}` : ""}
             </p>
           </div>
         ) : null}
       </header>
 
-      <section className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="space-y-3 pb-72">
+      <section className="flex-1 overflow-y-auto px-3 py-3">
+        <div className="space-y-2 pb-[360px]">
           {messages.map((message, index) => {
             const isAssistant = message.role === "assistant";
             const baseClass = isAssistant
-              ? `max-w-[92%] rounded-2xl rounded-tl-sm ${isDark ? "bg-[#151b24]" : "bg-white"}`
-              : "ml-auto max-w-[92%] rounded-2xl rounded-tr-sm bg-[#1f334f] text-white";
+              ? `max-w-[94%] rounded-xl rounded-tl-sm ${isDark ? "bg-[#151b24]" : "bg-white"}`
+              : "ml-auto max-w-[94%] rounded-xl rounded-tr-sm bg-[#1f334f] text-white";
 
             return (
-              <article key={`${message.createdAt}-${index}`} className={`${baseClass} px-4 py-3 text-sm shadow-sm`}>
+              <article key={`${message.createdAt}-${index}`} className={`${baseClass} px-3 py-2 text-sm shadow-sm`}>
                 {message.kind === "code" ? (
-                  <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-[13px] leading-5">{message.content}</pre>
+                  <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-[12px] leading-5">{message.content}</pre>
                 ) : (
-                  <p className="whitespace-pre-wrap leading-6">{message.content}</p>
+                  <p className="whitespace-pre-wrap leading-5">{message.content}</p>
                 )}
               </article>
             );
@@ -582,135 +575,90 @@ export default function Home() {
         </div>
       </section>
 
-      <section className={`sticky bottom-0 z-30 border-t px-3 pt-2 backdrop-blur ${isDark ? "border-white/15 bg-[#0f141d]/98" : "border-black/10 bg-white/98"}`}>
-        <div className="mb-1 flex gap-1 overflow-x-auto pb-1">
-          {quickActions.map((action) => (
-            <button
-              key={action}
-              type="button"
-              onClick={() => {
-                void sendTurn({ sendText: true, sendCode: false, presetText: action });
-              }}
-              className={`shrink-0 rounded-full border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white"}`}
-            >
-              {action}
-            </button>
-          ))}
-        </div>
-
-        <div className={`mb-1 grid grid-cols-2 gap-px overflow-hidden rounded-lg border ${isDark ? "border-white/15 bg-white/10" : "border-black/15 bg-black/10"}`}>
-          <button
-            type="button"
-            onClick={() => focusComposer("chat")}
-            className={`px-2 py-1 text-xs font-semibold ${composerMode === "chat" ? (isDark ? "bg-[#1c2430]" : "bg-white") : isDark ? "bg-[#101720]" : "bg-[#eceae2]"}`}
-          >
-            Chat
-          </button>
-          <button
-            type="button"
-            onClick={() => focusComposer("code")}
-            className={`px-2 py-1 text-xs font-semibold ${composerMode === "code" ? (isDark ? "bg-[#1c2430]" : "bg-white") : isDark ? "bg-[#101720]" : "bg-[#eceae2]"}`}
-          >
-            Code
-          </button>
-        </div>
-
-        <form onSubmit={onSendText} className="mb-1 grid grid-cols-[1fr_auto_auto_auto] gap-px">
-          {composerMode === "chat" ? (
+      <section className={`sticky bottom-0 z-30 border-t px-2 pt-1 pb-2 backdrop-blur ${isDark ? "border-white/15 bg-[#0f141d]/98" : "border-black/10 bg-white/98"}`}>
+        <div className="mb-1 space-y-1">
+          <div className={`grid grid-cols-[1fr_auto] gap-px overflow-hidden rounded-lg border ${isDark ? "border-white/20 bg-white/10" : "border-black/15 bg-black/10"}`}>
             <textarea
               ref={chatInputRef}
               value={draft}
+              readOnly
               inputMode="none"
-              onKeyDown={(event) => event.preventDefault()}
-              onChange={() => {}}
               onFocus={() => focusComposer("chat")}
               onClick={() => syncCursorFromDom("chat")}
               onSelect={() => syncCursorFromDom("chat")}
-              rows={3}
-              placeholder="Type message with keyboard below"
-              className={`min-h-[64px] resize-none rounded-l-lg border px-2 py-2 text-sm outline-none ${isDark ? "border-white/20 bg-[#151b24] text-[#e5e7eb] caret-[#e5e7eb]" : "border-black/15 bg-white caret-[#111]"}`}
+              rows={2}
+              placeholder="message bubble"
+              className={`resize-none border-0 px-2 py-2 text-sm outline-none ${isDark ? "bg-[#151b24] text-[#e5e7eb] caret-[#e5e7eb]" : "bg-white text-[#111] caret-[#111]"}`}
             />
-          ) : (
+            <button
+              type="button"
+              disabled={isSending || !draft.trim()}
+              onClick={() => {
+                void sendTurn({ sendText: true, sendCode: false });
+              }}
+              className="w-10 border-l border-black/10 bg-[#1f334f] text-sm font-bold text-white disabled:opacity-50"
+            >
+              ✓
+            </button>
+          </div>
+
+          <div className={`grid grid-cols-[1fr_auto] gap-px overflow-hidden rounded-lg border ${isDark ? "border-white/20 bg-white/10" : "border-black/15 bg-black/10"}`}>
             <textarea
               ref={codeInputRef}
               value={code}
+              readOnly
               inputMode="none"
-              onKeyDown={(event) => event.preventDefault()}
-              onChange={() => {}}
+              spellCheck={false}
               onFocus={() => focusComposer("code")}
               onClick={() => syncCursorFromDom("code")}
               onSelect={() => syncCursorFromDom("code")}
-              rows={3}
-              spellCheck={false}
-              placeholder="Type Python with keyboard below"
-              className={`min-h-[64px] resize-none rounded-l-lg border px-2 py-2 font-mono text-[13px] leading-5 outline-none ${isDark ? "border-white/20 bg-[#0e1117] text-[#e5e7eb] caret-[#e5e7eb]" : "border-black/15 bg-[#0e1117] text-[#e5e7eb] caret-[#e5e7eb]"}`}
+              rows={4}
+              placeholder="pinned code bubble"
+              className="resize-none border-0 bg-[#0e1117] px-2 py-2 font-mono text-[12px] leading-5 text-[#e5e7eb] caret-[#e5e7eb] outline-none"
             />
-          )}
-          <button
-            type="button"
-            disabled={isSending || !draft.trim()}
-            onClick={() => {
-              void sendTurn({ sendText: true, sendCode: false });
-            }}
-            className={`h-[64px] border px-2 text-[11px] font-semibold text-white disabled:opacity-50 ${isDark ? "border-white/20 bg-[#1f334f]" : "border-black/15 bg-[#111827]"}`}
-          >
-            Text
-          </button>
-          <button
-            type="button"
-            disabled={isSending || !code.trim()}
-            onClick={() => {
-              void sendTurn({ sendText: false, sendCode: true });
-            }}
-            className={`h-[64px] border px-2 text-[11px] font-semibold text-white disabled:opacity-50 ${isDark ? "border-white/20 bg-[#2259f3]" : "border-black/15 bg-[#1d4ed8]"}`}
-          >
-            Code
-          </button>
-          <button
-            type="button"
-            disabled={isSending || !draft.trim() || !code.trim()}
-            onClick={() => {
-              void sendTurn({ sendText: true, sendCode: true });
-            }}
-            className={`h-[64px] rounded-r-lg border px-2 text-[11px] font-semibold text-white disabled:opacity-50 ${isDark ? "border-white/20 bg-[#1a6a38]" : "border-black/15 bg-[#14532d]"}`}
-          >
-            Both
-          </button>
-        </form>
-
-        <div className={`mb-1 text-[11px] font-medium ${isDark ? "text-white/60" : "text-black/60"}`}>
-          Keyboard target: {composerMode === "chat" ? "chat" : "python code"} · swipe horizontally for full layout
+            <button
+              type="button"
+              disabled={isSending || !code.trim()}
+              onClick={() => {
+                void sendTurn({ sendText: false, sendCode: true });
+              }}
+              className="w-10 border-l border-black/10 bg-[#2259f3] text-sm font-bold text-white disabled:opacity-50"
+            >
+              ✓
+            </button>
+          </div>
         </div>
 
-        <div className={`overflow-x-auto rounded-lg border p-px ${isDark ? "border-white/20 bg-[#121720]" : "border-black/15 bg-[#eceae2]"}`}>
-          <div className="min-w-[780px] space-y-px">
+        <div className={`mb-1 text-[10px] font-medium ${isDark ? "text-white/60" : "text-black/60"}`}>
+          Target: {composerMode === "chat" ? "chat" : "code"} · custom keyboard
+        </div>
+
+        <div className={`rounded-md border p-px ${isDark ? "border-white/20 bg-[#121720]" : "border-black/15 bg-[#eceae2]"}`}>
+          <div className="space-y-px">
             {KEYBOARD_ROWS.map((row, rowIndex) => (
-              <div key={`row-${rowIndex}`} className="grid auto-cols-fr grid-flow-col gap-px">
+              <div key={`row-${rowIndex}`} className="flex gap-px">
                 {row.map((token) => {
                   if (token.includes("|")) {
                     const [left, right] = token.split("|");
                     return (
-                      <div key={`${rowIndex}-${token}`} className="grid grid-cols-2 gap-px">
+                      <div key={`${rowIndex}-${token}`} className={`grid grid-cols-2 gap-px ${keyFlex(token)}`}>
                         <button
                           type="button"
                           onClick={() => pressKey(left)}
-                          className={`h-9 border px-1 text-center font-mono text-[11px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
+                          className={`h-8 border px-0.5 text-center font-mono text-[9px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
                         >
                           {left}
                         </button>
                         <button
                           type="button"
                           onClick={() => pressKey(right)}
-                          className={`h-9 border px-1 text-center font-mono text-[11px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
+                          className={`h-8 border px-0.5 text-center font-mono text-[9px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
                         >
                           {right}
                         </button>
                       </div>
                     );
                   }
-
-                  const isSpace = token === "SPACE";
-                  const isWide = token === "BACKSPACE" || token === "CLEAR";
 
                   return (
                     <button
@@ -723,9 +671,9 @@ export default function Home() {
                           pressKey(token);
                         }
                       }}
-                      className={`h-9 border px-1 text-center font-mono text-[11px] ${
-                        isSpace ? "col-span-4" : isWide ? "col-span-2" : ""
-                      } ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
+                      className={`h-8 border px-0.5 text-center font-mono text-[10px] ${keyFlex(token)} ${
+                        isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"
+                      }`}
                     >
                       {labelForKey(token)}
                     </button>
@@ -736,7 +684,7 @@ export default function Home() {
           </div>
         </div>
 
-        {error ? <p className={`py-2 text-xs ${isDark ? "text-[#ff8383]" : "text-[#b42318]"}`}>{error}</p> : null}
+        {error ? <p className={`pt-1 text-[11px] ${isDark ? "text-[#ff8383]" : "text-[#b42318]"}`}>{error}</p> : null}
       </section>
     </main>
   );
