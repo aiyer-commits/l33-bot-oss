@@ -9,7 +9,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "l33.bot",
-  description: "Mobile-first conversational LeetCode 75 practice with GPT-4.1-mini",
+  description: "Coding interview practice bot.",
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
     shortcut: [{ url: "/icon.svg", type: "image/svg+xml" }],

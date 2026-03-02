@@ -3,6 +3,8 @@ import { getOptionalUser } from '@/lib/auth';
 import { ensureLearnerProfile } from '@/lib/db/repo';
 import { getStripe } from '@/lib/stripe';
 
+const CREDIT_PACK_DOLLARS = 40;
+
 export async function POST(request: NextRequest) {
   try {
     const user = await getOptionalUser();
@@ -34,7 +36,8 @@ export async function POST(request: NextRequest) {
       metadata: {
         userId: user.id,
         learnerId: learner.learner_id,
-        packageDollars: '10.00',
+        creditDollars: (CREDIT_PACK_DOLLARS * quantity).toFixed(2),
+        packageDollars: `${CREDIT_PACK_DOLLARS.toFixed(2)}`,
         quantity: String(quantity),
       },
     });

@@ -4,6 +4,8 @@ import { getStripe } from '@/lib/stripe';
 import { addCredits, ensureLearnerProfile } from '@/lib/db/repo';
 import { dollarsToFemtodollars } from '@/lib/pricing';
 
+const CREDIT_PACK_DOLLARS = 40;
+
 export async function POST(request: Request) {
   const stripe = getStripe();
   const body = await request.text();
@@ -29,8 +31,8 @@ export async function POST(request: Request) {
 
     if (userId && learnerId && session.id) {
       const learner = await ensureLearnerProfile({ userId });
-      const credits = dollarsToFemtodollars(10 * Math.max(1, quantity));
-      await addCredits(learner.learner_id, credits, 'purchase', '$10 credit pack purchase', session.id);
+      const credits = dollarsToFemtodollars(CREDIT_PACK_DOLLARS * Math.max(1, quantity));
+      await addCredits(learner.learner_id, credits, 'purchase', '$40 credit pack purchase', session.id);
     }
   }
 
