@@ -607,6 +607,25 @@ export default function Home() {
     if (userScrollRafRef.current != null) window.cancelAnimationFrame(userScrollRafRef.current);
   }, []);
 
+  useEffect(() => {
+    const stopRepeat = () => stopKeyRepeat();
+    const onVisibilityChange = () => {
+      if (document.visibilityState !== "visible") stopKeyRepeat();
+    };
+    window.addEventListener("pointerup", stopRepeat, { passive: true });
+    window.addEventListener("touchend", stopRepeat, { passive: true });
+    window.addEventListener("touchcancel", stopRepeat, { passive: true });
+    window.addEventListener("blur", stopRepeat);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      window.removeEventListener("pointerup", stopRepeat);
+      window.removeEventListener("touchend", stopRepeat);
+      window.removeEventListener("touchcancel", stopRepeat);
+      window.removeEventListener("blur", stopRepeat);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, []);
+
   function getPaneCards(el: HTMLDivElement) {
     const track = el.firstElementChild as HTMLElement | null;
     if (!track) return [] as HTMLElement[];
@@ -750,6 +769,8 @@ export default function Home() {
 
     let result: { value: string; cursor: Cursor } = { value: source, cursor };
 
+    let consumeShiftAfterPress = false;
+
     if (token === "BACKSPACE") {
       result = applyBackspace(source, cursor);
     } else if (token === "LEFT") {
@@ -780,9 +801,10 @@ export default function Home() {
       if (isLetter) {
         const upper = capsOn ? !shiftOn : shiftOn;
         result = applyInsert(source, cursor, upper ? token.toUpperCase() : token.toLowerCase());
-        if (shiftOn) setShiftOn(false);
+        if (shiftOn) consumeShiftAfterPress = true;
       } else {
         result = applyInsert(source, cursor, token);
+        if (shiftOn) consumeShiftAfterPress = true;
       }
     }
 
@@ -790,6 +812,10 @@ export default function Home() {
       setDraft(result.value);
     } else {
       setCode(result.value);
+    }
+
+    if (consumeShiftAfterPress) {
+      setShiftOn(false);
     }
 
     setCursorOnDom(target, result.cursor);
@@ -935,7 +961,7 @@ export default function Home() {
   }
 
   function labelForKey(token: string) {
-    if (token === "SHIFT") return capsOn ? "caps" : "shift";
+    if (token === "SHIFT") return capsOn ? (shiftOn ? "caps↓" : "caps") : "shift";
     if (token === "TAB") return "tab";
     if (token === "SPACE") return "space";
     if (token === "ENTER") return "enter";
@@ -1127,7 +1153,8 @@ export default function Home() {
 
   function cancelKeyPress(token: string) {
     if (isRepeatableToken(token)) {
-      stopKeyRepeat();
+      // Mobile browsers can emit pointercancel during slight drift.
+      // Keep repeat alive; global release listeners stop it on actual release.
       return;
     }
     clearHoldTimer();
@@ -1513,8 +1540,8 @@ export default function Home() {
                 {(row.offsetUnits ?? 0) > 0 ? <div /> : null}
                 {row.keys.map((key, keyIndex) => {
                   const token = key.token;
-                  const keyBaseClass = `h-full w-full select-none overflow-hidden rounded-[10px] border px-1 text-center font-mono text-[11px] leading-[1] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition active:translate-y-[1px] [touch-action:manipulation] [-webkit-touch-callout:none]`;
-                  const arrowCircleClass = `mx-auto flex h-[80%] w-auto aspect-square items-center justify-center rounded-full border text-[11px] leading-none shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition active:translate-y-[1px] [touch-action:manipulation] [-webkit-touch-callout:none]`;
+                  const keyBaseClass = `h-full w-full select-none overflow-hidden rounded-[10px] border px-1 text-center font-mono text-[11px] leading-[1] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition active:translate-y-[1px] [touch-action:none] [-webkit-touch-callout:none]`;
+                  const arrowCircleClass = `mx-auto flex h-[80%] w-auto aspect-square items-center justify-center rounded-full border text-[11px] leading-none shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition active:translate-y-[1px] [touch-action:none] [-webkit-touch-callout:none]`;
                   const keyToneClass =
                     token === "SHIFT" && (shiftOn || capsOn)
                       ? "border-[#7aa2ff] bg-[#22407a] text-white"
@@ -1574,7 +1601,7 @@ export default function Home() {
 
                   if (token === "ARROWS") {
                     const arrowToneClass = isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white text-black";
-                    const dpadButtonClass = `absolute flex h-[38%] w-[38%] items-center justify-center rounded-full border shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition active:translate-y-[1px] [touch-action:manipulation] [-webkit-touch-callout:none] ${arrowToneClass}`;
+                    const dpadButtonClass = `absolute flex h-[38%] w-[38%] items-center justify-center rounded-full border shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition active:translate-y-[1px] [touch-action:none] [-webkit-touch-callout:none] ${arrowToneClass}`;
                     return (
                       <div
                         key={`${rowIndex}-${keyIndex}-${token}`}
