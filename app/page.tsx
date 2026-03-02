@@ -1521,7 +1521,7 @@ export default function Home() {
                   </article>
                 ))}
 
-                <div className="sticky right-0 z-10 ml-auto h-full w-[94%] min-w-[94%] shrink-0 pl-8">
+                <div className="relative ml-auto h-full w-[94%] min-w-[94%] shrink-0 pl-8 pr-10">
                   <button
                     type="button"
                     onClick={() => {
