@@ -1503,7 +1503,7 @@ export default function Home() {
 
           <section className="relative min-h-0 overflow-hidden">
             <div ref={userScrollRef} className="no-scrollbar h-full overflow-x-auto overflow-y-hidden px-3 py-3">
-              <div className="flex h-full items-stretch gap-2">
+              <div className="flex h-full items-stretch gap-2 pr-12">
                 {userMessages.map((message, index) => (
                   <article
                     key={`${message.createdAt}-u-${index}`}
@@ -1521,7 +1521,7 @@ export default function Home() {
                   </article>
                 ))}
 
-                <div className="relative ml-auto h-full w-[94%] min-w-[94%] shrink-0 pl-8">
+                <div className="sticky right-0 z-10 ml-auto h-full w-[94%] min-w-[94%] shrink-0 pl-8">
                   <button
                     type="button"
                     onClick={() => {

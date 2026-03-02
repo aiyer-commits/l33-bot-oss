@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
+    "@vercel/analytics": "^1.6.1",
     "@vercel/blob": "^2.3.0",
     "@workos-inc/authkit-nextjs": "^2.15.0",
     "class-variance-authority": "^0.7.1",
