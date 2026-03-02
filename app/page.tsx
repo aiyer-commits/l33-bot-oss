@@ -18,12 +18,11 @@ type ThemeMode = "light" | "dark";
 type Cursor = { start: number; end: number };
 
 const KEYBOARD_ROWS = [
-  ["1|!", "2|@", "3|#", "4|$", "5|%", "6|^", "7|&", "8|*", "9|(", "0|)"],
-  ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
-  ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";|:"],
-  ["z", "x", "c", "v", "b", "n", "m", ",|<", ".|>", "/|?"],
-  ["[|{", "]|}", "\\||", "-|_", "=|+", "'|\"", "`|~", "LEFT", "RIGHT", "BACKSPACE"],
-  ["TAB", "SPACE", "ENTER", "CLEAR"],
+  ["`|~", "1|!", "2|@", "3|#", "4|$", "5|%", "6|^", "7|&", "8|*", "9|(", "0|)", "-|_", "=|+", "BACKSPACE"],
+  ["TAB", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[|{", "]|}", "\\||"],
+  ["CAPS", "a", "s", "d", "f", "g", "h", "j", "k", "l", ";|:", "'|\"", "ENTER"],
+  ["SHIFT", "z", "x", "c", "v", "b", "n", "m", ",|<", ".|>", "/|?", "SHIFT"],
+  ["LEFT", "UPDOWN", "RIGHT", "SPACE", "CLEAR"],
 ];
 
 function nowIso() {
@@ -108,6 +107,34 @@ function clampPos(value: number, max: number): number {
   return Math.max(0, Math.min(max, value));
 }
 
+function moveVertical(source: string, cursor: Cursor, direction: "UP" | "DOWN"): Cursor {
+  const point = cursor.start;
+  const lines = source.split("\n");
+  let running = 0;
+  let row = 0;
+  let col = 0;
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const lineLen = lines[i].length;
+    const lineEnd = running + lineLen;
+    if (point <= lineEnd) {
+      row = i;
+      col = point - running;
+      break;
+    }
+    running = lineEnd + 1;
+  }
+
+  const targetRow = direction === "UP" ? Math.max(0, row - 1) : Math.min(lines.length - 1, row + 1);
+  let targetPos = 0;
+  for (let i = 0; i < targetRow; i += 1) {
+    targetPos += lines[i].length + 1;
+  }
+  const targetCol = Math.min(col, lines[targetRow].length);
+  targetPos += targetCol;
+  return { start: targetPos, end: targetPos };
+}
+
 export default function Home() {
   const [profile, setProfile] = useState<LocalProfile | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -124,6 +151,8 @@ export default function Home() {
 
   const [headerExpanded, setHeaderExpanded] = useState(false);
   const [composerMode, setComposerMode] = useState<ComposerMode>("chat");
+  const [shiftOn, setShiftOn] = useState(false);
+  const [capsOn, setCapsOn] = useState(false);
 
   const [chatCursor, setChatCursor] = useState<Cursor>({ start: 0, end: 0 });
   const [codeCursor, setCodeCursor] = useState<Cursor>({ start: 0, end: 0 });
@@ -222,6 +251,13 @@ export default function Home() {
     localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
 
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      if (composerMode === "chat") chatInputRef.current?.focus();
+      else codeInputRef.current?.focus();
+    });
+  }, [composerMode]);
+
   const activeProblem = useMemo(() => {
     if (!profile) return null;
     return getProblemById(profile.activeProblemId) ?? null;
@@ -269,6 +305,14 @@ export default function Home() {
     if (typeof navigator !== "undefined" && "vibrate" in navigator) {
       navigator.vibrate(6);
     }
+    if (token === "SHIFT") {
+      setShiftOn((v) => !v);
+      return;
+    }
+    if (token === "CAPS") {
+      setCapsOn((v) => !v);
+      return;
+    }
     const target: TargetField = composerMode;
     const source = target === "chat" ? draft : code;
     const cursor = target === "chat" ? chatCursor : codeCursor;
@@ -283,14 +327,27 @@ export default function Home() {
     } else if (token === "RIGHT") {
       const pos = clampPos(cursor.end + 1, source.length);
       result = { value: source, cursor: { start: pos, end: pos } };
+    } else if (token === "UP" || token === "DOWN") {
+      result = { value: source, cursor: moveVertical(source, cursor, token) };
     } else if (token === "SPACE") {
       result = applyInsert(source, cursor, " ");
     } else if (token === "ENTER") {
       result = applyInsert(source, cursor, "\n");
     } else if (token === "TAB") {
       result = applyInsert(source, cursor, "    ");
+    } else if (token.includes("|")) {
+      const [left, right] = token.split("|");
+      result = applyInsert(source, cursor, shiftOn ? right : left);
+      if (shiftOn) setShiftOn(false);
     } else {
-      result = applyInsert(source, cursor, token);
+      const isLetter = /^[a-z]$/i.test(token);
+      if (isLetter) {
+        const upper = capsOn !== shiftOn;
+        result = applyInsert(source, cursor, upper ? token.toUpperCase() : token.toLowerCase());
+        if (shiftOn) setShiftOn(false);
+      } else {
+        result = applyInsert(source, cursor, token);
+      }
     }
 
     if (target === "chat") {
@@ -457,9 +514,13 @@ export default function Home() {
   }
 
   function labelForKey(token: string) {
+    if (token === "SHIFT") return "shift";
+    if (token === "CAPS") return "caps";
     if (token === "TAB") return "tab";
     if (token === "SPACE") return "space";
     if (token === "ENTER") return "enter";
+    if (token === "UP") return "↑";
+    if (token === "DOWN") return "↓";
     if (token === "LEFT") return "←";
     if (token === "RIGHT") return "→";
     if (token === "BACKSPACE") return "⌫";
@@ -472,10 +533,30 @@ export default function Home() {
   }
 
   function keyFlex(token: string) {
-    if (token === "SPACE") return "flex-[4]";
-    if (token === "BACKSPACE" || token === "ENTER") return "flex-[1.8]";
-    if (token === "CLEAR") return "flex-[1.4]";
+    if (token === "SPACE") return "flex-[6]";
+    if (token === "BACKSPACE") return "flex-[1.9]";
+    if (token === "TAB") return "flex-[1.6]";
+    if (token === "CAPS") return "flex-[1.9]";
+    if (token === "ENTER") return "flex-[2]";
+    if (token === "SHIFT") return "flex-[2.2]";
+    if (token === "CLEAR") return "flex-[1.5]";
+    if (token === "UPDOWN") return "flex-[1.2]";
+    if (token === "LEFT" || token === "RIGHT") return "flex-[1.2]";
     return "flex-1";
+  }
+
+  function rowPadding(rowIndex: number) {
+    if (rowIndex === 1) return "px-[1.5%]";
+    if (rowIndex === 2) return "px-[3.5%]";
+    if (rowIndex === 3) return "px-[1%]";
+    return "";
+  }
+
+  function difficultyDotColor(difficulty: string) {
+    const d = difficulty.toLowerCase();
+    if (d === "easy") return "bg-[#22c55e]";
+    if (d === "medium") return "bg-[#f59e0b]";
+    return "bg-[#ef4444]";
   }
 
   if (!profile || !activeProblem) {
@@ -485,20 +566,23 @@ export default function Home() {
   return (
     <main className={`mx-auto flex min-h-screen max-w-3xl flex-col ${isDark ? "bg-[#0a0d12] text-[#e5e7eb]" : "bg-[#f3f2ec] text-[#141414]"}`}>
       <header className={`sticky top-0 z-20 border-b px-3 py-2 backdrop-blur ${isDark ? "border-white/15 bg-[#0a0d12]/95" : "border-black/10 bg-[#f3f2ec]/95"}`}>
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <p className="text-sm font-semibold">#{activeProblem.id} · {activeProblem.title}</p>
-            <p className={`text-[11px] ${isDark ? "text-white/65" : "text-black/65"}`}>{activeProblem.category} · {activeProblem.difficulty}</p>
+        <div
+          className={`cursor-pointer rounded-md px-1 py-0.5 ${isDark ? "hover:bg-white/5" : "hover:bg-black/5"}`}
+          onClick={() => setHeaderExpanded((v) => !v)}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-[13px] font-semibold leading-4">#{activeProblem.id} · {activeProblem.title}</p>
+            <div className="flex items-center gap-1">
+              <span className={`h-2 w-2 rounded-full ${difficultyDotColor(activeProblem.difficulty)}`} />
+              <span className={`text-[10px] font-medium ${isDark ? "text-white/70" : "text-black/70"}`}>{activeProblem.difficulty}</span>
+            </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setHeaderExpanded((v) => !v)}
-            className={`rounded-md border px-2 py-1 text-[11px] font-semibold ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
-          >
-            {headerExpanded ? "Collapse" : "Expand"}
-          </button>
         </div>
-        <p className={`mt-2 max-h-[24vh] overflow-y-auto whitespace-pre-wrap text-sm leading-5 ${isDark ? "text-white/85" : "text-black/85"}`}>
+        <p
+          className={`mt-2 whitespace-pre-wrap ${
+            headerExpanded ? "text-sm leading-5" : "text-[11px] leading-4"
+          } ${isDark ? "text-white/85" : "text-black/85"}`}
+        >
           {activeProblem.statement}
         </p>
 
@@ -509,8 +593,9 @@ export default function Home() {
                 type="button"
                 onClick={cycleTheme}
                 className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+                title="Cycle theme"
               >
-                Theme: {theme}
+                ◐
               </button>
               {authUser ? (
                 <>
@@ -520,35 +605,57 @@ export default function Home() {
                       void startCheckout();
                     }}
                     className={`rounded-md border px-2 py-1 text-[11px] font-semibold ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+                    title="Buy $10 credits"
                   >
-                    {purchaseLoading ? "..." : "Buy $10"}
+                    {purchaseLoading ? "…" : "$"}
                   </button>
-                  <a href="/auth/sign-out" className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}>
-                    Logout
+                  <a
+                    href="/auth/sign-out"
+                    title="Logout"
+                    className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+                  >
+                    ⇥
                   </a>
                 </>
               ) : (
-                <a href="/auth/sign-in?returnTo=/" className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}>
-                  Login
+                <a
+                  href="/auth/sign-in?returnTo=/"
+                  title="Login"
+                  className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+                >
+                  ⇤
                 </a>
               )}
               <button
                 type="button"
                 onClick={resetLocalState}
                 className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+                title="Reset local progress"
               >
-                Reset
+                ↺
               </button>
+              <details className="group">
+                <summary
+                  className={`list-none cursor-pointer rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+                  title="Show details"
+                >
+                  ⋯
+                </summary>
+                <div className={`mt-2 space-y-2 rounded-md border p-2 text-[11px] ${isDark ? "border-white/15 bg-white/5 text-white/70" : "border-black/10 bg-white/70 text-black/70"}`}>
+                  <p>Topic: {activeProblem.category} · Difficulty: {activeProblem.difficulty}</p>
+                  <div className={`h-2 w-full overflow-hidden rounded-full ${isDark ? "bg-white/15" : "bg-black/10"}`}>
+                    <div className="h-full bg-[#1a7f52] transition-all" style={{ width: `${(masteredCount / 150) * 100}%` }} />
+                  </div>
+                  <p>
+                    Mastered {masteredCount}/150 · Status {currentProgress?.status ?? "unseen"} · Confidence{" "}
+                    {currentProgress?.confidence ?? 0}% · Attempts {currentProgress?.attempts ?? 0}
+                  </p>
+                  <p>
+                    {authUser ? `Credits $${creditBalance.toFixed(2)}` : "Anonymous mode"}
+                  </p>
+                </div>
+              </details>
             </div>
-            <div className={`h-2 w-full overflow-hidden rounded-full ${isDark ? "bg-white/15" : "bg-black/10"}`}>
-              <div className="h-full bg-[#1a7f52] transition-all" style={{ width: `${(masteredCount / 150) * 100}%` }} />
-            </div>
-            <p className={`text-[11px] ${isDark ? "text-white/65" : "text-black/70"}`}>
-              Mastered {masteredCount}/150 · Status {currentProgress?.status ?? "unseen"} · Confidence {currentProgress?.confidence ?? 0}% · Attempts {currentProgress?.attempts ?? 0}
-            </p>
-            <p className={`text-[11px] ${isDark ? "text-white/65" : "text-black/70"}`}>
-              GPT-4.1-mini · {authUser ? "logged-in + DB credits" : "free anonymous mode"}{authUser ? ` · Credits $${creditBalance.toFixed(2)}` : ""}
-            </p>
           </div>
         ) : null}
       </header>
@@ -571,18 +678,13 @@ export default function Home() {
               </article>
             );
           })}
-          <div ref={chatBottomRef} />
-        </div>
-      </section>
-
-      <section className={`sticky bottom-0 z-30 border-t px-2 pt-1 pb-2 backdrop-blur ${isDark ? "border-white/15 bg-[#0f141d]/98" : "border-black/10 bg-white/98"}`}>
-        <div className="mb-1 space-y-1">
           <div className={`grid grid-cols-[1fr_auto] gap-px overflow-hidden rounded-lg border ${isDark ? "border-white/20 bg-white/10" : "border-black/15 bg-black/10"}`}>
             <textarea
               ref={chatInputRef}
               value={draft}
-              readOnly
               inputMode="none"
+              onKeyDown={(event) => event.preventDefault()}
+              onChange={(event) => setDraft(event.target.value)}
               onFocus={() => focusComposer("chat")}
               onClick={() => syncCursorFromDom("chat")}
               onSelect={() => syncCursorFromDom("chat")}
@@ -606,9 +708,10 @@ export default function Home() {
             <textarea
               ref={codeInputRef}
               value={code}
-              readOnly
               inputMode="none"
               spellCheck={false}
+              onKeyDown={(event) => event.preventDefault()}
+              onChange={(event) => setCode(event.target.value)}
               onFocus={() => focusComposer("code")}
               onClick={() => syncCursorFromDom("code")}
               onSelect={() => syncCursorFromDom("code")}
@@ -627,17 +730,36 @@ export default function Home() {
               ✓
             </button>
           </div>
+          <div ref={chatBottomRef} />
         </div>
+      </section>
 
-        <div className={`mb-1 text-[10px] font-medium ${isDark ? "text-white/60" : "text-black/60"}`}>
-          Target: {composerMode === "chat" ? "chat" : "code"} · custom keyboard
-        </div>
-
+      <section className={`sticky bottom-0 z-30 border-t px-2 pt-1 pb-2 backdrop-blur ${isDark ? "border-white/15 bg-[#0f141d]/98" : "border-black/10 bg-white/98"}`}>
         <div className={`rounded-md border p-px ${isDark ? "border-white/20 bg-[#121720]" : "border-black/15 bg-[#eceae2]"}`}>
           <div className="space-y-px">
             {KEYBOARD_ROWS.map((row, rowIndex) => (
-              <div key={`row-${rowIndex}`} className="flex gap-px">
+              <div key={`row-${rowIndex}`} className={`flex gap-px ${rowPadding(rowIndex)}`}>
                 {row.map((token) => {
+                  if (token === "UPDOWN") {
+                    return (
+                      <div key={`${rowIndex}-${token}`} className={`grid grid-rows-2 gap-px ${keyFlex(token)}`}>
+                        <button
+                          type="button"
+                          onClick={() => pressKey("UP")}
+                          className={`h-4 border px-0.5 text-center font-mono text-[9px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => pressKey("DOWN")}
+                          className={`h-4 border px-0.5 text-center font-mono text-[9px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
+                        >
+                          ↓
+                        </button>
+                      </div>
+                    );
+                  }
                   if (token.includes("|")) {
                     const [left, right] = token.split("|");
                     return (
@@ -672,10 +794,16 @@ export default function Home() {
                         }
                       }}
                       className={`h-8 border px-0.5 text-center font-mono text-[10px] ${keyFlex(token)} ${
-                        isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"
+                        token === "SHIFT" && shiftOn
+                          ? "border-[#7aa2ff] bg-[#22407a] text-white"
+                          : token === "CAPS" && capsOn
+                            ? "border-[#7aa2ff] bg-[#22407a] text-white"
+                            : isDark
+                              ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]"
+                              : "border-black/10 bg-white"
                       }`}
                     >
-                      {labelForKey(token)}
+                      {/^[a-z]$/.test(token) ? (capsOn !== shiftOn ? token.toUpperCase() : token.toLowerCase()) : labelForKey(token)}
                     </button>
                   );
                 })}
