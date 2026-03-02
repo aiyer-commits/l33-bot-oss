@@ -19,6 +19,7 @@ const INDENT_TOKEN = "\t";
 const TAP_OUTPUT_MAP: Record<string, string> = {
   "&": "and ",
   "|": "or ",
+  "!": "not ",
   "@": "@lru_cache(None)\ndef ",
   for: "for ",
   while: "while ",
@@ -31,6 +32,7 @@ const TAP_OUTPUT_MAP: Record<string, string> = {
 const HOLD_OUTPUT_MAP: Record<string, string> = {
   "&": "&",
   "|": "|",
+  "!": "!",
   "<": "<<",
   ">": ">>",
   "1": "True",
@@ -273,7 +275,7 @@ function normalizeMessages(raw: unknown): ChatMessage[] {
 function bootstrapIntro(problemId: number): ChatMessage[] {
   const problem = getProblemById(problemId);
   if (!problem) return [asMessage("assistant", "Session started. Problem data is missing.", "text")];
-  return [asMessage("assistant", "Welcome to l33tsp33k.", "text"), ...buildProblemMessages(problem.id)];
+  return [asMessage("assistant", "Welcome to l33.bot.", "text"), ...buildProblemMessages(problem.id)];
 }
 
 function buildProblemMessages(problemId: number): ChatMessage[] {
@@ -584,6 +586,10 @@ export default function Home() {
     autoResizeTextarea(codeInputRef);
   }, [code]);
 
+  useEffect(() => {
+    if (composerMode === "code") autoResizeTextarea(codeInputRef);
+  }, [composerMode]);
+
   useEffect(() => () => {
     stopKeyRepeat();
     clearHoldTimer();
@@ -653,6 +659,8 @@ export default function Home() {
       setShiftOn((v) => !v);
       return;
     }
+    // Only consecutive shift taps should toggle caps lock.
+    lastShiftTapRef.current = 0;
     const target: TargetField = composerMode;
     const source = target === "chat" ? draft : code;
     const cursor = target === "chat" ? chatCursor : codeCursor;
@@ -835,8 +843,16 @@ export default function Home() {
     }
   }
 
+  function submitCurrentComposer() {
+    if (composerMode === "code") {
+      void sendTurn({ sendText: false, sendCode: true });
+      return;
+    }
+    void sendTurn({ sendText: true, sendCode: false });
+  }
+
   function labelForKey(token: string) {
-    if (token === "SHIFT") return "shift";
+    if (token === "SHIFT") return capsOn ? "caps" : "shift";
     if (token === "TAB") return "tab";
     if (token === "SPACE") return "space";
     if (token === "ENTER") return "enter";
@@ -848,6 +864,7 @@ export default function Home() {
     if (token === "BACKSPACE") return "";
     if (token === "&") return "and";
     if (token === "|") return "or";
+    if (token === "!") return "not";
     if (token === "@") return "lru";
     if (token === "CLEAR") return "clear";
     return token;
@@ -877,6 +894,24 @@ export default function Home() {
 
   function isRepeatableToken(token: string) {
     return token === "BACKSPACE" || token === "LEFT" || token === "RIGHT" || token === "UP" || token === "DOWN";
+  }
+
+  function capturePointer(target: EventTarget & Element, pointerId: number) {
+    try {
+      target.setPointerCapture(pointerId);
+    } catch {
+      // no-op
+    }
+  }
+
+  function releasePointer(target: EventTarget & Element, pointerId: number) {
+    try {
+      if (target.hasPointerCapture(pointerId)) {
+        target.releasePointerCapture(pointerId);
+      }
+    } catch {
+      // no-op
+    }
   }
 
   function resolveKeyOutput(token: string, mode: "tap" | "hold") {
@@ -914,6 +949,14 @@ export default function Home() {
 
     holdTriggeredRef.current = false;
     clearHoldTimer();
+    if (token === "ENTER") {
+      if (typeof window === "undefined") return;
+      holdTimeoutRef.current = window.setTimeout(() => {
+        holdTriggeredRef.current = true;
+        submitCurrentComposer();
+      }, HOLD_DELAY_MS);
+      return;
+    }
     if (typeof window === "undefined" || !HOLD_OUTPUT_MAP[token]) return;
 
     holdTimeoutRef.current = window.setTimeout(() => {
@@ -992,6 +1035,12 @@ export default function Home() {
       >
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
+            <div className="mb-1 flex items-center gap-2">
+              <img src="/icon.svg" alt="l33 logo" className="h-5 w-5 rounded-[6px]" />
+              <span className={`font-mono text-[11px] font-semibold tracking-[0.12em] ${isDark ? "text-[#8fd9ff]" : "text-[#0b4f8a]"}`}>
+                l33.bot
+              </span>
+            </div>
             <button
               type="button"
               onClick={scrollToActiveProblemMessage}
@@ -1076,59 +1125,48 @@ export default function Home() {
               </article>
             );
           })}
-          <div className="relative ml-auto w-full max-w-[88%] pl-8">
-            <button
-              type="button"
-              disabled={isSending || !draft.trim()}
-              onClick={() => {
-                void sendTurn({ sendText: true, sendCode: false });
-              }}
-              className="absolute left-0 top-1/2 h-7 w-7 -translate-y-1/2 rounded-full bg-[#1f334f] text-sm font-bold text-white disabled:opacity-50"
-            >
-              ✓
-            </button>
-            <div className={`relative overflow-hidden rounded-2xl rounded-br-none border ${isDark ? "border-white/20 bg-[#151b24]" : "border-black/15 bg-white"}`}>
-              <textarea
-                ref={chatInputRef}
-                value={draft}
-                inputMode="none"
-                onKeyDown={(event) => event.preventDefault()}
-                onChange={(event) => setDraft(event.target.value)}
-                onFocus={() => focusComposer("chat")}
-                onClick={() => syncCursorFromDom("chat")}
-                onSelect={() => syncCursorFromDom("chat")}
-                rows={2}
-                placeholder="message bubble"
-                className={`w-full resize-none border-0 bg-transparent px-3 py-2 text-sm outline-none ${isDark ? "text-[#e5e7eb] caret-[#e5e7eb]" : "text-[#111] caret-[#111]"}`}
-              />
-            </div>
-          </div>
-
           <div className="relative ml-auto w-full max-w-[92%] pl-8">
             <button
               type="button"
-              disabled={isSending || !code.trim()}
               onClick={() => {
-                void sendTurn({ sendText: false, sendCode: true });
+                focusComposer(composerMode === "chat" ? "code" : "chat");
               }}
-              className="absolute left-0 top-1/2 h-7 w-7 -translate-y-1/2 rounded-full bg-[#2259f3] text-sm font-bold text-white disabled:opacity-50"
+              className={`absolute left-0 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-[11px] font-bold ${
+                composerMode === "code" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
+              }`}
+              title={composerMode === "chat" ? "Switch to code mode" : "Switch to text mode"}
             >
-              ✓
+              {composerMode === "chat" ? "0" : "T"}
             </button>
-            <div className="relative overflow-hidden rounded-2xl rounded-br-none border border-white/20 bg-[#0e1117]">
+            <div
+              className={`relative overflow-hidden rounded-2xl rounded-br-none border ${
+                composerMode === "code"
+                  ? "border-white/20 bg-[#0e1117]"
+                  : isDark
+                    ? "border-white/20 bg-[#151b24]"
+                    : "border-black/15 bg-white"
+              }`}
+            >
               <textarea
-                ref={codeInputRef}
-                value={code}
+                ref={composerMode === "code" ? codeInputRef : chatInputRef}
+                value={composerMode === "code" ? code : draft}
                 inputMode="none"
-                spellCheck={false}
+                spellCheck={composerMode !== "code"}
                 onKeyDown={(event) => event.preventDefault()}
-                onChange={(event) => setCode(event.target.value)}
-                onFocus={() => focusComposer("code")}
-                onClick={() => syncCursorFromDom("code")}
-                onSelect={() => syncCursorFromDom("code")}
-                rows={1}
-                placeholder="pinned code bubble"
-                className="w-full resize-none overflow-y-hidden border-0 bg-[#0e1117] px-3 py-2 font-mono text-[12px] leading-5 text-[#e5e7eb] caret-[#e5e7eb] outline-none"
+                onChange={(event) => {
+                  if (composerMode === "code") setCode(event.target.value);
+                  else setDraft(event.target.value);
+                }}
+                onFocus={() => focusComposer(composerMode)}
+                onClick={() => syncCursorFromDom(composerMode)}
+                onSelect={() => syncCursorFromDom(composerMode)}
+                rows={composerMode === "code" ? 1 : 2}
+                placeholder={composerMode === "code" ? "code bubble (hold enter to submit)" : "message bubble"}
+                className={`w-full resize-none border-0 px-3 py-2 outline-none ${
+                  composerMode === "code"
+                    ? "overflow-y-hidden bg-[#0e1117] font-mono text-[12px] leading-5 text-[#e5e7eb] caret-[#e5e7eb]"
+                    : `${isDark ? "bg-[#151b24] text-[#e5e7eb] caret-[#e5e7eb]" : "bg-transparent text-[#111] caret-[#111]"} text-sm`
+                }`}
               />
             </div>
           </div>
@@ -1169,10 +1207,16 @@ export default function Home() {
                           type="button"
                           onPointerDown={(event) => {
                             event.preventDefault();
+                            capturePointer(event.currentTarget, event.pointerId);
                             startKeyRepeat("UP");
                           }}
-                          onPointerUp={stopKeyRepeat}
-                          onPointerLeave={stopKeyRepeat}
+                          onPointerUp={(event) => {
+                            releasePointer(event.currentTarget, event.pointerId);
+                            stopKeyRepeat();
+                          }}
+                          onPointerLeave={() => {
+                            // pointer capture keeps repeat stable during slight finger drift
+                          }}
                           onPointerCancel={stopKeyRepeat}
                           onContextMenu={(event) => event.preventDefault()}
                           className={`${arrowCircleClass} ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white text-black"}`}
@@ -1183,10 +1227,16 @@ export default function Home() {
                           type="button"
                           onPointerDown={(event) => {
                             event.preventDefault();
+                            capturePointer(event.currentTarget, event.pointerId);
                             startKeyRepeat("DOWN");
                           }}
-                          onPointerUp={stopKeyRepeat}
-                          onPointerLeave={stopKeyRepeat}
+                          onPointerUp={(event) => {
+                            releasePointer(event.currentTarget, event.pointerId);
+                            stopKeyRepeat();
+                          }}
+                          onPointerLeave={() => {
+                            // pointer capture keeps repeat stable during slight finger drift
+                          }}
                           onPointerCancel={stopKeyRepeat}
                           onContextMenu={(event) => event.preventDefault()}
                           className={`${arrowCircleClass} ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white text-black"}`}
@@ -1210,10 +1260,16 @@ export default function Home() {
                             type="button"
                             onPointerDown={(event) => {
                               event.preventDefault();
+                              capturePointer(event.currentTarget, event.pointerId);
                               startKeyRepeat("LEFT");
                             }}
-                            onPointerUp={stopKeyRepeat}
-                            onPointerLeave={stopKeyRepeat}
+                            onPointerUp={(event) => {
+                              releasePointer(event.currentTarget, event.pointerId);
+                              stopKeyRepeat();
+                            }}
+                            onPointerLeave={() => {
+                              // pointer capture keeps repeat stable during slight finger drift
+                            }}
                             onPointerCancel={stopKeyRepeat}
                             onContextMenu={(event) => event.preventDefault()}
                             className={`${dpadButtonClass} left-0 top-1/2 -translate-x-0 -translate-y-1/2`}
@@ -1224,10 +1280,16 @@ export default function Home() {
                             type="button"
                             onPointerDown={(event) => {
                               event.preventDefault();
+                              capturePointer(event.currentTarget, event.pointerId);
                               startKeyRepeat("UP");
                             }}
-                            onPointerUp={stopKeyRepeat}
-                            onPointerLeave={stopKeyRepeat}
+                            onPointerUp={(event) => {
+                              releasePointer(event.currentTarget, event.pointerId);
+                              stopKeyRepeat();
+                            }}
+                            onPointerLeave={() => {
+                              // pointer capture keeps repeat stable during slight finger drift
+                            }}
                             onPointerCancel={stopKeyRepeat}
                             onContextMenu={(event) => event.preventDefault()}
                             className={`${dpadButtonClass} left-1/2 top-0 -translate-x-1/2 -translate-y-0`}
@@ -1238,10 +1300,16 @@ export default function Home() {
                             type="button"
                             onPointerDown={(event) => {
                               event.preventDefault();
+                              capturePointer(event.currentTarget, event.pointerId);
                               startKeyRepeat("DOWN");
                             }}
-                            onPointerUp={stopKeyRepeat}
-                            onPointerLeave={stopKeyRepeat}
+                            onPointerUp={(event) => {
+                              releasePointer(event.currentTarget, event.pointerId);
+                              stopKeyRepeat();
+                            }}
+                            onPointerLeave={() => {
+                              // pointer capture keeps repeat stable during slight finger drift
+                            }}
                             onPointerCancel={stopKeyRepeat}
                             onContextMenu={(event) => event.preventDefault()}
                             className={`${dpadButtonClass} left-1/2 bottom-0 -translate-x-1/2 translate-y-0`}
@@ -1252,10 +1320,16 @@ export default function Home() {
                             type="button"
                             onPointerDown={(event) => {
                               event.preventDefault();
+                              capturePointer(event.currentTarget, event.pointerId);
                               startKeyRepeat("RIGHT");
                             }}
-                            onPointerUp={stopKeyRepeat}
-                            onPointerLeave={stopKeyRepeat}
+                            onPointerUp={(event) => {
+                              releasePointer(event.currentTarget, event.pointerId);
+                              stopKeyRepeat();
+                            }}
+                            onPointerLeave={() => {
+                              // pointer capture keeps repeat stable during slight finger drift
+                            }}
                             onPointerCancel={stopKeyRepeat}
                             onContextMenu={(event) => event.preventDefault()}
                             className={`${dpadButtonClass} right-0 top-1/2 translate-x-0 -translate-y-1/2`}
@@ -1273,13 +1347,17 @@ export default function Home() {
                       type="button"
                       onPointerDown={(event) => {
                         event.preventDefault();
+                        capturePointer(event.currentTarget, event.pointerId);
                         startKeyPress(token);
                       }}
                       onPointerUp={(event) => {
                         event.preventDefault();
+                        releasePointer(event.currentTarget, event.pointerId);
                         endKeyPress(token);
                       }}
-                      onPointerLeave={() => cancelKeyPress(token)}
+                      onPointerLeave={() => {
+                        // pointer capture keeps press active during slight finger drift
+                      }}
                       onPointerCancel={() => cancelKeyPress(token)}
                       onContextMenu={(event) => event.preventDefault()}
                       className={`${keyBaseClass} ${keyToneClass}`}

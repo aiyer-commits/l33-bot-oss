@@ -62,7 +62,7 @@ function parseJson<T>(value: string): T {
 function responseSchema() {
   return {
     type: 'json_schema' as const,
-    name: 'l33tsp33k_response',
+    name: 'l33_bot_response',
     strict: true,
     schema: {
       type: 'object',
@@ -278,7 +278,7 @@ export async function POST(request: Request) {
           {
             type: 'input_text',
             text:
-              'You are l33tsp33k coach. Keep response concise, chat-first, and practical. Evaluate correctness/TLE/edge cases. Use conversational mastery tracking. If user asks for a specific topic/difficulty, moveToProblemId can jump to that semantic match.',
+              'You are l33.bot interviewer-coach for coding interviews. Default mode is strict interviewer: do NOT provide hints, solution ideas, or next steps unless the user explicitly asks for help/hint/explanation. In interviewer mode, ask concise probing questions, evaluate correctness/TLE/edge cases, and request clarifications/tests. If the user explicitly asks for help, switch to tutor mode and teach clearly; when giving guidance beyond realistic interview hints, state a short realism note such as \"Interview realism note: this is more guidance than a typical interviewer would provide.\" Keep responses concise and practical. If user asks for a specific topic/difficulty, moveToProblemId can jump to that semantic match.',
           },
         ],
       },

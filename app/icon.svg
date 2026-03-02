@@ -1,0 +1,27 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="l33 app icon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1220"/>
+      <stop offset="100%" stop-color="#111B33"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8EF7FF"/>
+      <stop offset="100%" stop-color="#53B5FF"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#8AA4FF" stroke-opacity="0.08" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect x="18" y="18" width="476" height="476" rx="112" fill="url(#bg)"/>
+  <rect x="18" y="18" width="476" height="476" rx="112" fill="url(#grid)"/>
+  <rect x="18" y="18" width="476" height="476" rx="112" fill="none" stroke="#84A8FF" stroke-opacity="0.22" stroke-width="2"/>
+
+  <text x="256" y="302"
+        text-anchor="middle"
+        font-family="'JetBrains Mono','IBM Plex Mono','Fira Code','SFMono-Regular',Menlo,Monaco,Consolas,monospace"
+        font-size="200"
+        font-weight="800"
+        letter-spacing="-12"
+        fill="url(#ink)">l33</text>
+</svg>
