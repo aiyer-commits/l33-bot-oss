@@ -14,6 +14,7 @@ const THEME_KEY = "l33tsp33k.theme.v1";
 const HOLD_DELAY_MS = 320;
 const REPEAT_DELAY_MS = 260;
 const REPEAT_INTERVAL_MS = 42;
+const INDENT_TOKEN = "\t";
 
 const TAP_OUTPUT_MAP: Record<string, string> = {
   "&": "and ",
@@ -364,6 +365,84 @@ function moveVertical(source: string, cursor: Cursor, direction: "UP" | "DOWN"):
   return { start: targetPos, end: targetPos };
 }
 
+function lineBounds(source: string, index: number) {
+  const clamped = clampPos(index, source.length);
+  const start = source.lastIndexOf("\n", Math.max(0, clamped - 1)) + 1;
+  const nextNl = source.indexOf("\n", clamped);
+  const end = nextNl === -1 ? source.length : nextNl;
+  return { start, end };
+}
+
+function selectedLineRange(source: string, cursor: Cursor) {
+  const startBounds = lineBounds(source, cursor.start);
+  const endIndex = cursor.end > cursor.start ? cursor.end - 1 : cursor.end;
+  const endBounds = lineBounds(source, endIndex);
+  return { start: startBounds.start, end: endBounds.end };
+}
+
+function applyIndent(source: string, cursor: Cursor): { value: string; cursor: Cursor } {
+  if (cursor.start === cursor.end) {
+    return applyInsert(source, cursor, INDENT_TOKEN);
+  }
+
+  const range = selectedLineRange(source, cursor);
+  const selected = source.slice(range.start, range.end);
+  const lines = selected.split("\n");
+  const indented = lines.map((line) => `${INDENT_TOKEN}${line}`).join("\n");
+  const value = `${source.slice(0, range.start)}${indented}${source.slice(range.end)}`;
+  const nextStart = cursor.start + INDENT_TOKEN.length;
+  const nextEnd = cursor.end + lines.length * INDENT_TOKEN.length;
+  return { value, cursor: { start: nextStart, end: nextEnd } };
+}
+
+function applyOutdent(source: string, cursor: Cursor): { value: string; cursor: Cursor } {
+  const range = selectedLineRange(source, cursor);
+  const selected = source.slice(range.start, range.end);
+  const lines = selected.split("\n");
+
+  let removedBeforeStart = 0;
+  let removedTotal = 0;
+  const outdentedLines = lines.map((line, lineIndex) => {
+    if (line.startsWith(INDENT_TOKEN)) {
+      removedTotal += INDENT_TOKEN.length;
+      if (lineIndex === 0) removedBeforeStart += INDENT_TOKEN.length;
+      return line.slice(INDENT_TOKEN.length);
+    }
+    return line;
+  });
+
+  const outdented = outdentedLines.join("\n");
+  const value = `${source.slice(0, range.start)}${outdented}${source.slice(range.end)}`;
+
+  if (cursor.start === cursor.end) {
+    const pos = clampPos(cursor.start - removedBeforeStart, value.length);
+    return { value, cursor: { start: pos, end: pos } };
+  }
+
+  const nextStart = clampPos(cursor.start - removedBeforeStart, value.length);
+  const nextEnd = clampPos(cursor.end - removedTotal, value.length);
+  return { value, cursor: { start: nextStart, end: nextEnd } };
+}
+
+function applySmartEnter(source: string, cursor: Cursor): { value: string; cursor: Cursor } {
+  const currentLine = lineBounds(source, cursor.start);
+  const linePrefix = source.slice(currentLine.start, cursor.start);
+  const indentMatch = linePrefix.match(/^\t*/);
+  const baseIndent = indentMatch ? indentMatch[0] : "";
+  const trimmedPrefix = linePrefix.trimEnd();
+  if (trimmedPrefix.endsWith(":")) {
+    return applyInsert(source, cursor, `\n${baseIndent}${INDENT_TOKEN}`);
+  }
+
+  // Python smart dedent after block-exit statements.
+  const dedentMatch = trimmedPrefix.match(/^\t*(return|pass|break|continue|raise)\b/);
+  if (dedentMatch && baseIndent.length > 0) {
+    return applyInsert(source, cursor, `\n${baseIndent.slice(0, -INDENT_TOKEN.length)}`);
+  }
+
+  return applyInsert(source, cursor, `\n${baseIndent}`);
+}
+
 export default function Home() {
   const [profile, setProfile] = useState<LocalProfile | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -582,9 +661,18 @@ export default function Home() {
     } else if (token === "SPACE") {
       result = applyInsert(source, cursor, " ");
     } else if (token === "ENTER") {
-      result = applyInsert(source, cursor, "\n");
+      result = target === "code" ? applySmartEnter(source, cursor) : applyInsert(source, cursor, "\n");
     } else if (token === "TAB") {
-      result = applyInsert(source, cursor, "    ");
+      if (target === "code") {
+        if (shiftOn) {
+          result = applyOutdent(source, cursor);
+          setShiftOn(false);
+        } else {
+          result = applyIndent(source, cursor);
+        }
+      } else {
+        result = applyInsert(source, cursor, "    ");
+      }
     } else {
       const isLetter = /^[a-z]$/i.test(token);
       if (isLetter) {
