@@ -17,13 +17,122 @@ type ThemeMode = "light" | "dark";
 
 type Cursor = { start: number; end: number };
 
-const KEYBOARD_ROWS = [
-  ["LEFT", "UPDOWN", "RIGHT", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+", "{", "}", "|"],
-  ["`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "[", "]", "\\", ";", "'", ",", ".", "/", "BACKSPACE"],
-  ["TAB", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
-  ["CAPS", "a", "s", "d", "f", "g", "h", "j", "k", "l", "ENTER"],
-  ["SHIFT", "z", "x", "c", "v", "b", "n", "m", "SHIFT"],
-  [":", '"', "<", ">", "?", "SPACE", "CLEAR"],
+type KeySpec = { token: string; units?: number };
+type KeyboardRow = { offsetUnits?: number; heightUnits?: number; keys: KeySpec[] };
+const BASE_KEY_HEIGHT = "clamp(44px, 9.6vw, 66px)";
+
+const KEYBOARD_LAYOUT: KeyboardRow[] = [
+  {
+    heightUnits: 0.9,
+    keys: [
+      { token: "TAB", units: 1.5 },
+      { token: "LEFT", units: 1.2 },
+      { token: "UPDOWN", units: 1.2 },
+      { token: "RIGHT", units: 1.2 },
+      { token: "~" },
+      { token: "!" },
+      { token: "@" },
+      { token: "#" },
+      { token: "$" },
+      { token: "%" },
+      { token: "^" },
+      { token: "&" },
+      { token: "*" },
+      { token: "(" },
+      { token: ")" },
+      { token: "_" },
+      { token: "+" },
+      { token: "{" },
+      { token: "}" },
+      { token: "|" },
+    ],
+  },
+  {
+    heightUnits: 0.95,
+    keys: [
+      { token: "`" },
+      { token: "1" },
+      { token: "2" },
+      { token: "3" },
+      { token: "4" },
+      { token: "5" },
+      { token: "6" },
+      { token: "7" },
+      { token: "8" },
+      { token: "9" },
+      { token: "0" },
+      { token: "-" },
+      { token: "=" },
+      { token: "[" },
+      { token: "]" },
+      { token: "\\" },
+      { token: ";" },
+      { token: "'" },
+      { token: "," },
+      { token: "." },
+      { token: "/" },
+    ],
+  },
+  {
+    offsetUnits: 0,
+    heightUnits: 1.0,
+    keys: [
+      { token: "q" },
+      { token: "w" },
+      { token: "e" },
+      { token: "r" },
+      { token: "t" },
+      { token: "y" },
+      { token: "u" },
+      { token: "i" },
+      { token: "o" },
+      { token: "p" },
+      { token: "BACKSPACE", units: 1.1 },
+    ],
+  },
+  {
+    offsetUnits: 0.5,
+    heightUnits: 1.0,
+    keys: [
+      { token: "a" },
+      { token: "s" },
+      { token: "d" },
+      { token: "f" },
+      { token: "g" },
+      { token: "h" },
+      { token: "j" },
+      { token: "k" },
+      { token: "l" },
+    ],
+  },
+  {
+    offsetUnits: 1.0,
+    heightUnits: 1.0,
+    keys: [
+      { token: "SHIFT", units: 1.25 },
+      { token: "z" },
+      { token: "x" },
+      { token: "c" },
+      { token: "v" },
+      { token: "b" },
+      { token: "n" },
+      { token: "m" },
+      { token: "SHIFT", units: 1.25 },
+    ],
+  },
+  {
+    heightUnits: 1.2,
+    keys: [
+      { token: ":" },
+      { token: '"' },
+      { token: "<" },
+      { token: ">" },
+      { token: "?" },
+      { token: "SPACE", units: 6 },
+      { token: "ENTER", units: 1.8 },
+      { token: "CLEAR", units: 1.5 },
+    ],
+  },
 ];
 
 function nowIso() {
@@ -156,7 +265,6 @@ export default function Home() {
 
   const [composerMode, setComposerMode] = useState<ComposerMode>("chat");
   const [shiftOn, setShiftOn] = useState(false);
-  const [capsOn, setCapsOn] = useState(false);
 
   const [chatCursor, setChatCursor] = useState<Cursor>({ start: 0, end: 0 });
   const [codeCursor, setCodeCursor] = useState<Cursor>({ start: 0, end: 0 });
@@ -304,10 +412,6 @@ export default function Home() {
       setShiftOn((v) => !v);
       return;
     }
-    if (token === "CAPS") {
-      setCapsOn((v) => !v);
-      return;
-    }
     const target: TargetField = composerMode;
     const source = target === "chat" ? draft : code;
     const cursor = target === "chat" ? chatCursor : codeCursor;
@@ -333,7 +437,7 @@ export default function Home() {
     } else {
       const isLetter = /^[a-z]$/i.test(token);
       if (isLetter) {
-        const upper = capsOn !== shiftOn;
+        const upper = shiftOn;
         result = applyInsert(source, cursor, upper ? token.toUpperCase() : token.toLowerCase());
         if (shiftOn) setShiftOn(false);
       } else {
@@ -357,20 +461,6 @@ export default function Home() {
     } else {
       setCode("");
       setCursorOnDom("code", { start: 0, end: 0 });
-    }
-  }
-
-  function resetLocalState() {
-    const fresh = createInitialProfile();
-    setProfile(fresh);
-    setMessages(bootstrapIntro(1));
-    setDraft("");
-    setCode("");
-    setError("");
-    setComposerMode("chat");
-    if (!authUser) {
-      localStorage.removeItem(CHAT_KEY);
-      localStorage.removeItem(PROFILE_KEY);
     }
   }
 
@@ -504,7 +594,6 @@ export default function Home() {
 
   function labelForKey(token: string) {
     if (token === "SHIFT") return "shift";
-    if (token === "CAPS") return "caps";
     if (token === "TAB") return "tab";
     if (token === "SPACE") return "space";
     if (token === "ENTER") return "enter";
@@ -521,24 +610,17 @@ export default function Home() {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   }
 
-  function keyFlex(token: string) {
-    if (token === "SPACE") return "flex-[6]";
-    if (token === "BACKSPACE") return "flex-[1.9]";
-    if (token === "TAB") return "flex-[1.6]";
-    if (token === "CAPS") return "flex-[1.9]";
-    if (token === "ENTER") return "flex-[2]";
-    if (token === "SHIFT") return "flex-[2.2]";
-    if (token === "CLEAR") return "flex-[1.5]";
-    if (token === "UPDOWN") return "flex-[1.2]";
-    if (token === "LEFT" || token === "RIGHT") return "flex-[1.2]";
-    return "flex-1";
+  function keyUnits(key: KeySpec) {
+    return key.units ?? 1;
   }
 
-  function rowPadding(rowIndex: number) {
-    if (rowIndex === 2) return "px-[4%]";
-    if (rowIndex === 3) return "px-[8%]";
-    if (rowIndex === 4) return "px-[3%]";
-    return "";
+  function rowUnits(row: KeyboardRow) {
+    const offset = row.offsetUnits ?? 0;
+    return row.keys.reduce((sum, key) => sum + keyUnits(key), offset);
+  }
+
+  function rowHeightPx(row: KeyboardRow) {
+    return `calc(${BASE_KEY_HEIGHT} * ${row.heightUnits ?? 1})`;
   }
 
   function difficultyDotColor(difficulty: string) {
@@ -601,14 +683,6 @@ export default function Home() {
                 ⇤
               </a>
             )}
-            <button
-              type="button"
-              onClick={resetLocalState}
-              className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
-              title="Reset local progress"
-            >
-              ↺
-            </button>
           </div>
         </div>
         <p className={`mt-1 whitespace-pre-wrap text-[11px] leading-4 ${isDark ? "text-white/85" : "text-black/85"}`}>
@@ -710,23 +784,34 @@ export default function Home() {
       <section className={`sticky bottom-0 z-30 border-t px-2 pt-1 pb-2 backdrop-blur ${isDark ? "border-white/15 bg-[#0f141d]/98" : "border-black/10 bg-white/98"}`}>
         <div className={`rounded-md border p-px ${isDark ? "border-white/20 bg-[#121720]" : "border-black/15 bg-[#eceae2]"}`}>
           <div className="space-y-px">
-            {KEYBOARD_ROWS.map((row, rowIndex) => (
-              <div key={`row-${rowIndex}`} className={`flex gap-px ${rowPadding(rowIndex)}`}>
-                {row.map((token) => {
+            {KEYBOARD_LAYOUT.map((row, rowIndex) => {
+              const totalUnits = rowUnits(row);
+              const leftOffsetPct = (((row.offsetUnits ?? 0) / totalUnits) * 100).toFixed(4);
+              const rowHeight = rowHeightPx(row);
+              return (
+              <div key={`row-${rowIndex}`} className="flex gap-px" style={{ height: rowHeight }}>
+                {(row.offsetUnits ?? 0) > 0 ? <div style={{ width: `${leftOffsetPct}%` }} className="shrink-0" /> : null}
+                {row.keys.map((key, keyIndex) => {
+                  const token = key.token;
+                  const widthPct = ((keyUnits(key) / totalUnits) * 100).toFixed(4);
                   if (token === "UPDOWN") {
                     return (
-                      <div key={`${rowIndex}-${token}`} className={`grid grid-rows-2 gap-px ${keyFlex(token)}`}>
+                      <div
+                        key={`${rowIndex}-${keyIndex}-${token}`}
+                        className="shrink-0 grid grid-rows-2 gap-px"
+                        style={{ width: `${widthPct}%` }}
+                      >
                         <button
                           type="button"
                           onClick={() => pressKey("UP")}
-                          className={`h-[22px] border px-0.5 text-center font-mono text-[10px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
+                          className={`h-full border px-0.5 text-center font-mono text-[12px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
                         >
                           ↑
                         </button>
                         <button
                           type="button"
                           onClick={() => pressKey("DOWN")}
-                          className={`h-[22px] border px-0.5 text-center font-mono text-[10px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
+                          className={`h-full border px-0.5 text-center font-mono text-[12px] ${isDark ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]" : "border-black/10 bg-white"}`}
                         >
                           ↓
                         </button>
@@ -736,7 +821,7 @@ export default function Home() {
 
                   return (
                     <button
-                      key={`${rowIndex}-${token}`}
+                      key={`${rowIndex}-${keyIndex}-${token}`}
                       type="button"
                       onClick={() => {
                         if (token === "CLEAR") {
@@ -745,22 +830,21 @@ export default function Home() {
                           pressKey(token);
                         }
                       }}
-                      className={`h-11 border px-1 text-center font-mono text-[12px] ${keyFlex(token)} ${
+                      style={{ width: `${widthPct}%` }}
+                      className={`h-full shrink-0 border px-1 text-center font-mono text-[12px] ${
                         token === "SHIFT" && shiftOn
                           ? "border-[#7aa2ff] bg-[#22407a] text-white"
-                          : token === "CAPS" && capsOn
-                            ? "border-[#7aa2ff] bg-[#22407a] text-white"
-                            : isDark
-                              ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]"
-                              : "border-black/10 bg-white"
+                          : isDark
+                            ? "border-white/15 bg-[#1a2230] text-[#e5e7eb]"
+                            : "border-black/10 bg-white"
                       }`}
                     >
-                      {/^[a-z]$/.test(token) ? (capsOn !== shiftOn ? token.toUpperCase() : token.toLowerCase()) : labelForKey(token)}
+                      {/^[a-z]$/.test(token) ? (shiftOn ? token.toUpperCase() : token.toLowerCase()) : labelForKey(token)}
                     </button>
                   );
                 })}
               </div>
-            ))}
+            )})}
           </div>
         </div>
 
