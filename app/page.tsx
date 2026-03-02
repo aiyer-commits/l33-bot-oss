@@ -459,22 +459,38 @@ export default function Home() {
   const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [theme, setTheme] = useState<ThemeMode>("light");
 
-  const [composerMode, setComposerMode] = useState<ComposerMode>("chat");
+  const [composerMode, setComposerMode] = useState<ComposerMode>("code");
   const [shiftOn, setShiftOn] = useState(false);
   const [capsOn, setCapsOn] = useState(false);
 
   const [chatCursor, setChatCursor] = useState<Cursor>({ start: 0, end: 0 });
   const [codeCursor, setCodeCursor] = useState<Cursor>({ start: 0, end: 0 });
+  const [assistantHasMore, setAssistantHasMore] = useState(false);
+  const [userHasMore, setUserHasMore] = useState(false);
+  const [assistantHasPrev, setAssistantHasPrev] = useState(false);
+  const [userHasPrev, setUserHasPrev] = useState(false);
+  const [assistantActiveIndex, setAssistantActiveIndex] = useState(0);
+  const [userActiveIndex, setUserActiveIndex] = useState(0);
 
-  const chatBottomRef = useRef<HTMLDivElement | null>(null);
   const activeProblemMessageRef = useRef<HTMLElement | null>(null);
   const headerRef = useRef<HTMLElement | null>(null);
-  const chatScrollRef = useRef<HTMLElement | null>(null);
+  const assistantScrollRef = useRef<HTMLDivElement | null>(null);
+  const userScrollRef = useRef<HTMLDivElement | null>(null);
   const repeatTimeoutRef = useRef<number | null>(null);
   const repeatIntervalRef = useRef<number | null>(null);
   const holdTimeoutRef = useRef<number | null>(null);
   const holdTriggeredRef = useRef(false);
   const lastShiftTapRef = useRef<number>(0);
+  const assistantFabHoldRef = useRef<number | null>(null);
+  const userFabHoldRef = useRef<number | null>(null);
+  const assistantFabLongPressedRef = useRef(false);
+  const userFabLongPressedRef = useRef(false);
+  const assistantFabDirectionRef = useRef<"next" | "prev">("next");
+  const userFabDirectionRef = useRef<"next" | "prev">("next");
+  const assistantFabActionHandledRef = useRef(false);
+  const userFabActionHandledRef = useRef(false);
+  const assistantScrollRafRef = useRef<number | null>(null);
+  const userScrollRafRef = useRef<number | null>(null);
   const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
   const codeInputRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -553,7 +569,6 @@ export default function Home() {
 
   useEffect(() => {
     localStorage.setItem(CHAT_KEY, JSON.stringify(messages));
-    chatBottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages]);
 
   useEffect(() => {
@@ -582,30 +597,102 @@ export default function Home() {
     });
   }, [composerMode]);
 
-  useEffect(() => {
-    autoResizeTextarea(codeInputRef);
-  }, [code]);
-
-  useEffect(() => {
-    if (composerMode === "code") autoResizeTextarea(codeInputRef);
-  }, [composerMode]);
-
   useEffect(() => () => {
     stopKeyRepeat();
     clearHoldTimer();
+    if (assistantScrollRafRef.current != null) window.cancelAnimationFrame(assistantScrollRafRef.current);
+    if (userScrollRafRef.current != null) window.cancelAnimationFrame(userScrollRafRef.current);
+  }, []);
+
+  function getPaneCards(el: HTMLDivElement) {
+    const track = el.firstElementChild as HTMLElement | null;
+    if (!track) return [] as HTMLElement[];
+    return Array.from(track.children) as HTMLElement[];
+  }
+
+  function centeredCardIndex(el: HTMLDivElement, cards: HTMLElement[]) {
+    if (cards.length === 0) return 0;
+    const viewportCenter = el.scrollLeft + el.clientWidth / 2;
+    let bestIndex = 0;
+    let bestDistance = Number.POSITIVE_INFINITY;
+    for (let i = 0; i < cards.length; i += 1) {
+      const card = cards[i];
+      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+      const d = Math.abs(cardCenter - viewportCenter);
+      if (d < bestDistance) {
+        bestDistance = d;
+        bestIndex = i;
+      }
+    }
+    return bestIndex;
+  }
+
+  function targetLeftForCenteredCard(el: HTMLDivElement, card: HTMLElement) {
+    return card.offsetLeft + card.offsetWidth / 2 - el.clientWidth / 2;
+  }
+
+  function updatePaneScrollState(
+    ref: { current: HTMLDivElement | null },
+    setPrev: (value: boolean) => void,
+    setNext: (value: boolean) => void,
+    setIndex: (value: number) => void,
+  ) {
+    const el = ref.current;
+    if (!el) return;
+    setPrev(el.scrollLeft > 6);
+    const remaining = el.scrollWidth - el.scrollLeft - el.clientWidth;
+    setNext(remaining > 6);
+    const cards = getPaneCards(el);
+    setIndex(centeredCardIndex(el, cards));
+  }
+
+  function attachPaneScroll(
+    ref: { current: HTMLDivElement | null },
+    setPrev: (value: boolean) => void,
+    setNext: (value: boolean) => void,
+    setIndex: (value: number) => void,
+  ) {
+    const el = ref.current;
+    if (!el) return () => {};
+    const onScroll = () => updatePaneScrollState(ref, setPrev, setNext, setIndex);
+    onScroll();
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }
+
+  useEffect(
+    () => attachPaneScroll(assistantScrollRef, setAssistantHasPrev, setAssistantHasMore, setAssistantActiveIndex),
+    [messages],
+  );
+  useEffect(
+    () => attachPaneScroll(userScrollRef, setUserHasPrev, setUserHasMore, setUserActiveIndex),
+    [messages, code, draft, composerMode],
+  );
+
+  useEffect(() => {
+    const tick = () => {
+      updatePaneScrollState(assistantScrollRef, setAssistantHasPrev, setAssistantHasMore, setAssistantActiveIndex);
+      updatePaneScrollState(userScrollRef, setUserHasPrev, setUserHasMore, setUserActiveIndex);
+    };
+    tick();
+    window.addEventListener("resize", tick);
+    return () => window.removeEventListener("resize", tick);
   }, []);
 
   const activeProblem = useMemo(() => {
     if (!profile) return null;
     return getProblemById(profile.activeProblemId) ?? null;
   }, [profile]);
+  const assistantMessages = useMemo(() => messages.filter((msg) => msg.role === "assistant"), [messages]);
+  const userMessages = useMemo(() => messages.filter((msg) => msg.role === "user"), [messages]);
+
   const activeProblemMessageIndex = useMemo(() => {
     if (!activeProblem) return -1;
-    for (let i = messages.length - 1; i >= 0; i -= 1) {
-      if (extractProblemMessageId(messages[i]) === activeProblem.id) return i;
+    for (let i = assistantMessages.length - 1; i >= 0; i -= 1) {
+      if (extractProblemMessageId(assistantMessages[i]) === activeProblem.id) return i;
     }
     return -1;
-  }, [messages, activeProblem]);
+  }, [assistantMessages, activeProblem]);
 
   const isDark = theme === "dark";
 
@@ -634,13 +721,6 @@ export default function Home() {
       if (target === "chat") setChatCursor(cursor);
       else setCodeCursor(cursor);
     });
-  }
-
-  function autoResizeTextarea(ref: { current: HTMLTextAreaElement | null }) {
-    const el = ref.current;
-    if (!el) return;
-    el.style.height = "0px";
-    el.style.height = `${el.scrollHeight}px`;
   }
 
   function pressKey(token: string) {
@@ -986,15 +1066,124 @@ export default function Home() {
     holdTriggeredRef.current = false;
   }
 
+  function getScrollRafRef(ref: { current: HTMLDivElement | null }) {
+    return ref === assistantScrollRef ? assistantScrollRafRef : userScrollRafRef;
+  }
+
+  function easeOutCubic(t: number) {
+    return 1 - (1 - t) ** 3;
+  }
+
+  function smoothScrollPaneTo(ref: { current: HTMLDivElement | null }, targetLeft: number) {
+    const el = ref.current;
+    if (!el) return;
+    const maxLeft = Math.max(0, el.scrollWidth - el.clientWidth);
+    const finalLeft = Math.max(0, Math.min(targetLeft, maxLeft));
+    const startLeft = el.scrollLeft;
+    const delta = finalLeft - startLeft;
+    if (Math.abs(delta) < 1) return;
+
+    const rafRef = getScrollRafRef(ref);
+    if (rafRef.current != null) {
+      window.cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+
+    const durationMs = Math.max(220, Math.min(560, Math.abs(delta) * 0.55));
+    const startTs = performance.now();
+    const tick = (now: number) => {
+      const elapsed = now - startTs;
+      const p = Math.max(0, Math.min(1, elapsed / durationMs));
+      const eased = easeOutCubic(p);
+      el.scrollLeft = startLeft + delta * eased;
+      if (p < 1) {
+        rafRef.current = window.requestAnimationFrame(tick);
+      } else {
+        rafRef.current = null;
+      }
+    };
+    rafRef.current = window.requestAnimationFrame(tick);
+  }
+
   function scrollToActiveProblemMessage() {
     const target = activeProblemMessageRef.current;
-    const scroller = chatScrollRef.current;
+    const scroller = assistantScrollRef.current;
     if (!target || !scroller) return;
     const scrollerRect = scroller.getBoundingClientRect();
     const targetRect = target.getBoundingClientRect();
-    const delta = targetRect.top - scrollerRect.top;
-    const targetTop = scroller.scrollTop + delta - 8;
-    scroller.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
+    const delta = targetRect.left - scrollerRect.left;
+    const targetLeft = scroller.scrollLeft + delta - 8;
+    smoothScrollPaneTo(assistantScrollRef, targetLeft);
+  }
+
+  function scrollPaneStep(
+    ref: { current: HTMLDivElement | null },
+    direction: "next" | "prev",
+    activeIndex: number,
+    setIndex: (value: number) => void,
+  ) {
+    const el = ref.current;
+    if (!el) return;
+    const cards = getPaneCards(el);
+    if (cards.length === 0) {
+      const delta = Math.max(160, Math.floor(el.clientWidth * 0.78));
+      smoothScrollPaneTo(ref, el.scrollLeft + (direction === "next" ? delta : -delta));
+      return;
+    }
+    const centeredIndex = centeredCardIndex(el, cards);
+    const currentIndex = Number.isFinite(activeIndex) ? Math.max(0, Math.min(cards.length - 1, activeIndex)) : centeredIndex;
+    const nextIndex = direction === "next" ? Math.min(cards.length - 1, currentIndex + 1) : Math.max(0, currentIndex - 1);
+    const targetCard = cards[nextIndex];
+    if (!targetCard) return;
+    setIndex(nextIndex);
+    smoothScrollPaneTo(ref, targetLeftForCenteredCard(el, targetCard));
+  }
+
+  function scrollPaneToEdge(ref: { current: HTMLDivElement | null }, direction: "next" | "prev") {
+    const el = ref.current;
+    if (!el) return;
+    smoothScrollPaneTo(ref, direction === "next" ? el.scrollWidth : 0);
+  }
+
+  function startFabHold(which: "assistant" | "user", direction: "next" | "prev") {
+    const holdRef = which === "assistant" ? assistantFabHoldRef : userFabHoldRef;
+    const longRef = which === "assistant" ? assistantFabLongPressedRef : userFabLongPressedRef;
+    const directionRef = which === "assistant" ? assistantFabDirectionRef : userFabDirectionRef;
+    const actionHandledRef = which === "assistant" ? assistantFabActionHandledRef : userFabActionHandledRef;
+    const targetRef = which === "assistant" ? assistantScrollRef : userScrollRef;
+    if (holdRef.current != null) window.clearTimeout(holdRef.current);
+    longRef.current = false;
+    directionRef.current = direction;
+    actionHandledRef.current = false;
+    holdRef.current = window.setTimeout(() => {
+      longRef.current = true;
+      actionHandledRef.current = true;
+      scrollPaneToEdge(targetRef, direction);
+    }, 320);
+  }
+
+  function endFabHold(which: "assistant" | "user", direction?: "next" | "prev") {
+    const holdRef = which === "assistant" ? assistantFabHoldRef : userFabHoldRef;
+    if (holdRef.current != null) {
+      window.clearTimeout(holdRef.current);
+      holdRef.current = null;
+    }
+    if (!direction) return;
+    const longRef = which === "assistant" ? assistantFabLongPressedRef : userFabLongPressedRef;
+    const directionRef = which === "assistant" ? assistantFabDirectionRef : userFabDirectionRef;
+    const actionHandledRef = which === "assistant" ? assistantFabActionHandledRef : userFabActionHandledRef;
+    if (actionHandledRef.current) return;
+    if (longRef.current && directionRef.current === direction) {
+      longRef.current = false;
+      actionHandledRef.current = true;
+      return;
+    }
+    if (which === "assistant") {
+      scrollPaneStep(assistantScrollRef, direction, assistantActiveIndex, setAssistantActiveIndex);
+    } else {
+      scrollPaneStep(userScrollRef, direction, userActiveIndex, setUserActiveIndex);
+    }
+    actionHandledRef.current = true;
   }
 
   function keyUnits(key: KeySpec) {
@@ -1035,12 +1224,6 @@ export default function Home() {
       >
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <div className="mb-1 flex items-center gap-2">
-              <img src="/icon.svg" alt="l33 logo" className="h-5 w-5 rounded-[6px]" />
-              <span className={`font-mono text-[11px] font-semibold tracking-[0.12em] ${isDark ? "text-[#8fd9ff]" : "text-[#0b4f8a]"}`}>
-                l33.bot
-              </span>
-            </div>
             <button
               type="button"
               onClick={scrollToActiveProblemMessage}
@@ -1058,7 +1241,7 @@ export default function Home() {
             <button
               type="button"
               onClick={cycleTheme}
-              className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+              className={`inline-flex h-7 w-7 items-center justify-center rounded-md border text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
               title="Cycle theme"
             >
               ◐
@@ -1070,7 +1253,7 @@ export default function Home() {
                   onClick={() => {
                     void startCheckout();
                   }}
-                  className={`rounded-md border px-2 py-1 text-[11px] font-semibold ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+                  className={`inline-flex h-7 w-7 items-center justify-center rounded-md border text-[11px] font-semibold ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
                   title={`Buy credits${authUser ? ` (bal $${creditBalance.toFixed(2)})` : ""}`}
                 >
                   {purchaseLoading ? "…" : "$"}
@@ -1078,7 +1261,7 @@ export default function Home() {
                 <a
                   href="/auth/sign-out"
                   title="Logout"
-                  className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+                  className={`inline-flex h-7 w-7 items-center justify-center rounded-md border text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
                 >
                   ⇥
                 </a>
@@ -1087,7 +1270,7 @@ export default function Home() {
               <a
                 href="/auth/sign-in?returnTo=/"
                 title="Login"
-                className={`rounded-md border px-2 py-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
+                className={`inline-flex h-7 w-7 items-center justify-center rounded-md border text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
               >
                 ⇤
               </a>
@@ -1096,81 +1279,155 @@ export default function Home() {
         </div>
       </header>
 
-      <section ref={chatScrollRef} className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
-        <div className="space-y-2">
-          {messages.map((message, index) => {
-            const isAssistant = message.role === "assistant";
-            const baseClass = isAssistant
-              ? `max-w-[94%] rounded-xl rounded-bl-none ${isDark ? "bg-[#151b24]" : "bg-white"}`
-              : "ml-auto max-w-[94%] rounded-xl rounded-br-none bg-[#1f334f] text-white";
-
-            return (
-              <article
-                key={`${message.createdAt}-${index}`}
-                ref={index === activeProblemMessageIndex ? (node) => {
-                  activeProblemMessageRef.current = node;
-                } : undefined}
-                className={`${baseClass} relative px-3 py-2 text-sm shadow-sm`}
-              >
-                {message.kind === "code" ? (
-                  <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-[12px] leading-5">{message.content}</pre>
-                ) : isAssistant && looksLikeHtmlMarkup(message.content) ? (
-                  <div
-                    className="space-y-2 text-[13px] leading-5 [&_code]:rounded [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[12px] [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:rounded-md [&_pre]:p-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
-                    dangerouslySetInnerHTML={{ __html: sanitizeHtmlForRender(message.content) }}
-                  />
-                ) : (
-                  <p className="whitespace-pre-wrap leading-5">{message.content}</p>
-                )}
-              </article>
-            );
-          })}
-          <div className="relative ml-auto w-full max-w-[92%] pl-8">
-            <button
-              type="button"
-              onClick={() => {
-                focusComposer(composerMode === "chat" ? "code" : "chat");
-              }}
-              className={`absolute left-0 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-[11px] font-bold ${
-                composerMode === "code" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
-              }`}
-              title={composerMode === "chat" ? "Switch to code mode" : "Switch to text mode"}
-            >
-              {composerMode === "chat" ? "0" : "T"}
-            </button>
-            <div
-              className={`relative overflow-hidden rounded-2xl rounded-br-none border ${
-                composerMode === "code"
-                  ? "border-white/20 bg-[#0e1117]"
-                  : isDark
-                    ? "border-white/20 bg-[#151b24]"
-                    : "border-black/15 bg-white"
-              }`}
-            >
-              <textarea
-                ref={composerMode === "code" ? codeInputRef : chatInputRef}
-                value={composerMode === "code" ? code : draft}
-                inputMode="none"
-                spellCheck={composerMode !== "code"}
-                onKeyDown={(event) => event.preventDefault()}
-                onChange={(event) => {
-                  if (composerMode === "code") setCode(event.target.value);
-                  else setDraft(event.target.value);
-                }}
-                onFocus={() => focusComposer(composerMode)}
-                onClick={() => syncCursorFromDom(composerMode)}
-                onSelect={() => syncCursorFromDom(composerMode)}
-                rows={composerMode === "code" ? 1 : 2}
-                placeholder={composerMode === "code" ? "code bubble (hold enter to submit)" : "message bubble"}
-                className={`w-full resize-none border-0 px-3 py-2 outline-none ${
-                  composerMode === "code"
-                    ? "overflow-y-hidden bg-[#0e1117] font-mono text-[12px] leading-5 text-[#e5e7eb] caret-[#e5e7eb]"
-                    : `${isDark ? "bg-[#151b24] text-[#e5e7eb] caret-[#e5e7eb]" : "bg-transparent text-[#111] caret-[#111]"} text-sm`
-                }`}
-              />
+      <section className="min-h-0 flex-1 overflow-hidden">
+        <div className="grid h-full grid-rows-2">
+          <section className="relative min-h-0 overflow-hidden">
+            <div ref={assistantScrollRef} className="no-scrollbar h-full overflow-x-auto overflow-y-hidden px-3 py-3">
+              <div className="flex h-full items-stretch gap-2 pr-12">
+                {assistantMessages.map((message, index) => (
+                  <article
+                    key={`${message.createdAt}-a-${index}`}
+                    ref={index === activeProblemMessageIndex ? (node) => {
+                      activeProblemMessageRef.current = node;
+                    } : undefined}
+                    className={`flex h-full min-h-full max-w-[96%] shrink-0 self-stretch flex-col rounded-xl rounded-tl-none px-3 py-2 text-sm shadow-sm ${isDark ? "bg-[#151b24]" : "bg-white"}`}
+                  >
+                    <div className="no-scrollbar h-full min-h-0 flex-1 overflow-auto">
+                      {message.kind === "code" ? (
+                        <pre className="whitespace-pre-wrap font-mono text-[12px] leading-5">{message.content}</pre>
+                      ) : looksLikeHtmlMarkup(message.content) ? (
+                        <div
+                          className="space-y-2 text-[13px] leading-5 [&_code]:rounded [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[12px] [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:rounded-md [&_pre]:p-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtmlForRender(message.content) }}
+                        />
+                      ) : (
+                        <p className="whitespace-pre-wrap leading-5">{message.content}</p>
+                      )}
+                    </div>
+                  </article>
+                ))}
+              </div>
             </div>
-          </div>
-          <div ref={chatBottomRef} />
+            {assistantHasPrev ? (
+              <button
+                type="button"
+                onPointerDown={() => startFabHold("assistant", "prev")}
+                onPointerUp={() => endFabHold("assistant", "prev")}
+                onPointerCancel={() => endFabHold("assistant", "prev")}
+                onPointerLeave={() => endFabHold("assistant", "prev")}
+                className="absolute bottom-2 left-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow"
+                title="Previous assistant message (hold to start)"
+              >
+                ←
+              </button>
+            ) : null}
+            {assistantHasMore ? (
+              <button
+                type="button"
+                onPointerDown={() => startFabHold("assistant", "next")}
+                onPointerUp={() => endFabHold("assistant", "next")}
+                onPointerCancel={() => endFabHold("assistant", "next")}
+                onPointerLeave={() => endFabHold("assistant", "next")}
+                className="absolute bottom-2 right-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow"
+                title="Next assistant message (hold to end)"
+              >
+                →
+              </button>
+            ) : null}
+          </section>
+
+          <section className="relative min-h-0 overflow-hidden">
+            <div ref={userScrollRef} className="no-scrollbar h-full overflow-x-auto overflow-y-hidden px-3 py-3">
+              <div className="flex h-full items-stretch gap-2">
+                {userMessages.map((message, index) => (
+                  <article
+                    key={`${message.createdAt}-u-${index}`}
+                    className="flex h-full min-h-full max-w-[96%] shrink-0 self-stretch flex-col rounded-xl rounded-br-none bg-[#1f334f] px-3 py-2 text-sm text-white shadow-sm"
+                  >
+                    <div className="no-scrollbar h-full min-h-0 flex-1 overflow-auto">
+                      {message.kind === "code" ? (
+                        <pre className="whitespace-pre-wrap font-mono text-[12px] leading-5">{message.content}</pre>
+                      ) : (
+                        <p className="whitespace-pre-wrap leading-5">{message.content}</p>
+                      )}
+                    </div>
+                  </article>
+                ))}
+
+                <div className="relative ml-auto h-full min-w-0 flex-1 shrink-0 pl-8">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      focusComposer(composerMode === "chat" ? "code" : "chat");
+                    }}
+                    className={`absolute left-0 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-[11px] font-bold ${
+                      composerMode === "code" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
+                    }`}
+                    title={composerMode === "chat" ? "Mode: text (tap to switch to code)" : "Mode: code (tap to switch to text)"}
+                  >
+                    <span className={composerMode === "chat" ? "text-[11px]" : "text-[8px] leading-none"}>{composerMode === "chat" ? "T" : "</>"}</span>
+                  </button>
+                  <div
+                    className={`relative overflow-hidden rounded-2xl rounded-br-none border ${
+                      composerMode === "code"
+                        ? "border-white/20 bg-[#0e1117]"
+                        : isDark
+                          ? "border-white/20 bg-[#151b24]"
+                          : "border-black/15 bg-white"
+                    } h-full`}
+                  >
+                    <textarea
+                      ref={composerMode === "code" ? codeInputRef : chatInputRef}
+                      value={composerMode === "code" ? code : draft}
+                      inputMode="none"
+                      spellCheck={composerMode !== "code"}
+                      onKeyDown={(event) => event.preventDefault()}
+                      onChange={(event) => {
+                        if (composerMode === "code") setCode(event.target.value);
+                        else setDraft(event.target.value);
+                      }}
+                      onFocus={() => focusComposer(composerMode)}
+                      onClick={() => syncCursorFromDom(composerMode)}
+                      onSelect={() => syncCursorFromDom(composerMode)}
+                      rows={composerMode === "code" ? 1 : 2}
+                      placeholder={composerMode === "code" ? "code bubble (hold enter to submit)" : "message bubble"}
+                      className={`h-full w-full resize-none border-0 px-3 py-2 outline-none ${
+                        composerMode === "code"
+                          ? "overflow-y-auto bg-[#0e1117] font-mono text-[12px] leading-5 text-[#e5e7eb] caret-[#e5e7eb]"
+                          : `${isDark ? "bg-[#151b24] text-[#e5e7eb] caret-[#e5e7eb]" : "bg-transparent text-[#111] caret-[#111]"} text-sm`
+                      }`}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            {userHasPrev ? (
+              <button
+                type="button"
+                onPointerDown={() => startFabHold("user", "prev")}
+                onPointerUp={() => endFabHold("user", "prev")}
+                onPointerCancel={() => endFabHold("user", "prev")}
+                onPointerLeave={() => endFabHold("user", "prev")}
+                className="absolute bottom-2 left-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow"
+                title="Previous user message (hold to start)"
+              >
+                ←
+              </button>
+            ) : null}
+            {userHasMore ? (
+              <button
+                type="button"
+                onPointerDown={() => startFabHold("user", "next")}
+                onPointerUp={() => endFabHold("user", "next")}
+                onPointerCancel={() => endFabHold("user", "next")}
+                onPointerLeave={() => endFabHold("user", "next")}
+                className="absolute bottom-2 right-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow"
+                title="Next user message (hold to end)"
+              >
+                →
+              </button>
+            ) : null}
+          </section>
         </div>
       </section>
 
