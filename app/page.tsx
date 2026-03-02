@@ -580,6 +580,10 @@ export default function Home() {
     });
   }, [composerMode]);
 
+  useEffect(() => {
+    autoResizeTextarea(codeInputRef);
+  }, [code]);
+
   useEffect(() => () => {
     stopKeyRepeat();
     clearHoldTimer();
@@ -624,6 +628,13 @@ export default function Home() {
       if (target === "chat") setChatCursor(cursor);
       else setCodeCursor(cursor);
     });
+  }
+
+  function autoResizeTextarea(ref: { current: HTMLTextAreaElement | null }) {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = "0px";
+    el.style.height = `${el.scrollHeight}px`;
   }
 
   function pressKey(token: string) {
@@ -1115,9 +1126,9 @@ export default function Home() {
                 onFocus={() => focusComposer("code")}
                 onClick={() => syncCursorFromDom("code")}
                 onSelect={() => syncCursorFromDom("code")}
-                rows={4}
+                rows={1}
                 placeholder="pinned code bubble"
-                className="w-full resize-none border-0 bg-[#0e1117] px-3 py-2 font-mono text-[12px] leading-5 text-[#e5e7eb] caret-[#e5e7eb] outline-none"
+                className="w-full resize-none overflow-y-hidden border-0 bg-[#0e1117] px-3 py-2 font-mono text-[12px] leading-5 text-[#e5e7eb] caret-[#e5e7eb] outline-none"
               />
             </div>
           </div>
