@@ -7,7 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run lint && npm run build && npm run typecheck",
+    "env:check": "node scripts/check-env.mjs .env.local",
+    "setup": "bash scripts/setup.sh",
     "db:migrate": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f db/schema.sql",
+    "db:bootstrap": "npm run db:migrate && npm run db:seed:catalog",
     "db:seed:lc150": "node scripts/seed-lc150.mjs",
     "db:build:catalog": "node scripts/build-catalog-and-curricula.mjs",
     "db:seed:catalog": "node scripts/seed-catalog-curriculums.mjs",
@@ -17,7 +22,6 @@
     "@neondatabase/serverless": "^1.0.2",
     "@vercel/analytics": "^1.6.1",
     "@vercel/blob": "^2.3.0",
-    "@workos-inc/authkit-nextjs": "^2.15.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.575.0",
@@ -26,7 +30,6 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "stripe": "^20.4.0",
     "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {

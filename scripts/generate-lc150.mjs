@@ -115,5 +115,5 @@ const out = dedup
     };
   });
 
-writeFileSync('/home/ai/Development/l33tsp33k/data/lc150.json', JSON.stringify(out, null, 2));
-console.log(`Generated lc150.json with ${out.length} rows`);
+writeFileSync(new URL('../data/lc150.json', import.meta.url), `${JSON.stringify(out, null, 2)}\n`, 'utf8');
+console.log(`Generated data/lc150.json with ${out.length} rows`);

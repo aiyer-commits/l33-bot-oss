@@ -1,9 +1,11 @@
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, basename } from 'node:path';
 import { neon } from '@neondatabase/serverless';
 
-const repoRoot = process.env.DOOCS_REPO || '/home/ai/Development/doocs-leetcode';
+const repoRoot = process.env.DOOCS_REPO;
+if (!repoRoot) throw new Error('DOOCS_REPO is required and must point to a local clone of github.com/doocs/leetcode');
 const solutionRoot = join(repoRoot, 'solution');
+if (!existsSync(solutionRoot)) throw new Error(`DOOCS_REPO does not contain a solution/ directory: ${solutionRoot}`);
 
 const lc150 = JSON.parse(readFileSync(new URL('../data/lc150.json', import.meta.url), 'utf8'));
 const lc75 = JSON.parse(readFileSync(new URL('../data/leetcode75.json', import.meta.url), 'utf8'));

@@ -2,11 +2,9 @@ import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
 import type { ResponseFunctionToolCall } from 'openai/resources/responses/responses';
 import type { ChatApiRequest, ChatApiResponse, ChatMessage } from '@/lib/types';
-import { getOptionalUser } from '@/lib/auth';
 import {
   appendMessages,
   countMastered,
-  deductCredits,
   ensureLearnerProfile,
   getCurriculumProgressSummary,
   getCurriculumSequenceContext,
@@ -16,7 +14,6 @@ import {
   getProblemById,
   getProgressForProblem,
   getRecentMessages,
-  hasPaidAccess,
   listCurriculums,
   logUsage,
   searchProblems,
@@ -24,7 +21,7 @@ import {
   setActiveProblem,
   upsertProblemProgress,
 } from '@/lib/db/repo';
-import { applyMargin, calculateResponseCostFemtodollars, femtodollarsToDollars } from '@/lib/pricing';
+import { calculateResponseCostFemtodollars } from '@/lib/pricing';
 
 const MODEL = 'gpt-4.1-mini';
 
@@ -323,14 +320,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Empty turn payload' }, { status: 400 });
   }
 
-  const user = await getOptionalUser();
   const learner = await ensureLearnerProfile({
-    userId: user?.id ?? null,
-    email: user?.email ?? null,
+    userId: null,
+    email: null,
     anonId: body.anonId ?? null,
   });
-  const paidAccess = user ? await hasPaidAccess(learner.learner_id) : false;
-  const availableCurriculums = await listCurriculums(paidAccess);
+  const availableCurriculums = await listCurriculums(true);
   const allowedCurriculumKeys = new Set(availableCurriculums.map((c) => String(c.key)));
 
   let activeCurriculumKey = learner.active_curriculum_key;
@@ -408,7 +403,7 @@ export async function POST(request: Request) {
   const problemStatement = plainStatement(activeProblem.statement ?? '');
 
   const prompt = [
-    `Learner mode: ${user ? 'logged_in' : 'anonymous_free'}`,
+    'Learner mode: anonymous',
     `Problem #${activeProblem.id}: ${activeProblem.title}`,
     `Difficulty: ${activeProblem.difficulty}`,
     `Category: ${activeProblem.category}`,
@@ -519,30 +514,6 @@ export async function POST(request: Request) {
     cachedTokens,
     reasoningTokens,
   });
-  const charge = applyMargin(rawCost);
-
-  let remainingBalance: bigint | null = null;
-  if (user) {
-    const deduction = await deductCredits(learner.learner_id, charge, 'Chat tutoring message', {
-      inputTokens,
-      outputTokens,
-      cachedTokens,
-      reasoningTokens,
-      model: MODEL,
-    });
-
-    if (!deduction.ok) {
-      return NextResponse.json(
-        {
-          error: 'Insufficient credits. Purchase $10 pack to continue logged-in tutoring.',
-          sessionId,
-        },
-        { status: 402 },
-      );
-    }
-    remainingBalance = deduction.balance;
-  }
-
   await logUsage({
     learnerId: learner.learner_id,
     sessionId,
@@ -552,7 +523,7 @@ export async function POST(request: Request) {
     cachedTokens,
     reasoningTokens,
     costFemtodollars: rawCost,
-    chargeFemtodollars: user ? charge : BigInt(0),
+    chargeFemtodollars: BigInt(0),
     openaiResponseId: response.id ?? null,
   });
 
@@ -561,12 +532,7 @@ export async function POST(request: Request) {
     sessionId,
     activeProblemId: moveToProblemId,
     activeCurriculumKey,
-    usage: {
-      chargedFemtodollars: (user ? charge : BigInt(0)).toString(),
-      chargedDollars: femtodollarsToDollars(user ? charge : BigInt(0)),
-      remainingBalanceFemtodollars: remainingBalance?.toString(),
-      remainingBalanceDollars: remainingBalance != null ? femtodollarsToDollars(remainingBalance) : undefined,
-    },
+    usage: { chargedFemtodollars: '0', chargedDollars: 0 },
   };
 
   return NextResponse.json(out);

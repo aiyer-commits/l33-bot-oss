@@ -455,9 +455,6 @@ export default function Home() {
   const [error, setError] = useState("");
   const [sessionId, setSessionId] = useState<string>("");
   const [anonId, setAnonId] = useState<string>("");
-  const [authUser, setAuthUser] = useState<{ id: string; email?: string | null } | null>(null);
-  const [creditBalance, setCreditBalance] = useState<number>(0);
-  const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [theme, setTheme] = useState<ThemeMode>("light");
 
   const [composerMode, setComposerMode] = useState<ComposerMode>("code");
@@ -548,30 +545,6 @@ export default function Home() {
     if (typeof codeRaw === "string") setCode(codeRaw);
     if (themeRaw === "dark" || themeRaw === "light") setTheme(themeRaw);
 
-    const hydrate = async () => {
-      try {
-        const response = await fetch(`/api/auth/session?anonId=${encodeURIComponent(localAnonId ?? "")}`);
-        if (!response.ok) return;
-        const payload = await response.json();
-        setAuthUser(payload.user ?? null);
-        setCreditBalance(payload.credits?.balanceDollars ?? 0);
-
-        if (typeof payload.activeProblemId === "number") {
-          setProfile((prev) =>
-            prev
-              ? {
-                  ...prev,
-                  activeProblemId: payload.activeProblemId,
-                }
-              : prev,
-          );
-        }
-      } catch {
-        // Ignore hydration failures; app still works in local-only mode.
-      }
-    };
-
-    void hydrate();
   }, []);
 
   useEffect(() => {
@@ -877,28 +850,6 @@ export default function Home() {
     }
   }
 
-  async function startCheckout() {
-    if (!authUser || purchaseLoading) return;
-    setPurchaseLoading(true);
-    setError("");
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quantity: 1 }),
-      });
-      const payload = await response.json();
-      if (!response.ok) throw new Error(payload.error ?? "Checkout failed");
-      if (payload.url) {
-        window.location.href = payload.url;
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Checkout failed");
-    } finally {
-      setPurchaseLoading(false);
-    }
-  }
-
   async function sendTurn(options: { sendText: boolean; sendCode: boolean; presetText?: string }) {
     if (!profile || !activeProblem || isSending) return;
 
@@ -956,10 +907,6 @@ export default function Home() {
       if (payload.activeProblemId && payload.activeProblemId !== profile.activeProblemId) {
         setProfile((prev) => (prev ? { ...prev, activeProblemId: payload.activeProblemId! } : prev));
       }
-      if (payload.usage?.remainingBalanceDollars != null) {
-        setCreditBalance(payload.usage.remainingBalanceDollars);
-      }
-
       setMessages((prev) => {
         const tail = [payload.assessment.summaryNote, `Next: ${payload.assessment.nextStep}`]
           .filter(Boolean)
@@ -1394,35 +1341,6 @@ export default function Home() {
             >
               ◐
             </button>
-            {authUser ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => {
-                    void startCheckout();
-                  }}
-                  className={`inline-flex h-7 w-7 items-center justify-center rounded-md border text-[11px] font-semibold ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
-                  title={`Buy credits${authUser ? ` (bal $${creditBalance.toFixed(2)})` : ""}`}
-                >
-                  {purchaseLoading ? "…" : "$"}
-                </button>
-                <a
-                  href="/auth/sign-out"
-                  title="Logout"
-                  className={`inline-flex h-7 w-7 items-center justify-center rounded-md border text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
-                >
-                  ⇥
-                </a>
-              </>
-            ) : (
-              <a
-                href="/auth/sign-in?returnTo=/"
-                title="Login"
-                className={`inline-flex h-7 w-7 items-center justify-center rounded-md border text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-white/70"}`}
-              >
-                ⇤
-              </a>
-            )}
           </div>
         </div>
       </header>
