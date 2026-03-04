@@ -156,6 +156,22 @@ export async function getCurriculumProblemIds(curriculumKey: string) {
   return rows.map((r) => r.problem_id);
 }
 
+export async function getCurriculumProblems(curriculumKey: string) {
+  const sql = getSql();
+  return sql`
+    SELECT
+      cp.position,
+      p.id,
+      p.title,
+      p.difficulty,
+      p.category
+    FROM curriculum_problems cp
+    JOIN problems p ON p.id = cp.problem_id
+    WHERE cp.curriculum_key = ${curriculumKey}
+    ORDER BY cp.position ASC
+  `;
+}
+
 export async function getFirstProblemForCurriculum(curriculumKey: string) {
   const sql = getSql();
   const rows = (await sql`
