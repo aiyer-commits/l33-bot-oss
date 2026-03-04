@@ -231,7 +231,7 @@ function normalizeMessages(raw: unknown): ChatMessage[] {
 function bootstrapIntro(problemId: number): ChatMessage[] {
   const problem = getProblemById(problemId);
   if (!problem) return [asMessage("assistant", "Session started. Problem data is missing.", "text")];
-  return [asMessage("assistant", "Welcome to l33.bot.", "text"), ...buildProblemMessages(problem.id)];
+  return [asMessage("assistant", "Use this flow: read the problem above, write code in the lower bubble, then hold Enter to submit. Tap the T/<> toggle to switch chat vs code, and use the language picker in the header to match your solution language. Ask for a hint or explanation anytime.", "text"), ...buildProblemMessages(problem.id)];
 }
 
 function buildProblemMessages(problemId: number): ChatMessage[] {
