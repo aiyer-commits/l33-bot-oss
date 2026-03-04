@@ -41,9 +41,18 @@ export type ChatMessage = {
   createdAt: string;
 };
 
+export type ProgrammingLanguage = "python" | "javascript" | "typescript" | "java" | "cpp" | "go" | "rust" | "sql";
+
+export type LanguageState = {
+  selected: ProgrammingLanguage;
+  effective: ProgrammingLanguage;
+  mode: "explicit";
+};
+
 export type ChatApiRequest = {
   message: string;
   code: string;
+  languageState?: LanguageState;
   activeProblemId?: number;
   profile?: LocalProfile;
   conversation?: ChatMessage[];

@@ -131,6 +131,7 @@ export async function POST(request: Request) {
     const body = (await request.json()) as ChatApiRequest;
     const message = (body.message ?? '').trim();
     const code = (body.code ?? '').trim();
+    const languageState = body.languageState;
 
     if (!message && !code) {
       return NextResponse.json({ error: 'Empty turn payload' }, { status: 400 });
@@ -178,6 +179,7 @@ export async function POST(request: Request) {
       `Current curriculum progress: ${curriculumProgress.mastered}/${curriculumProgress.total} mastered. Next suggested id: ${curriculumProgress.nextProblemId ?? 'none'}`,
       `Latest user text: ${message || '(none)'}`,
       `Latest user code present: ${code.length > 0 ? 'yes' : 'no'}`,
+      `Language state: ${languageState ? JSON.stringify(languageState) : 'none'}`,
       `Recent history:\n${compactHistory || '(none)'}`,
       'Only switch curriculum/problem when user intent clearly asks for it.',
       'If uncertain, keep current curriculum and problem.',
@@ -240,6 +242,7 @@ export async function POST(request: Request) {
       `Recent chat history:\n${compactHistoryForCoach || '(none)'}`,
       `Latest user message: ${message || '(none)'}`,
       `Latest user code: ${code || '(none)'}`,
+      `Language state: ${languageState ? JSON.stringify(languageState) : 'none'}`,
     ].join('\n\n');
 
     const coach = await generateJson<ChatApiResponse>({
@@ -326,4 +329,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
-

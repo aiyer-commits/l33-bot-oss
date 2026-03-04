@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Delete } from "lucide-react";
 import { clampConfidence, createInitialProfile, getProblemById } from "@/lib/leetcode75";
-import type { ChatApiResponse, ChatMessage, LocalProfile } from "@/lib/types";
+import type { ChatApiResponse, ChatMessage, LocalProfile, ProgrammingLanguage } from "@/lib/types";
 
 const PROFILE_KEY = "l33tsp33k.profile.v2";
 const CHAT_KEY = "l33tsp33k.chat.v2";
@@ -11,34 +11,11 @@ const CODE_KEY = "l33tsp33k.code.v2";
 const TEXT_KEY = "l33tsp33k.text.v2";
 const ANON_ID_KEY = "l33tsp33k.anon-id.v1";
 const THEME_KEY = "l33tsp33k.theme.v1";
+const LANGUAGE_KEY = "l33tsp33k.language.v1";
 const HOLD_DELAY_MS = 320;
 const REPEAT_DELAY_MS = 260;
 const REPEAT_INTERVAL_MS = 42;
 const INDENT_TOKEN = "\t";
-
-const TAP_OUTPUT_MAP: Record<string, string> = {
-  "&": "and ",
-  "|": "or ",
-  "!": "not ",
-  "@": "@lru_cache(None)\ndef ",
-  for: "for ",
-  while: "while ",
-  if: "if ",
-  elif: "elif ",
-  else: "else ",
-  in: "in ",
-};
-
-const HOLD_OUTPUT_MAP: Record<string, string> = {
-  "&": "&",
-  "|": "|",
-  "!": "!",
-  "<": "<<",
-  ">": ">>",
-  "1": "True",
-  "0": "False",
-  "@": "@",
-};
 
 type TargetField = "chat" | "code";
 type ComposerMode = "chat" | "code";
@@ -51,125 +28,103 @@ type KeyboardRow = { offsetUnits?: number; heightUnits?: number; keys: KeySpec[]
 type FuzzyKeyMeta = { token: string; rowIndex: number; keyIndex: number; el: HTMLButtonElement };
 const BASE_KEY_HEIGHT = "clamp(44px, 9.6vw, 58px)";
 
-const KEYBOARD_LAYOUT: KeyboardRow[] = [
-  {
-    heightUnits: 0.92,
-    keys: [
-      { token: "<" },
-      { token: ">" },
-      { token: "1" },
-      { token: "2" },
-      { token: "3" },
-      { token: "for" },
-      { token: "while" },
-      { token: "if" },
-      { token: "^" },
-      { token: "~" },
-      { token: "#" },
-    ],
-  },
-  {
-    heightUnits: 0.92,
-    keys: [
-      { token: "[" },
-      { token: "]" },
-      { token: "4" },
-      { token: "5" },
-      { token: "6" },
-      { token: "elif" },
-      { token: "else" },
-      { token: "in" },
-      { token: '"' },
-      { token: "?" },
-      { token: "@" },
-    ],
-  },
-  {
-    heightUnits: 0.92,
-    keys: [
-      { token: "{" },
-      { token: "}" },
-      { token: "7" },
-      { token: "8" },
-      { token: "9" },
-      { token: "&" },
-      { token: "|" },
-      { token: "!" },
-      { token: "/" },
-      { token: "%" },
-      { token: "=" },
-    ],
-  },
-  {
-    heightUnits: 0.92,
-    keys: [
-      { token: "(" },
-      { token: ")" },
-      { token: "_" },
-      { token: "0" },
-      { token: ":" },
-      { token: "," },
-      { token: "." },
-      { token: "'" },
-      { token: "+" },
-      { token: "-" },
-      { token: "*" },
-    ],
-  },
-  {
-    heightUnits: 1.0,
-    keys: [
-      { token: "q" },
-      { token: "w" },
-      { token: "e" },
-      { token: "r" },
-      { token: "t" },
-      { token: "y" },
-      { token: "u" },
-      { token: "i" },
-      { token: "o" },
-      { token: "p" },
-    ],
-  },
-  {
-    offsetUnits: 0.5,
-    heightUnits: 1.0,
-    keys: [
-      { token: "a" },
-      { token: "s" },
-      { token: "d" },
-      { token: "f" },
-      { token: "g" },
-      { token: "h" },
-      { token: "j" },
-      { token: "k" },
-      { token: "l" },
-    ],
-  },
-  {
-    heightUnits: 1.0,
-    keys: [
-      { token: "SHIFT", units: 1.5 },
-      { token: "z" },
-      { token: "x" },
-      { token: "c" },
-      { token: "v" },
-      { token: "b" },
-      { token: "n" },
-      { token: "m" },
-      { token: "BACKSPACE", units: 1.5 },
-    ],
-  },
-  {
-    heightUnits: 1.08,
-    keys: [
-      { token: "TAB", units: 1.8 },
-      { token: "ARROWS", units: 1.8 },
-      { token: "SPACE", units: 4 },
-      { token: "ENTER", units: 3.6 },
-    ],
-  },
+const LANGUAGE_OPTIONS: Array<{ value: ProgrammingLanguage; label: string }> = [
+  { value: "python", label: "Py" },
+  { value: "javascript", label: "JS" },
+  { value: "typescript", label: "TS" },
+  { value: "java", label: "Java" },
+  { value: "cpp", label: "C++" },
+  { value: "go", label: "Go" },
+  { value: "rust", label: "Rust" },
+  { value: "sql", label: "SQL" },
 ];
+
+const SYMBOL_ROWS_BY_LANGUAGE: Record<ProgrammingLanguage, string[][]> = {
+  python: [
+    ["<", ">", "1", "2", "3", "for", "while", "if", "^", "~", "#"],
+    ["[", "]", "4", "5", "6", "elif", "else", "in", '"', "?", "@"],
+    ["{", "}", "7", "8", "9", "&", "|", "!", "/", "%", "="],
+    ["(", ")", "_", "0", ":", ",", ".", "'", "+", "-", "*"],
+  ],
+  javascript: [
+    ["<", ">", "1", "2", "3", "for", "while", "if", ";", "=>", "#"],
+    ["[", "]", "4", "5", "6", "else", "in", "fn", '"', "?", "const"],
+    ["{", "}", "7", "8", "9", "&", "|", "!", "/", "%", "="],
+    ["(", ")", "_", "0", ":", ",", ".", "'", "+", "-", "*"],
+  ],
+  typescript: [
+    ["<", ">", "1", "2", "3", "for", "while", "if", ";", "=>", "#"],
+    ["[", "]", "4", "5", "6", "else", "in", "type", '"', "?", "const"],
+    ["{", "}", "7", "8", "9", "&", "|", "!", "/", "%", "="],
+    ["(", ")", "_", "0", ":", ",", ".", "'", "+", "-", "*"],
+  ],
+  java: [
+    ["<", ">", "1", "2", "3", "for", "while", "if", ";", "new", "#"],
+    ["[", "]", "4", "5", "6", "else", "class", "void", '"', "?", "public"],
+    ["{", "}", "7", "8", "9", "&", "|", "!", "/", "%", "="],
+    ["(", ")", "_", "0", ":", ",", ".", "'", "+", "-", "*"],
+  ],
+  cpp: [
+    ["<", ">", "1", "2", "3", "for", "while", "if", ";", "::", "#"],
+    ["[", "]", "4", "5", "6", "else", "auto", "std", '"', "?", "->"],
+    ["{", "}", "7", "8", "9", "&", "|", "!", "/", "%", "="],
+    ["(", ")", "_", "0", ":", ",", ".", "'", "+", "-", "*"],
+  ],
+  go: [
+    ["<", ">", "1", "2", "3", "for", "if", "func", ";", ":=", "#"],
+    ["[", "]", "4", "5", "6", "else", "range", "var", '"', "?", "go"],
+    ["{", "}", "7", "8", "9", "&", "|", "!", "/", "%", "="],
+    ["(", ")", "_", "0", ":", ",", ".", "'", "+", "-", "*"],
+  ],
+  rust: [
+    ["<", ">", "1", "2", "3", "for", "while", "if", ";", "->", "#"],
+    ["[", "]", "4", "5", "6", "else", "let", "fn", '"', "?", "mut"],
+    ["{", "}", "7", "8", "9", "&", "|", "!", "/", "%", "="],
+    ["(", ")", "_", "0", ":", ",", ".", "'", "+", "-", "*"],
+  ],
+  sql: [
+    ["<", ">", "1", "2", "3", "SELECT", "FROM", "WHERE", ";", "AND", "#"],
+    ["[", "]", "4", "5", "6", "JOIN", "GROUP", "ORDER", '"', "?", "LIMIT"],
+    ["{", "}", "7", "8", "9", "&", "|", "!", "/", "%", "="],
+    ["(", ")", "_", "0", ":", ",", ".", "'", "+", "-", "*"],
+  ],
+};
+
+const TAP_OUTPUT_BY_LANGUAGE: Record<ProgrammingLanguage, Record<string, string>> = {
+  python: { "&": "and ", "|": "or ", "!": "not ", "@": "@lru_cache(None)\ndef ", for: "for ", while: "while ", if: "if ", elif: "elif ", else: "else ", in: "in " },
+  javascript: { for: "for ", while: "while ", if: "if ", else: "else ", fn: "function ", const: "const ", "=>": "() => " },
+  typescript: { for: "for ", while: "while ", if: "if ", else: "else ", type: "type ", const: "const ", "=>": "() => " },
+  java: { for: "for ", while: "while ", if: "if ", else: "else ", class: "class ", public: "public ", new: "new " },
+  cpp: { for: "for ", while: "while ", if: "if ", else: "else ", auto: "auto ", std: "std::", "::": "::", "->": "->" },
+  go: { for: "for ", if: "if ", else: "else ", func: "func ", var: "var ", ":=": ":= ", range: "range " },
+  rust: { for: "for ", while: "while ", if: "if ", else: "else ", let: "let ", fn: "fn ", mut: "mut " },
+  sql: { SELECT: "SELECT ", FROM: "FROM ", WHERE: "WHERE ", JOIN: "JOIN ", GROUP: "GROUP BY ", ORDER: "ORDER BY ", LIMIT: "LIMIT ", AND: "AND " },
+};
+
+const HOLD_OUTPUT_BY_LANGUAGE: Record<ProgrammingLanguage, Record<string, string>> = {
+  python: { "&": "&", "|": "|", "!": "!", "<": "<<", ">": ">>", "1": "True", "0": "False", "@": "@" },
+  javascript: { "&": "&&", "|": "||", "!": "!", "<": "<<", ">": ">>", "1": "true", "0": "false" },
+  typescript: { "&": "&&", "|": "||", "!": "!", "<": "<<", ">": ">>", "1": "true", "0": "false" },
+  java: { "&": "&&", "|": "||", "!": "!", "<": "<<", ">": ">>", "1": "true", "0": "false" },
+  cpp: { "&": "&&", "|": "||", "!": "!", "<": "<<", ">": ">>", "1": "true", "0": "false" },
+  go: { "&": "&&", "|": "||", "!": "!", "<": "<<", ">": ">>", "1": "true", "0": "false" },
+  rust: { "&": "&&", "|": "||", "!": "!", "<": "<<", ">": ">>", "1": "true", "0": "false" },
+  sql: { "&": "AND ", "|": "OR ", "!": "NOT ", "<": "<=", ">": ">=", "1": "TRUE", "0": "FALSE" },
+};
+
+function buildKeyboardLayout(language: ProgrammingLanguage): KeyboardRow[] {
+  const symbolRows = SYMBOL_ROWS_BY_LANGUAGE[language] ?? SYMBOL_ROWS_BY_LANGUAGE.python;
+  return [
+    { heightUnits: 0.92, keys: symbolRows[0].map((token) => ({ token })) },
+    { heightUnits: 0.92, keys: symbolRows[1].map((token) => ({ token })) },
+    { heightUnits: 0.92, keys: symbolRows[2].map((token) => ({ token })) },
+    { heightUnits: 0.92, keys: symbolRows[3].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"].map((token) => ({ token })) },
+    { offsetUnits: 0.5, heightUnits: 1.0, keys: ["a", "s", "d", "f", "g", "h", "j", "k", "l"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: [{ token: "SHIFT", units: 1.5 }, ...["z", "x", "c", "v", "b", "n", "m"].map((token) => ({ token })), { token: "BACKSPACE", units: 1.5 }] },
+    { heightUnits: 1.08, keys: [{ token: "TAB", units: 1.8 }, { token: "ARROWS", units: 1.8 }, { token: "SPACE", units: 4 }, { token: "ENTER", units: 3.6 }] },
+  ];
+}
 
 function nowIso() {
   return new Date().toISOString();
@@ -427,20 +382,42 @@ function applyOutdent(source: string, cursor: Cursor): { value: string; cursor: 
   return { value, cursor: { start: nextStart, end: nextEnd } };
 }
 
-function applySmartEnter(source: string, cursor: Cursor): { value: string; cursor: Cursor } {
+function normalizeLanguage(value: string | null | undefined): ProgrammingLanguage {
+  const normalized = String(value ?? "").toLowerCase();
+  if (
+    normalized === "python" ||
+    normalized === "javascript" ||
+    normalized === "typescript" ||
+    normalized === "java" ||
+    normalized === "cpp" ||
+    normalized === "go" ||
+    normalized === "rust" ||
+    normalized === "sql"
+  ) {
+    return normalized;
+  }
+  return "python";
+}
+
+function applySmartEnterForLanguage(source: string, cursor: Cursor, language: ProgrammingLanguage): { value: string; cursor: Cursor } {
+  const resolved = language;
   const currentLine = lineBounds(source, cursor.start);
   const linePrefix = source.slice(currentLine.start, cursor.start);
   const indentMatch = linePrefix.match(/^\t*/);
   const baseIndent = indentMatch ? indentMatch[0] : "";
   const trimmedPrefix = linePrefix.trimEnd();
-  if (trimmedPrefix.endsWith(":")) {
-    return applyInsert(source, cursor, `\n${baseIndent}${INDENT_TOKEN}`);
+
+  if (resolved === "python") {
+    if (trimmedPrefix.endsWith(":")) return applyInsert(source, cursor, `\n${baseIndent}${INDENT_TOKEN}`);
+    const dedentMatch = trimmedPrefix.match(/^\t*(return|pass|break|continue|raise)\b/);
+    if (dedentMatch && baseIndent.length > 0) return applyInsert(source, cursor, `\n${baseIndent.slice(0, -INDENT_TOKEN.length)}`);
+    return applyInsert(source, cursor, `\n${baseIndent}`);
   }
 
-  // Python smart dedent after block-exit statements.
-  const dedentMatch = trimmedPrefix.match(/^\t*(return|pass|break|continue|raise)\b/);
-  if (dedentMatch && baseIndent.length > 0) {
-    return applyInsert(source, cursor, `\n${baseIndent.slice(0, -INDENT_TOKEN.length)}`);
+  if (["javascript", "typescript", "java", "cpp", "go", "rust"].includes(resolved)) {
+    if (trimmedPrefix.endsWith("{")) return applyInsert(source, cursor, `\n${baseIndent}${INDENT_TOKEN}`);
+    if (trimmedPrefix === "}" && baseIndent.length > 0) return applyInsert(source, cursor, `\n${baseIndent.slice(0, -INDENT_TOKEN.length)}`);
+    return applyInsert(source, cursor, `\n${baseIndent}`);
   }
 
   return applyInsert(source, cursor, `\n${baseIndent}`);
@@ -456,6 +433,7 @@ export default function Home() {
   const [sessionId, setSessionId] = useState<string>("");
   const [anonId, setAnonId] = useState<string>("");
   const [theme, setTheme] = useState<ThemeMode>("light");
+  const [selectedLanguage, setSelectedLanguage] = useState<ProgrammingLanguage>("python");
 
   const [composerMode, setComposerMode] = useState<ComposerMode>("code");
   const [shiftOn, setShiftOn] = useState(false);
@@ -509,6 +487,7 @@ export default function Home() {
     const textRaw = localStorage.getItem(TEXT_KEY);
     const codeRaw = localStorage.getItem(CODE_KEY);
     const themeRaw = localStorage.getItem(THEME_KEY);
+    const languageRaw = localStorage.getItem(LANGUAGE_KEY);
 
     let loadedProfile: LocalProfile;
     if (profileRaw) {
@@ -544,6 +523,7 @@ export default function Home() {
     if (typeof textRaw === "string") setDraft(textRaw);
     if (typeof codeRaw === "string") setCode(codeRaw);
     if (themeRaw === "dark" || themeRaw === "light") setTheme(themeRaw);
+    setSelectedLanguage(normalizeLanguage(languageRaw));
 
   }, []);
 
@@ -574,6 +554,10 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem(LANGUAGE_KEY, selectedLanguage);
+  }, [selectedLanguage]);
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -700,6 +684,10 @@ export default function Home() {
     if (!profile) return null;
     return getProblemById(profile.activeProblemId) ?? null;
   }, [profile]);
+  const effectiveLanguage = useMemo<ProgrammingLanguage>(() => selectedLanguage, [selectedLanguage]);
+  const keyboardLayout = useMemo(() => buildKeyboardLayout(effectiveLanguage), [effectiveLanguage]);
+  const tapOutputMap = useMemo(() => TAP_OUTPUT_BY_LANGUAGE[effectiveLanguage] ?? TAP_OUTPUT_BY_LANGUAGE.python, [effectiveLanguage]);
+  const holdOutputMap = useMemo(() => HOLD_OUTPUT_BY_LANGUAGE[effectiveLanguage] ?? HOLD_OUTPUT_BY_LANGUAGE.python, [effectiveLanguage]);
   const assistantMessages = useMemo(() => messages.filter((msg) => msg.role === "assistant"), [messages]);
   const userMessages = useMemo(() => messages.filter((msg) => msg.role === "user"), [messages]);
 
@@ -803,7 +791,7 @@ export default function Home() {
     } else if (token === "SPACE") {
       result = applyInsert(source, cursor, " ");
     } else if (token === "ENTER") {
-      result = target === "code" ? applySmartEnter(source, cursor) : applyInsert(source, cursor, "\n");
+      result = target === "code" ? applySmartEnterForLanguage(source, cursor, effectiveLanguage) : applyInsert(source, cursor, "\n");
     } else if (token === "TAB") {
       if (target === "code") {
         if (shiftOn) {
@@ -889,6 +877,11 @@ export default function Home() {
         body: JSON.stringify({
           message: includeText ? textToSend : "",
           code: includeCode ? codeToSend : "",
+          languageState: {
+            selected: selectedLanguage,
+            effective: effectiveLanguage,
+            mode: "explicit",
+          },
           activeProblemId: profile.activeProblemId,
           profile,
           conversation: nextMessages,
@@ -971,10 +964,7 @@ export default function Home() {
     if (token === "RIGHT") return "";
     if (token === "ARROWS") return "";
     if (token === "BACKSPACE") return "";
-    if (token === "&") return "and";
-    if (token === "|") return "or";
-    if (token === "!") return "not";
-    if (token === "@") return "lru";
+    if (tapOutputMap[token]) return tapOutputMap[token].trim().slice(0, 8);
     if (token === "CLEAR") return "clear";
     return token;
   }
@@ -1089,8 +1079,8 @@ export default function Home() {
   }
 
   function resolveKeyOutput(token: string, mode: "tap" | "hold") {
-    if (mode === "hold" && HOLD_OUTPUT_MAP[token]) return HOLD_OUTPUT_MAP[token];
-    if (mode === "tap" && TAP_OUTPUT_MAP[token]) return TAP_OUTPUT_MAP[token];
+    if (mode === "hold" && holdOutputMap[token]) return holdOutputMap[token];
+    if (mode === "tap" && tapOutputMap[token]) return tapOutputMap[token];
     return token;
   }
 
@@ -1131,7 +1121,7 @@ export default function Home() {
       }, HOLD_DELAY_MS);
       return;
     }
-    if (typeof window === "undefined" || !HOLD_OUTPUT_MAP[token]) return;
+    if (typeof window === "undefined" || !holdOutputMap[token]) return;
 
     holdTimeoutRef.current = window.setTimeout(() => {
       holdTriggeredRef.current = true;
@@ -1333,6 +1323,18 @@ export default function Home() {
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-1">
+            <select
+              value={selectedLanguage}
+              onChange={(event) => setSelectedLanguage(normalizeLanguage(event.target.value))}
+              className={`h-7 rounded-md border px-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5 text-white" : "border-black/15 bg-white/70 text-black"}`}
+              title="Preferred coding language"
+            >
+              {LANGUAGE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
             <button
               type="button"
               onClick={cycleTheme}
@@ -1475,7 +1477,11 @@ export default function Home() {
                       onClick={() => syncCursorFromDom(composerMode)}
                       onSelect={() => syncCursorFromDom(composerMode)}
                       rows={composerMode === "code" ? 1 : 2}
-                      placeholder={composerMode === "code" ? "code bubble (hold enter to submit)" : "message bubble"}
+                      placeholder={
+                        composerMode === "code"
+                          ? `${effectiveLanguage} bubble (hold enter to submit)`
+                          : "message bubble"
+                      }
                       className={`h-full w-full resize-none border-0 px-3 py-2 outline-none ${
                         composerMode === "code"
                           ? "overflow-y-auto bg-[#0e1117] font-mono text-[12px] leading-5 text-[#e5e7eb] caret-[#e5e7eb]"
@@ -1523,7 +1529,7 @@ export default function Home() {
       <section className={`z-30 border-t px-2 pt-1 pb-2 backdrop-blur ${isDark ? "border-white/15 bg-[#121720]" : "border-black/10 bg-[#eceae2]"}`}>
         <div className="w-full [text-size-adjust:100%]">
           <div className="space-y-px">
-            {KEYBOARD_LAYOUT.map((row, rowIndex) => {
+            {keyboardLayout.map((row, rowIndex) => {
               const rowHeight = rowHeightPx(row);
               return (
               <div
