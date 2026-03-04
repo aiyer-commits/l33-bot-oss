@@ -1,57 +1,79 @@
-# AGENTS: OSS Setup + Deployment
+# AGENTS: OSS Setup, Provider Wiring, and Public Publish
 
-This repository is the OSS variant.
+This is the OSS branch/fork.
 
-Runtime scope:
-- No auth.
-- No payment/credits purchase flow.
-- DB-backed problem catalog/progress.
-- OpenAI-backed chat tutoring.
+## Runtime Contract
 
-## One-pass setup (local)
+- No auth routes
+- No payments/webhooks
+- DB-backed catalog/progress
+- LLM provider selected by `LLM_PROVIDER`
 
-1. Install deps:
-```bash
-npm install
-```
+Providers:
+- `openai`
+- `anthropic`
+- `google`
 
-2. Create env:
+Primary extension file:
+- [lib/llm/provider.ts](/home/ai/Development/l33-bot-oss/lib/llm/provider.ts)
+
+## Deterministic Setup
+
 ```bash
 cp .env.example .env.local
-```
-
-3. Fill required keys in `.env.local`:
-- `DATABASE_URL`
-- `OPENAI_API_KEY`
-- `BASE_URL`
-- `NEXT_PUBLIC_APP_URL`
-
-4. Validate env:
-```bash
+npm install
 npm run env:check
-```
-
-5. DB bootstrap:
-```bash
 npm run db:bootstrap
-```
-
-6. Start:
-```bash
 npm run dev
 ```
 
-## Docker flow (optional)
+## Provider Validation Matrix
 
+Run these checks before merge:
+
+1. OpenAI
 ```bash
-cp .env.example .env.local
-docker compose up --build
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/l33 npm run db:bootstrap
+LLM_PROVIDER=openai npm run env:check
 ```
 
-## Validation before PR
+2. Anthropic
+```bash
+LLM_PROVIDER=anthropic npm run env:check
+```
+
+3. Google
+```bash
+LLM_PROVIDER=google npm run env:check
+```
+
+## Quality Gate
 
 ```bash
 npm run check
 ```
+
+## Public Repo Publish via `gh`
+
+From repo root:
+
+1. Ensure auth:
+```bash
+gh auth status
+```
+
+2. Create public repo and push:
+```bash
+gh repo create l33-bot-oss --public --source=. --remote=origin --push
+```
+
+If `origin` already exists and points elsewhere:
+```bash
+git remote remove origin
+gh repo create l33-bot-oss --public --source=. --remote=origin --push
+```
+
+## Marketing Link
+
+Keep production link in docs:
+- https://l33.bot
 

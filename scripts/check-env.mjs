@@ -6,17 +6,19 @@ import { resolve } from 'node:path';
 const envFile = process.argv[2] || '.env.local';
 const envPath = resolve(process.cwd(), envFile);
 
-const required = [
-  'DATABASE_URL',
-  'OPENAI_API_KEY',
-  'BASE_URL',
-  'NEXT_PUBLIC_APP_URL',
-];
+const required = ['DATABASE_URL', 'BASE_URL', 'NEXT_PUBLIC_APP_URL'];
 
 const optional = [
   'POSTGRES_URL',
   'BLOB_READ_WRITE_TOKEN',
   'DOOCS_REPO',
+  'LLM_PROVIDER',
+  'OPENAI_MODEL',
+  'ANTHROPIC_MODEL',
+  'GOOGLE_MODEL',
+  'ANTHROPIC_API_KEY',
+  'GOOGLE_API_KEY',
+  'OPENAI_API_KEY',
 ];
 
 function parseEnvFile(path) {
@@ -38,6 +40,15 @@ function parseEnvFile(path) {
 const fileEnv = parseEnvFile(envPath);
 const merged = { ...fileEnv, ...process.env };
 
+const provider = String(merged.LLM_PROVIDER || 'openai').trim().toLowerCase();
+if (provider === 'openai') required.push('OPENAI_API_KEY');
+else if (provider === 'anthropic') required.push('ANTHROPIC_API_KEY');
+else if (provider === 'google') required.push('GOOGLE_API_KEY');
+else {
+  console.error(`Unsupported LLM_PROVIDER: ${provider}`);
+  process.exit(1);
+}
+
 const missing = required.filter((key) => !merged[key] || String(merged[key]).trim().length === 0);
 
 if (missing.length > 0) {
@@ -50,4 +61,3 @@ if (missing.length > 0) {
 console.log(`Environment check passed for ${envFile}.`);
 console.log(`Validated required vars: ${required.length}`);
 console.log(`Optional vars recognized: ${optional.length}`);
-

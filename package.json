@@ -19,6 +19,8 @@
     "data:gen:lc150": "node scripts/generate-lc150.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
+    "@google/genai": "^1.43.0",
     "@neondatabase/serverless": "^1.0.2",
     "@vercel/analytics": "^1.6.1",
     "@vercel/blob": "^2.3.0",
