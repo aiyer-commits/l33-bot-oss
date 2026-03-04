@@ -1,0 +1,82 @@
+name: Maintainer Agent - Discussions
+
+on:
+  discussion:
+    types: [created, edited]
+  discussion_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  discussions: write
+
+jobs:
+  engage:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reply in discussion thread
+        uses: actions/github-script@v7
+        env:
+          MAINTAINER_OPENAI_API_KEY: ${{ secrets.MAINTAINER_OPENAI_API_KEY }}
+          MAINTAINER_AGENT_MODEL: ${{ vars.MAINTAINER_AGENT_MODEL }}
+        with:
+          script: |
+            const discussion = context.payload.discussion;
+            if (!discussion) return;
+
+            const title = discussion.title || "";
+            const body = discussion.body || "";
+            const nodeId = discussion.node_id;
+
+            async function fallbackReply() {
+              return [
+                "Thanks for opening this discussion.",
+                "Maintainer agent review is active. If you’re reporting a bug, please include repro steps, expected/actual behavior, and environment details.",
+              ].join("\n\n");
+            }
+
+            async function llmReply() {
+              const key = process.env.MAINTAINER_OPENAI_API_KEY;
+              if (!key) return null;
+              const model = process.env.MAINTAINER_AGENT_MODEL || "gpt-5-codex";
+              const prompt = [
+                "You are the maintainer agent for an OSS project.",
+                "Write one concise discussion reply.",
+                "Be practical and ask clarifying questions only if needed.",
+                `Title: ${title}`,
+                `Body: ${body.slice(0, 5000)}`
+              ].join("\n");
+
+              const resp = await fetch("https://api.openai.com/v1/responses", {
+                method: "POST",
+                headers: {
+                  "Authorization": `Bearer ${key}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  model,
+                  input: prompt,
+                  max_output_tokens: 220,
+                }),
+              });
+              if (!resp.ok) return null;
+              const data = await resp.json();
+              const text = String(data.output_text || "").trim();
+              return text || null;
+            }
+
+            const commentBody = (await llmReply()) || (await fallbackReply());
+
+            const mutation = `
+              mutation($discussionId:ID!, $body:String!) {
+                addDiscussionComment(input:{discussionId:$discussionId, body:$body}) {
+                  comment { id }
+                }
+              }
+            `;
+
+            await github.graphql(mutation, {
+              discussionId: nodeId,
+              body: commentBody,
+            });

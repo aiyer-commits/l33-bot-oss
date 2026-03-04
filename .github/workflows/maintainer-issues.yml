@@ -1,0 +1,115 @@
+name: Maintainer Agent - Issues
+
+on:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  engage:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Triage and reply
+        uses: actions/github-script@v7
+        env:
+          MAINTAINER_OPENAI_API_KEY: ${{ secrets.MAINTAINER_OPENAI_API_KEY }}
+          MAINTAINER_AGENT_MODEL: ${{ vars.MAINTAINER_AGENT_MODEL }}
+        with:
+          script: |
+            const eventName = context.eventName;
+            const action = context.payload.action;
+            const repo = context.repo;
+            const issue = context.payload.issue;
+            if (!issue) return;
+
+            const issueNumber = issue.number;
+            const title = issue.title || "";
+            const body = issue.body || "";
+            const lower = `${title}\n${body}`.toLowerCase();
+
+            function inferLabels() {
+              const labels = [];
+              if (/\b(bug|error|crash|broken|fails?|regression)\b/.test(lower)) labels.push("bug");
+              if (/\b(feature|enhancement|improve|support)\b/.test(lower)) labels.push("enhancement");
+              if (/\b(how|why|question|help|usage|docs?)\b/.test(lower)) labels.push("question");
+              if (/\b(security|vulnerability|token|secret|leak)\b/.test(lower)) labels.push("security");
+
+              const hasSteps = /\bsteps? to reproduce\b/i.test(body) || /\brepro\b/i.test(body);
+              const hasExpected = /\bexpected\b/i.test(body);
+              const hasActual = /\bactual\b/i.test(body) || /\bobserved\b/i.test(body);
+              if ((labels.includes("bug") || /\bbug\b/.test(lower)) && !(hasSteps && hasExpected && hasActual)) {
+                labels.push("needs-repro");
+              }
+              return [...new Set(labels)];
+            }
+
+            async function fallbackReply() {
+              const triage = inferLabels();
+              if (eventName === "issues" && (action === "opened" || action === "edited")) {
+                return [
+                  "Thanks for the report. I triaged this and started maintainer review.",
+                  triage.includes("needs-repro")
+                    ? "To move quickly, please add: exact repro steps, expected result, actual result, and environment (OS, Node version, provider, DB setup)."
+                    : "Next step: I will validate against current `main` and post findings.",
+                ].join("\n\n");
+              }
+              return "Thanks for the follow-up. I’m reviewing this update and will post next actions.";
+            }
+
+            async function llmReply() {
+              const key = process.env.MAINTAINER_OPENAI_API_KEY;
+              if (!key) return null;
+              const model = process.env.MAINTAINER_AGENT_MODEL || "gpt-5-codex";
+              const prompt = [
+                "You are the maintainer agent for a public OSS coding interview app.",
+                "Write one concise GitHub comment.",
+                "Be technical, polite, and specific.",
+                "If bug details are incomplete, ask for repro steps, expected vs actual, env, and logs.",
+                `Event: ${eventName}/${action}`,
+                `Issue title: ${title}`,
+                `Issue body: ${body.slice(0, 5000)}`
+              ].join("\n");
+
+              const resp = await fetch("https://api.openai.com/v1/responses", {
+                method: "POST",
+                headers: {
+                  "Authorization": `Bearer ${key}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  model,
+                  input: prompt,
+                  max_output_tokens: 220,
+                }),
+              });
+              if (!resp.ok) return null;
+              const data = await resp.json();
+              const text = String(data.output_text || "").trim();
+              return text || null;
+            }
+
+            if (eventName === "issues" && (action === "opened" || action === "edited")) {
+              const labels = inferLabels();
+              if (labels.length > 0) {
+                await github.rest.issues.addLabels({
+                  ...repo,
+                  issue_number: issueNumber,
+                  labels,
+                }).catch(() => {});
+              }
+            }
+
+            const comment = (await llmReply()) || (await fallbackReply());
+            if (!comment) return;
+
+            await github.rest.issues.createComment({
+              ...repo,
+              issue_number: issueNumber,
+              body: comment,
+            });
