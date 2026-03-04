@@ -35,6 +35,7 @@ type CurriculumProblem = {
   difficulty: string;
   category: string;
   position: number;
+  statement?: string;
 };
 
 type KeySpec = { token: string; units?: number };
@@ -458,6 +459,7 @@ export default function Home() {
   const [curriculumLoading, setCurriculumLoading] = useState(false);
   const [curriculumError, setCurriculumError] = useState("");
   const [curriculumSwitchingProblemId, setCurriculumSwitchingProblemId] = useState<number | null>(null);
+  const [expandedCurriculumProblemId, setExpandedCurriculumProblemId] = useState<number | null>(null);
 
   const [composerMode, setComposerMode] = useState<ComposerMode>("code");
   const [shiftOn, setShiftOn] = useState(false);
@@ -747,10 +749,6 @@ export default function Home() {
   const keyboardLayout = useMemo(() => buildKeyboardLayout(effectiveLanguage), [effectiveLanguage]);
   const tapOutputMap = useMemo(() => TAP_OUTPUT_BY_LANGUAGE[effectiveLanguage] ?? TAP_OUTPUT_BY_LANGUAGE.python, [effectiveLanguage]);
   const holdOutputMap = useMemo(() => HOLD_OUTPUT_BY_LANGUAGE[effectiveLanguage] ?? HOLD_OUTPUT_BY_LANGUAGE.python, [effectiveLanguage]);
-  const selectedCurriculumMeta = useMemo(
-    () => curriculums.find((curriculum) => curriculum.key === curriculumTab) ?? null,
-    [curriculums, curriculumTab],
-  );
   const assistantMessages = useMemo(() => messages.filter((msg) => msg.role === "assistant"), [messages]);
   const userMessages = useMemo(() => messages.filter((msg) => msg.role === "user"), [messages]);
 
@@ -954,6 +952,7 @@ export default function Home() {
       if (typeof payload.selectedCurriculumKey === "string") setCurriculumTab(payload.selectedCurriculumKey);
       setCurriculums(Array.isArray(payload.curriculums) ? (payload.curriculums as CurriculumMeta[]) : []);
       setCurriculumProblems(Array.isArray(payload.problems) ? (payload.problems as CurriculumProblem[]) : []);
+      setExpandedCurriculumProblemId(null);
     } catch (err) {
       setCurriculumError(err instanceof Error ? err.message : "Failed to load curriculum");
     } finally {
@@ -989,6 +988,7 @@ export default function Home() {
       const nextCurriculumKey = String(payload.activeCurriculumKey ?? curriculumTab);
       setActiveCurriculumKey(nextCurriculumKey);
       setCurriculumTab(nextCurriculumKey);
+      setExpandedCurriculumProblemId(null);
       setProfile((prev) => (prev ? { ...prev, activeProblemId: nextProblemId } : prev));
       setComposerMode("chat");
       setCode("");
@@ -1361,18 +1361,6 @@ export default function Home() {
     };
     rafRef.current = window.requestAnimationFrame(tick);
   }
-
-  function scrollToActiveProblemMessage() {
-    const target = activeProblemMessageRef.current;
-    const scroller = assistantScrollRef.current;
-    if (!target || !scroller) return;
-    const scrollerRect = scroller.getBoundingClientRect();
-    const targetRect = target.getBoundingClientRect();
-    const delta = targetRect.left - scrollerRect.left;
-    const targetLeft = scroller.scrollLeft + delta - 8;
-    smoothScrollPaneTo(assistantScrollRef, targetLeft);
-  }
-
   function scrollPaneStep(
     ref: { current: HTMLDivElement | null },
     direction: "next" | "prev",
@@ -1544,113 +1532,86 @@ export default function Home() {
             }`}
             onClick={(event) => event.stopPropagation()}
           >
-            <div className={`flex items-center justify-between border-b px-3 py-2 ${isDark ? "border-white/10" : "border-black/10"}`}>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold">Curriculums</p>
-                <p className={`truncate text-[11px] ${isDark ? "text-white/60" : "text-black/60"}`}>
-                  Choose track and problem. Current: {activeCurriculumKey.toUpperCase()}
-                </p>
+            <div className={`flex items-center justify-between border-b px-2 py-2 ${isDark ? "border-white/10" : "border-black/10"}`}>
+              <div className={`no-scrollbar flex min-w-0 flex-1 gap-1 overflow-x-auto`}>
+                {curriculums.map((curriculum) => {
+                  const isActiveTab = curriculum.key === curriculumTab;
+                  return (
+                    <button
+                      key={curriculum.key}
+                      type="button"
+                      onClick={() => {
+                        setCurriculumTab(curriculum.key);
+                        void loadCurriculumDrawer(curriculum.key);
+                      }}
+                      className={`shrink-0 rounded border px-2 py-1 text-[11px] ${
+                        isActiveTab
+                          ? isDark
+                            ? "border-[#7aa2ff] bg-[#1d2c4d] text-white"
+                            : "border-[#3b82f6] bg-[#dbeafe] text-[#0b1f4a]"
+                          : isDark
+                            ? "border-white/20 bg-white/5 text-white/80"
+                            : "border-black/15 bg-black/[0.03] text-black/80"
+                      }`}
+                    >
+                      {curriculum.key}
+                    </button>
+                  );
+                })}
               </div>
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsCurriculumDrawerOpen(false);
-                    scrollToActiveProblemMessage();
-                  }}
-                  className={`h-7 rounded-md border px-2 text-[11px] ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-black/[0.03]"}`}
-                >
-                  locate
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsCurriculumDrawerOpen(false)}
-                  className={`h-7 w-7 rounded-md border text-[13px] ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-black/[0.03]"}`}
-                  title="Close drawer"
-                >
-                  ×
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setIsCurriculumDrawerOpen(false)}
+                className={`ml-2 h-7 w-7 rounded border text-[13px] ${isDark ? "border-white/20 bg-white/5" : "border-black/15 bg-black/[0.03]"}`}
+                title="Close"
+              >
+                ×
+              </button>
             </div>
 
-            <div className={`no-scrollbar flex gap-1 overflow-x-auto border-b px-2 py-2 ${isDark ? "border-white/10" : "border-black/10"}`}>
-              {curriculums.map((curriculum) => {
-                const isActiveTab = curriculum.key === curriculumTab;
-                return (
-                  <button
-                    key={curriculum.key}
-                    type="button"
-                    onClick={() => {
-                      setCurriculumTab(curriculum.key);
-                      void loadCurriculumDrawer(curriculum.key);
-                    }}
-                    className={`shrink-0 rounded-md border px-2 py-1 text-[11px] font-medium ${
-                      isActiveTab
-                        ? isDark
-                          ? "border-[#7aa2ff] bg-[#1d2c4d] text-white"
-                          : "border-[#3b82f6] bg-[#dbeafe] text-[#0b1f4a]"
-                        : isDark
-                          ? "border-white/20 bg-white/5 text-white/80"
-                          : "border-black/15 bg-black/[0.03] text-black/80"
-                    }`}
-                  >
-                    {curriculum.key.toUpperCase()}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="min-h-0 flex-1 overflow-auto px-3 py-3">
-              {curriculumLoading ? <p className={`text-sm ${isDark ? "text-white/70" : "text-black/70"}`}>Loading curriculum…</p> : null}
-
-              {!curriculumLoading && selectedCurriculumMeta ? (
-                <div className="mb-2">
-                  <p className="text-sm font-semibold">{selectedCurriculumMeta.name}</p>
-                  <p className={`text-[12px] ${isDark ? "text-white/65" : "text-black/65"}`}>
-                    {selectedCurriculumMeta.description ?? "Interview problem track"}
-                  </p>
-                </div>
-              ) : null}
-
-              {curriculumError ? <p className={`mb-2 text-[12px] ${isDark ? "text-[#ff9f9f]" : "text-[#b42318]"}`}>{curriculumError}</p> : null}
+            <div className="min-h-0 flex-1 overflow-auto px-2 py-1">
+              {curriculumError ? <p className={`mb-1 text-[11px] ${isDark ? "text-[#ff9f9f]" : "text-[#b42318]"}`}>{curriculumError}</p> : null}
+              {curriculumLoading ? <p className={`text-[11px] ${isDark ? "text-white/70" : "text-black/70"}`}>loading…</p> : null}
 
               {!curriculumLoading ? (
-                <div className="space-y-1.5">
+                <ul>
                   {curriculumProblems.map((problem) => {
                     const isCurrentProblem = problem.id === profile.activeProblemId && curriculumTab === activeCurriculumKey;
+                    const isExpanded = expandedCurriculumProblemId === problem.id;
                     const isSwitching = curriculumSwitchingProblemId === problem.id;
+                    const statement = problem.statement ? formatProblemStatement(problem.statement) : "";
+                    const preview = statement.length > 280 ? `${statement.slice(0, 280).trimEnd()}...` : statement;
                     return (
-                      <button
-                        key={`${curriculumTab}-${problem.id}`}
-                        type="button"
-                        disabled={isSwitching}
-                        onClick={() => {
-                          void switchProblemFromDrawer(problem.id);
-                        }}
-                        className={`w-full rounded-lg border px-3 py-2 text-left text-sm ${
-                          isCurrentProblem
-                            ? isDark
-                              ? "border-[#7aa2ff] bg-[#1d2c4d]"
-                              : "border-[#3b82f6] bg-[#dbeafe]"
-                            : isDark
-                              ? "border-white/15 bg-white/[0.03]"
-                              : "border-black/10 bg-black/[0.02]"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="truncate font-medium">#{problem.id} · {problem.title}</span>
-                          <span className={`shrink-0 text-[10px] ${isDark ? "text-white/60" : "text-black/60"}`}>{problem.difficulty}</span>
-                        </div>
-                        <div className={`mt-0.5 text-[11px] ${isDark ? "text-white/60" : "text-black/60"}`}>
-                          {isSwitching ? "Switching…" : problem.category}
-                        </div>
-                      </button>
+                      <li key={`${curriculumTab}-${problem.id}`} className={`border-b ${isDark ? "border-white/10" : "border-black/10"}`}>
+                        <button
+                          type="button"
+                          disabled={isSwitching}
+                          onClick={() => {
+                            if (!isExpanded) {
+                              setExpandedCurriculumProblemId(problem.id);
+                              return;
+                            }
+                            void switchProblemFromDrawer(problem.id);
+                          }}
+                          className={`w-full py-1.5 text-left ${isCurrentProblem ? (isDark ? "text-[#9ec0ff]" : "text-[#1849a9]") : ""}`}
+                        >
+                          <div className="text-[12px] leading-4">
+                            <span className="mr-1 opacity-70">#{problem.id}</span>
+                            <span className="break-words">{problem.title}</span>
+                          </div>
+                          <div className={`text-[10px] leading-4 ${isDark ? "text-white/60" : "text-black/60"}`}>
+                            {isSwitching ? "loading…" : problem.difficulty}
+                          </div>
+                        </button>
+                        {isExpanded ? (
+                          <div className={`pb-1.5 text-[11px] leading-4 ${isDark ? "text-white/70" : "text-black/70"}`}>
+                            {preview || "No statement"}
+                          </div>
+                        ) : null}
+                      </li>
                     );
                   })}
-                  {curriculumProblems.length === 0 ? (
-                    <p className={`text-sm ${isDark ? "text-white/70" : "text-black/70"}`}>No problems found for this curriculum.</p>
-                  ) : null}
-                </div>
+                </ul>
               ) : null}
             </div>
           </div>

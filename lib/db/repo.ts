@@ -85,7 +85,8 @@ export async function searchProblems(params: { query?: string; difficulty?: stri
   const curriculumKey = (params.curriculumKey ?? '').toLowerCase();
 
   return sql`
-    SELECT p.id, p.title, p.difficulty, p.category, p.tags
+    SELECT p.id, p.title, p.difficulty, p.category,
+      p.statement, p.tags
     FROM problems p
     LEFT JOIN curriculum_problems cp
       ON cp.problem_id = p.id
@@ -164,7 +165,8 @@ export async function getCurriculumProblems(curriculumKey: string) {
       p.id,
       p.title,
       p.difficulty,
-      p.category
+      p.category,
+      p.statement
     FROM curriculum_problems cp
     JOIN problems p ON p.id = cp.problem_id
     WHERE cp.curriculum_key = ${curriculumKey}
