@@ -434,6 +434,8 @@ export default function Home() {
   const [anonId, setAnonId] = useState<string>("");
   const [theme, setTheme] = useState<ThemeMode>("light");
   const [selectedLanguage, setSelectedLanguage] = useState<ProgrammingLanguage>("python");
+  const [hasPhysicalKeyboard, setHasPhysicalKeyboard] = useState(false);
+  const [showTouchKeyboard, setShowTouchKeyboard] = useState(true);
 
   const [composerMode, setComposerMode] = useState<ComposerMode>("code");
   const [shiftOn, setShiftOn] = useState(false);
@@ -566,6 +568,16 @@ export default function Home() {
     });
   }, [composerMode]);
 
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.isComposing || event.key === "Unidentified") return;
+      setHasPhysicalKeyboard(true);
+      setShowTouchKeyboard((prev) => (prev ? false : prev));
+    };
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
+  }, []);
+
   useEffect(() => () => {
     stopKeyRepeat();
     clearHoldTimer();
@@ -684,6 +696,7 @@ export default function Home() {
     if (!profile) return null;
     return getProblemById(profile.activeProblemId) ?? null;
   }, [profile]);
+  const showKeyboard = !hasPhysicalKeyboard || showTouchKeyboard;
   const effectiveLanguage = useMemo<ProgrammingLanguage>(() => selectedLanguage, [selectedLanguage]);
   const keyboardLayout = useMemo(() => buildKeyboardLayout(effectiveLanguage), [effectiveLanguage]);
   const tapOutputMap = useMemo(() => TAP_OUTPUT_BY_LANGUAGE[effectiveLanguage] ?? TAP_OUTPUT_BY_LANGUAGE.python, [effectiveLanguage]);
@@ -772,7 +785,11 @@ export default function Home() {
     lastShiftTapRef.current = 0;
     const target: TargetField = composerMode;
     const source = target === "chat" ? draft : code;
-    const cursor = target === "chat" ? chatCursor : codeCursor;
+    const fallbackCursor = target === "chat" ? chatCursor : codeCursor;
+    const activeInput = target === "chat" ? chatInputRef.current : codeInputRef.current;
+    const cursor = activeInput
+      ? { start: activeInput.selectionStart ?? fallbackCursor.start, end: activeInput.selectionEnd ?? fallbackCursor.end }
+      : fallbackCursor;
 
     let result: { value: string; cursor: Cursor } = { value: source, cursor };
 
@@ -826,6 +843,39 @@ export default function Home() {
     }
 
     setCursorOnDom(target, result.cursor);
+  }
+
+  function handleComposerKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if ((event.nativeEvent as KeyboardEvent).isComposing) return;
+    setHasPhysicalKeyboard(true);
+
+    const target: TargetField = composerMode;
+    const source = target === "chat" ? draft : code;
+    const cursor: Cursor = {
+      start: event.currentTarget.selectionStart ?? 0,
+      end: event.currentTarget.selectionEnd ?? 0,
+    };
+
+    if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+      event.preventDefault();
+      submitCurrentComposer();
+      return;
+    }
+
+    if (target === "code" && event.key === "Tab") {
+      event.preventDefault();
+      const result = event.shiftKey ? applyOutdent(source, cursor) : applyIndent(source, cursor);
+      setCode(result.value);
+      setCursorOnDom("code", result.cursor);
+      return;
+    }
+
+    if (target === "code" && event.key === "Enter") {
+      event.preventDefault();
+      const result = applySmartEnterForLanguage(source, cursor, effectiveLanguage);
+      setCode(result.value);
+      setCursorOnDom("code", result.cursor);
+    }
   }
 
   function clearField(target: TargetField) {
@@ -1323,6 +1373,16 @@ export default function Home() {
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-1">
+            {hasPhysicalKeyboard ? (
+              <button
+                type="button"
+                onClick={() => setShowTouchKeyboard((prev) => !prev)}
+                className={`inline-flex h-7 items-center justify-center rounded-md border px-1 text-[10px] font-medium ${isDark ? "border-white/20 bg-white/5 text-white" : "border-black/15 bg-white/70 text-black"}`}
+                title={showKeyboard ? "Hide on-screen keyboard" : "Show on-screen keyboard"}
+              >
+                {showKeyboard ? "kbd off" : "kbd on"}
+              </button>
+            ) : null}
             <select
               value={selectedLanguage}
               onChange={(event) => setSelectedLanguage(normalizeLanguage(event.target.value))}
@@ -1468,7 +1528,9 @@ export default function Home() {
                       value={composerMode === "code" ? code : draft}
                       inputMode="none"
                       spellCheck={composerMode !== "code"}
-                      onKeyDown={(event) => event.preventDefault()}
+                      onKeyDown={handleComposerKeyDown}
+                      onKeyUp={() => syncCursorFromDom(composerMode)}
+                      onInput={() => syncCursorFromDom(composerMode)}
                       onChange={(event) => {
                         if (composerMode === "code") setCode(event.target.value);
                         else setDraft(event.target.value);
@@ -1526,6 +1588,7 @@ export default function Home() {
         </div>
       </section>
 
+      {showKeyboard ? (
       <section className={`z-30 border-t px-2 pt-1 pb-2 backdrop-blur ${isDark ? "border-white/15 bg-[#121720]" : "border-black/10 bg-[#eceae2]"}`}>
         <div className="w-full [text-size-adjust:100%]">
           <div className="space-y-px">
@@ -1743,6 +1806,7 @@ export default function Home() {
 
         {error ? <p className={`pt-1 text-[11px] ${isDark ? "text-[#ff8383]" : "text-[#b42318]"}`}>{error}</p> : null}
       </section>
+      ) : null}
     </main>
   );
 }
