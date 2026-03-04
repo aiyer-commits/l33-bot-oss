@@ -1,0 +1,252 @@
+name: Maintainer Agent - PRs
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review, labeled, unlabeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+  statuses: read
+
+jobs:
+  triage-and-merge:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Triage and auto-merge
+        uses: actions/github-script@v7
+        env:
+          MAINTAINER_OPENAI_API_KEY: ${{ secrets.MAINTAINER_OPENAI_API_KEY }}
+          MAINTAINER_AGENT_MODEL: ${{ vars.MAINTAINER_AGENT_MODEL }}
+        with:
+          script: |
+            const repo = context.repo;
+            const pr = context.payload.pull_request;
+            if (!pr) return;
+
+            const owner = repo.owner;
+            const repoName = repo.repo;
+            const prNumber = pr.number;
+            const headSha = pr.head.sha;
+
+            const HARD_RISK_PATHS = [
+              /^\.github\/workflows\//,
+              /^db\/schema\.sql$/,
+              /^MAINTAINER_AGENT\.md$/,
+              /^AGENTS\.md$/,
+              /^LICENSE$/,
+            ];
+
+            const SOFT_RISK_PATHS = [
+              /^app\/api\//,
+              /^lib\/db\//,
+              /^lib\/llm\/provider\.ts$/,
+              /^package(-lock)?\.json$/,
+            ];
+
+            async function ensureLabel(name, color, description) {
+              try {
+                await github.rest.issues.createLabel({
+                  owner,
+                  repo: repoName,
+                  name,
+                  color,
+                  description,
+                });
+              } catch (e) {
+                // ignore "already exists"
+              }
+            }
+
+            async function addLabels(labels) {
+              if (!labels.length) return;
+              await github.rest.issues.addLabels({
+                owner,
+                repo: repoName,
+                issue_number: prNumber,
+                labels,
+              }).catch(() => {});
+            }
+
+            async function removeLabel(label) {
+              await github.rest.issues.removeLabel({
+                owner,
+                repo: repoName,
+                issue_number: prNumber,
+                name: label,
+              }).catch(() => {});
+            }
+
+            async function listFiles() {
+              const files = [];
+              let page = 1;
+              while (true) {
+                const res = await github.rest.pulls.listFiles({
+                  owner,
+                  repo: repoName,
+                  pull_number: prNumber,
+                  per_page: 100,
+                  page,
+                });
+                files.push(...res.data);
+                if (res.data.length < 100) break;
+                page += 1;
+              }
+              return files;
+            }
+
+            async function getChecks() {
+              const checks = await github.rest.checks.listForRef({
+                owner,
+                repo: repoName,
+                ref: headSha,
+                per_page: 100,
+              });
+              const status = await github.rest.repos.getCombinedStatusForRef({
+                owner,
+                repo: repoName,
+                ref: headSha,
+              });
+              return { checkRuns: checks.data.check_runs, status: status.data.state };
+            }
+
+            async function maybeLlmReview(summary) {
+              const key = process.env.MAINTAINER_OPENAI_API_KEY;
+              const model = process.env.MAINTAINER_AGENT_MODEL || "gpt-5-codex";
+              if (!key) return { needsHuman: false, rationale: "No LLM key configured; using rule-only triage." };
+
+              const prompt = [
+                "You are an OSS maintainer merge agent.",
+                "Decide if this PR absolutely requires human intervention.",
+                "Return strict JSON only:",
+                "{\"needsHuman\": boolean, \"rationale\": string, \"risk\": \"low\"|\"medium\"|\"high\"}",
+                "Use needsHuman=true only for security/policy/safety-critical uncertainty.",
+                `PR summary:\n${summary}`,
+              ].join("\n");
+
+              const resp = await fetch("https://api.openai.com/v1/responses", {
+                method: "POST",
+                headers: {
+                  "Authorization": `Bearer ${key}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  model,
+                  input: prompt,
+                  max_output_tokens: 220,
+                }),
+              });
+              if (!resp.ok) return { needsHuman: false, rationale: `LLM unavailable (${resp.status}); using rule-only triage.` };
+              const data = await resp.json();
+              const text = String(data.output_text || "").trim();
+              try {
+                const parsed = JSON.parse(text);
+                return {
+                  needsHuman: Boolean(parsed.needsHuman),
+                  rationale: String(parsed.rationale || "No rationale provided."),
+                  risk: String(parsed.risk || "medium"),
+                };
+              } catch {
+                return { needsHuman: false, rationale: "LLM output parse failed; using rule-only triage.", risk: "medium" };
+              }
+            }
+
+            await ensureLabel("agent-automerge", "0e8a16", "PR is eligible for maintainer-agent auto-merge");
+            await ensureLabel("needs-human", "d73a4a", "Maintainer agent flagged for required human intervention");
+            await ensureLabel("risk-low", "0e8a16", "Low risk change");
+            await ensureLabel("risk-medium", "fbca04", "Medium risk change");
+            await ensureLabel("risk-high", "d73a4a", "High risk change");
+
+            const files = await listFiles();
+            const fileCount = files.length;
+            const totalAdditions = files.reduce((n, f) => n + (f.additions || 0), 0);
+            const totalDeletions = files.reduce((n, f) => n + (f.deletions || 0), 0);
+            const changedLines = totalAdditions + totalDeletions;
+            const paths = files.map((f) => f.filename);
+
+            const hasHardRiskPath = paths.some((p) => HARD_RISK_PATHS.some((re) => re.test(p)));
+            const hasSoftRiskPath = paths.some((p) => SOFT_RISK_PATHS.some((re) => re.test(p)));
+            const securityIntent = /\bsecurity|vulnerability|token|secret|auth bypass|rce\b/i.test(`${pr.title}\n${pr.body || ""}`);
+            const tooLarge = fileCount > 25 || changedLines > 1200;
+
+            let risk = "low";
+            if (hasSoftRiskPath || changedLines > 300) risk = "medium";
+            if (hasHardRiskPath || securityIntent || tooLarge) risk = "high";
+
+            const llm = await maybeLlmReview(
+              [
+                `title: ${pr.title}`,
+                `files: ${fileCount}`,
+                `changed lines: +${totalAdditions}/-${totalDeletions}`,
+                `risk (rule): ${risk}`,
+                `paths:\n- ${paths.slice(0, 80).join("\n- ")}`,
+              ].join("\n"),
+            );
+
+            const needsHuman = Boolean(llm.needsHuman) || hasHardRiskPath || securityIntent || tooLarge;
+
+            await removeLabel("risk-low");
+            await removeLabel("risk-medium");
+            await removeLabel("risk-high");
+            await removeLabel("agent-automerge");
+            await removeLabel("needs-human");
+
+            await addLabels([`risk-${risk}`]);
+
+            if (needsHuman) {
+              await addLabels(["needs-human"]);
+              await github.rest.issues.createComment({
+                owner,
+                repo: repoName,
+                issue_number: prNumber,
+                body: [
+                  "Maintainer agent triage: this PR requires human intervention.",
+                  `Reason: ${llm.rationale || "high-risk policy path or size threshold triggered."}`,
+                  `Rule signals: hardRiskPath=${hasHardRiskPath}, securityIntent=${securityIntent}, tooLarge=${tooLarge}.`,
+                ].join("\n\n"),
+              }).catch(() => {});
+              return;
+            }
+
+            await addLabels(["agent-automerge"]);
+
+            // Merge gate checks
+            const prState = await github.rest.pulls.get({
+              owner,
+              repo: repoName,
+              pull_number: prNumber,
+            });
+            const current = prState.data;
+            if (current.draft) return;
+            if (current.state !== "open") return;
+            if (current.mergeable_state !== "clean" && current.mergeable_state !== "has_hooks") return;
+
+            const { checkRuns, status } = await getChecks();
+            const checksDone = checkRuns.length > 0 && checkRuns.every((c) => c.status === "completed");
+            const checksPassed = checkRuns.length > 0 && checkRuns.every((c) => c.conclusion === "success" || c.conclusion === "neutral");
+            const statusPassed = status === "success" || status === "pending";
+            // Require at least CI check job to be present and successful.
+            const ciCheck = checkRuns.find((c) => c.name.toLowerCase() === "check");
+            const ciPassed = Boolean(ciCheck && ciCheck.conclusion === "success");
+
+            if (!(checksDone && checksPassed && statusPassed && ciPassed)) {
+              return;
+            }
+
+            await github.rest.pulls.merge({
+              owner,
+              repo: repoName,
+              pull_number: prNumber,
+              merge_method: "squash",
+              commit_title: `${current.title} (#${prNumber})`,
+            });
+
+            await github.rest.issues.createComment({
+              owner,
+              repo: repoName,
+              issue_number: prNumber,
+              body: "Maintainer agent auto-merged this PR after passing automated policy and CI gates.",
+            }).catch(() => {});
+

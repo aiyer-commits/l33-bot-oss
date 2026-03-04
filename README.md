@@ -115,7 +115,16 @@ Ensure:
 - `.env.example` is accurate
 - migrations and seed scripts run from clean DB
 
+## Maintainer Automation
+
+Repository automation includes:
+- CI checks on push/PR
+- issue triage + bug-report engagement
+- discussion engagement
+- PR risk triage + auto-merge for eligible PRs
+
+The maintainer agent defaults to `gpt-5-codex` for issue/discussion/PR reasoning when `MAINTAINER_OPENAI_API_KEY` is configured.
+
 ## Agent Runbook
 
 For deterministic agent-executable setup, see [AGENTS.md](/home/ai/Development/l33-bot-oss/AGENTS.md).
-
