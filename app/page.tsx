@@ -9,6 +9,7 @@ const PROFILE_KEY = "l33tsp33k.profile.v2";
 const CHAT_KEY = "l33tsp33k.chat.v2";
 const CODE_KEY = "l33tsp33k.code.v2";
 const TEXT_KEY = "l33tsp33k.text.v2";
+const TEST_KEY = "l33tsp33k.test.v1";
 const ANON_ID_KEY = "l33tsp33k.anon-id.v1";
 const THEME_KEY = "l33tsp33k.theme.v1";
 const LANGUAGE_KEY = "l33tsp33k.language.v1";
@@ -17,9 +18,16 @@ const REPEAT_DELAY_MS = 260;
 const REPEAT_INTERVAL_MS = 42;
 const INDENT_TOKEN = "\t";
 
-type TargetField = "chat" | "code";
-type ComposerMode = "chat" | "code";
+type TargetField = "chat" | "code" | "test";
+type ComposerMode = "chat" | "code" | "test";
 type ThemeMode = "light" | "dark";
+type PyodideStatus = "idle" | "loading" | "ready" | "error";
+type PyodideInterface = {
+  runPythonAsync: (code: string) => Promise<unknown>;
+};
+type WindowWithPyodide = Window & {
+  loadPyodide?: (options: { indexURL: string }) => Promise<PyodideInterface>;
+};
 
 type Cursor = { start: number; end: number };
 type CurriculumMeta = {
@@ -443,6 +451,8 @@ export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [code, setCode] = useState("");
+  const [testInput, setTestInput] = useState("");
+  const [pyodideStatus, setPyodideStatus] = useState<PyodideStatus>("idle");
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
   const [sessionId, setSessionId] = useState<string>("");
@@ -467,6 +477,7 @@ export default function Home() {
 
   const [chatCursor, setChatCursor] = useState<Cursor>({ start: 0, end: 0 });
   const [codeCursor, setCodeCursor] = useState<Cursor>({ start: 0, end: 0 });
+  const [testCursor, setTestCursor] = useState<Cursor>({ start: 0, end: 0 });
   const [assistantHasMore, setAssistantHasMore] = useState(false);
   const [userHasMore, setUserHasMore] = useState(false);
   const [assistantHasPrev, setAssistantHasPrev] = useState(false);
@@ -504,6 +515,9 @@ export default function Home() {
   const userWasPinnedRightRef = useRef<boolean>(false);
   const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
   const codeInputRef = useRef<HTMLTextAreaElement | null>(null);
+  const testInputRef = useRef<HTMLTextAreaElement | null>(null);
+  const pyodideRef = useRef<PyodideInterface | null>(null);
+  const pyodideLoadPromiseRef = useRef<Promise<PyodideInterface> | null>(null);
   const fuzzyKeyMapRef = useRef<Map<string, FuzzyKeyMeta>>(new Map());
   const activeFuzzyPointerRef = useRef<{ pointerId: number; token: string; rowIndex: number; x: number; y: number } | null>(null);
 
@@ -512,6 +526,7 @@ export default function Home() {
     const chatRaw = localStorage.getItem(CHAT_KEY);
     const textRaw = localStorage.getItem(TEXT_KEY);
     const codeRaw = localStorage.getItem(CODE_KEY);
+    const testRaw = localStorage.getItem(TEST_KEY);
     const themeRaw = localStorage.getItem(THEME_KEY);
     const languageRaw = localStorage.getItem(LANGUAGE_KEY);
 
@@ -548,6 +563,7 @@ export default function Home() {
 
     if (typeof textRaw === "string") setDraft(textRaw);
     if (typeof codeRaw === "string") setCode(codeRaw);
+    if (typeof testRaw === "string") setTestInput(testRaw);
     if (themeRaw === "dark" || themeRaw === "light") setTheme(themeRaw);
     setSelectedLanguage(normalizeLanguage(languageRaw));
     const hydrateCurriculum = async () => {
@@ -602,6 +618,10 @@ export default function Home() {
   }, [code]);
 
   useEffect(() => {
+    localStorage.setItem(TEST_KEY, testInput);
+  }, [testInput]);
+
+  useEffect(() => {
     localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
 
@@ -610,11 +630,30 @@ export default function Home() {
   }, [selectedLanguage]);
 
   useEffect(() => {
+    if (selectedLanguage !== "python" && composerMode === "test") {
+      setComposerMode("code");
+    }
+  }, [selectedLanguage, composerMode]);
+
+  useEffect(() => {
     requestAnimationFrame(() => {
       if (composerMode === "chat") chatInputRef.current?.focus();
-      else codeInputRef.current?.focus();
+      else if (composerMode === "code") codeInputRef.current?.focus();
+      else testInputRef.current?.focus();
     });
   }, [composerMode]);
+
+  useEffect(() => {
+    if (selectedLanguage !== "python") return;
+    const win = window as WindowWithPyodide;
+    if (pyodideRef.current) {
+      setPyodideStatus("ready");
+      return;
+    }
+    if (typeof win.loadPyodide === "function") {
+      setPyodideStatus((prev) => (prev === "ready" ? prev : "idle"));
+    }
+  }, [selectedLanguage]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -746,6 +785,10 @@ export default function Home() {
   }, [profile]);
   const showKeyboard = !hasPhysicalKeyboard || showTouchKeyboard;
   const effectiveLanguage = useMemo<ProgrammingLanguage>(() => selectedLanguage, [selectedLanguage]);
+  const availableComposerModes = useMemo<ComposerMode[]>(
+    () => (effectiveLanguage === "python" ? ["chat", "code", "test"] : ["chat", "code"]),
+    [effectiveLanguage],
+  );
   const keyboardLayout = useMemo(() => buildKeyboardLayout(effectiveLanguage), [effectiveLanguage]);
   const tapOutputMap = useMemo(() => TAP_OUTPUT_BY_LANGUAGE[effectiveLanguage] ?? TAP_OUTPUT_BY_LANGUAGE.python, [effectiveLanguage]);
   const holdOutputMap = useMemo(() => HOLD_OUTPUT_BY_LANGUAGE[effectiveLanguage] ?? HOLD_OUTPUT_BY_LANGUAGE.python, [effectiveLanguage]);
@@ -786,30 +829,97 @@ export default function Home() {
 
   const isDark = theme === "dark";
 
+  async function downloadPyodide() {
+    if (pyodideRef.current) {
+      setPyodideStatus("ready");
+      return;
+    }
+    if (pyodideLoadPromiseRef.current) {
+      setPyodideStatus("loading");
+      try {
+        await pyodideLoadPromiseRef.current;
+        setPyodideStatus("ready");
+      } catch {
+        setPyodideStatus("error");
+      }
+      return;
+    }
+
+    const win = window as WindowWithPyodide;
+    setPyodideStatus("loading");
+    try {
+      if (typeof win.loadPyodide !== "function") {
+        await new Promise<void>((resolve, reject) => {
+          const existing = document.querySelector('script[data-pyodide-loader="1"]') as HTMLScriptElement | null;
+          if (existing) {
+            existing.addEventListener("load", () => resolve(), { once: true });
+            existing.addEventListener("error", () => reject(new Error("Failed to load pyodide script")), { once: true });
+            return;
+          }
+          const script = document.createElement("script");
+          script.src = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js";
+          script.async = true;
+          script.dataset.pyodideLoader = "1";
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error("Failed to load pyodide script"));
+          document.head.appendChild(script);
+        });
+      }
+
+      if (typeof win.loadPyodide !== "function") {
+        throw new Error("Pyodide loader unavailable");
+      }
+
+      pyodideLoadPromiseRef.current = win.loadPyodide({
+        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/",
+      });
+      pyodideRef.current = await pyodideLoadPromiseRef.current;
+      setPyodideStatus("ready");
+    } catch {
+      setPyodideStatus("error");
+      pyodideLoadPromiseRef.current = null;
+    }
+  }
+
+  function cycleComposerMode() {
+    const currentIndex = availableComposerModes.indexOf(composerMode);
+    const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % availableComposerModes.length;
+    focusComposer(availableComposerModes[nextIndex]);
+  }
+
+  function modeBadgeLabel(mode: ComposerMode) {
+    if (mode === "chat") return "T";
+    if (mode === "code") return "</>";
+    return "in";
+  }
+
   function focusComposer(mode: ComposerMode) {
     setComposerMode(mode);
     requestAnimationFrame(() => {
       if (mode === "chat") chatInputRef.current?.focus();
       if (mode === "code") codeInputRef.current?.focus();
+      if (mode === "test") testInputRef.current?.focus();
     });
   }
 
   function syncCursorFromDom(target: TargetField) {
-    const ref = target === "chat" ? chatInputRef.current : codeInputRef.current;
+    const ref = target === "chat" ? chatInputRef.current : target === "code" ? codeInputRef.current : testInputRef.current;
     if (!ref) return;
     const cursor: Cursor = { start: ref.selectionStart ?? 0, end: ref.selectionEnd ?? 0 };
     if (target === "chat") setChatCursor(cursor);
-    else setCodeCursor(cursor);
+    else if (target === "code") setCodeCursor(cursor);
+    else setTestCursor(cursor);
   }
 
   function setCursorOnDom(target: TargetField, cursor: Cursor) {
-    const ref = target === "chat" ? chatInputRef.current : codeInputRef.current;
+    const ref = target === "chat" ? chatInputRef.current : target === "code" ? codeInputRef.current : testInputRef.current;
     if (!ref) return;
     requestAnimationFrame(() => {
       ref.focus();
       ref.setSelectionRange(cursor.start, cursor.end);
       if (target === "chat") setChatCursor(cursor);
-      else setCodeCursor(cursor);
+      else if (target === "code") setCodeCursor(cursor);
+      else setTestCursor(cursor);
     });
   }
 
@@ -832,9 +942,9 @@ export default function Home() {
     // Only consecutive shift taps should toggle caps lock.
     lastShiftTapRef.current = 0;
     const target: TargetField = composerMode;
-    const source = target === "chat" ? draft : code;
-    const fallbackCursor = target === "chat" ? chatCursor : codeCursor;
-    const activeInput = target === "chat" ? chatInputRef.current : codeInputRef.current;
+    const source = target === "chat" ? draft : target === "code" ? code : testInput;
+    const fallbackCursor = target === "chat" ? chatCursor : target === "code" ? codeCursor : testCursor;
+    const activeInput = target === "chat" ? chatInputRef.current : target === "code" ? codeInputRef.current : testInputRef.current;
     const cursor = activeInput
       ? { start: activeInput.selectionStart ?? fallbackCursor.start, end: activeInput.selectionEnd ?? fallbackCursor.end }
       : fallbackCursor;
@@ -882,8 +992,10 @@ export default function Home() {
 
     if (target === "chat") {
       setDraft(result.value);
-    } else {
+    } else if (target === "code") {
       setCode(result.value);
+    } else {
+      setTestInput(result.value);
     }
 
     if (consumeShiftAfterPress) {
@@ -898,7 +1010,7 @@ export default function Home() {
     setHasPhysicalKeyboard(true);
 
     const target: TargetField = composerMode;
-    const source = target === "chat" ? draft : code;
+    const source = target === "chat" ? draft : target === "code" ? code : testInput;
     const cursor: Cursor = {
       start: event.currentTarget.selectionStart ?? 0,
       end: event.currentTarget.selectionEnd ?? 0,
@@ -930,9 +1042,12 @@ export default function Home() {
     if (target === "chat") {
       setDraft("");
       setCursorOnDom("chat", { start: 0, end: 0 });
-    } else {
+    } else if (target === "code") {
       setCode("");
       setCursorOnDom("code", { start: 0, end: 0 });
+    } else {
+      setTestInput("");
+      setCursorOnDom("test", { start: 0, end: 0 });
     }
   }
 
@@ -1120,6 +1235,9 @@ export default function Home() {
   function submitCurrentComposer() {
     if (composerMode === "code") {
       void sendTurn({ sendText: false, sendCode: true });
+      return;
+    }
+    if (composerMode === "test") {
       return;
     }
     void sendTurn({ sendText: true, sendCode: false });
@@ -1715,52 +1833,84 @@ export default function Home() {
                 <div className="relative ml-auto h-full w-[94%] min-w-[94%] shrink-0 pl-8 pr-10">
                   <button
                     type="button"
-                    onClick={() => {
-                      focusComposer(composerMode === "chat" ? "code" : "chat");
-                    }}
+                    onClick={cycleComposerMode}
                     className={`absolute left-0 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-[11px] font-bold ${
-                      composerMode === "code" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
+                      composerMode === "code" ? "bg-[#2259f3] text-white" : composerMode === "test" ? "bg-[#0f766e] text-white" : "bg-[#1f334f] text-white"
                     }`}
-                    title={composerMode === "chat" ? "Mode: text (tap to switch to code)" : "Mode: code (tap to switch to text)"}
+                    title={`Mode: ${composerMode} (tap to cycle)`}
                   >
-                    <span className={composerMode === "chat" ? "text-[11px]" : "text-[8px] leading-none"}>{composerMode === "chat" ? "T" : "</>"}</span>
+                    <span className={composerMode === "chat" ? "text-[11px]" : composerMode === "code" ? "text-[8px] leading-none" : "text-[10px] leading-none"}>
+                      {modeBadgeLabel(composerMode)}
+                    </span>
                   </button>
                   <div
                     className={`relative overflow-hidden rounded-2xl rounded-br-none border ${
                       composerMode === "code"
                         ? "border-white/20 bg-[#0e1117]"
+                        : composerMode === "test"
+                          ? isDark
+                            ? "border-[#34d399]/40 bg-[#0f1724]"
+                            : "border-[#34d399]/50 bg-[#ecfeff]"
                         : isDark
                           ? "border-white/20 bg-[#151b24]"
                           : "border-black/15 bg-white"
                     } h-full`}
                   >
-                    <textarea
-                      ref={composerMode === "code" ? codeInputRef : chatInputRef}
-                      value={composerMode === "code" ? code : draft}
-                      inputMode="none"
-                      spellCheck={composerMode !== "code"}
-                      onKeyDown={handleComposerKeyDown}
-                      onKeyUp={() => syncCursorFromDom(composerMode)}
-                      onInput={() => syncCursorFromDom(composerMode)}
-                      onChange={(event) => {
-                        if (composerMode === "code") setCode(event.target.value);
-                        else setDraft(event.target.value);
-                      }}
-                      onFocus={() => focusComposer(composerMode)}
-                      onClick={() => syncCursorFromDom(composerMode)}
-                      onSelect={() => syncCursorFromDom(composerMode)}
-                      rows={composerMode === "code" ? 1 : 2}
-                      placeholder={
-                        composerMode === "code"
-                          ? `${effectiveLanguage} bubble (hold enter to submit)`
-                          : "message bubble"
-                      }
-                      className={`h-full w-full resize-none border-0 px-3 py-2 outline-none ${
-                        composerMode === "code"
-                          ? "overflow-y-auto bg-[#0e1117] font-mono text-[12px] leading-5 text-[#e5e7eb] caret-[#e5e7eb]"
-                          : `${isDark ? "bg-[#151b24] text-[#e5e7eb] caret-[#e5e7eb]" : "bg-transparent text-[#111] caret-[#111]"} text-sm`
-                      }`}
-                    />
+                    {composerMode === "test" && effectiveLanguage === "python" && pyodideStatus !== "ready" ? (
+                      <div className="flex h-full flex-col items-start justify-center gap-2 px-3 py-2">
+                        <p className={`text-[12px] ${isDark ? "text-[#d1fae5]" : "text-[#065f46]"}`}>
+                          Local test mode uses Pyodide.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => void downloadPyodide()}
+                          disabled={pyodideStatus === "loading"}
+                          className={`h-7 rounded-md border px-2 text-[11px] font-semibold ${
+                            isDark ? "border-[#34d399]/50 bg-[#052e2b] text-[#d1fae5]" : "border-[#10b981]/40 bg-[#d1fae5] text-[#065f46]"
+                          }`}
+                        >
+                          {pyodideStatus === "loading" ? "Downloading Pyodide..." : "Download Pyodide"}
+                        </button>
+                        {pyodideStatus === "error" ? (
+                          <p className={`text-[11px] ${isDark ? "text-[#fca5a5]" : "text-[#b42318]"}`}>
+                            Could not load Pyodide. Try again.
+                          </p>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <textarea
+                        ref={composerMode === "code" ? codeInputRef : composerMode === "test" ? testInputRef : chatInputRef}
+                        value={composerMode === "code" ? code : composerMode === "test" ? testInput : draft}
+                        inputMode="none"
+                        spellCheck={composerMode === "chat"}
+                        onKeyDown={handleComposerKeyDown}
+                        onKeyUp={() => syncCursorFromDom(composerMode)}
+                        onInput={() => syncCursorFromDom(composerMode)}
+                        onChange={(event) => {
+                          if (composerMode === "code") setCode(event.target.value);
+                          else if (composerMode === "test") setTestInput(event.target.value);
+                          else setDraft(event.target.value);
+                        }}
+                        onFocus={() => focusComposer(composerMode)}
+                        onClick={() => syncCursorFromDom(composerMode)}
+                        onSelect={() => syncCursorFromDom(composerMode)}
+                        rows={composerMode === "code" ? 1 : composerMode === "test" ? 3 : 2}
+                        placeholder={
+                          composerMode === "code"
+                            ? `${effectiveLanguage} bubble (hold enter to submit)`
+                            : composerMode === "test"
+                              ? "python test input bubble (stdin/custom case)"
+                              : "message bubble"
+                        }
+                        className={`h-full w-full resize-none border-0 px-3 py-2 outline-none ${
+                          composerMode === "code"
+                            ? "overflow-y-auto bg-[#0e1117] font-mono text-[12px] leading-5 text-[#e5e7eb] caret-[#e5e7eb]"
+                            : composerMode === "test"
+                              ? `${isDark ? "bg-[#0f1724] text-[#d1fae5] caret-[#d1fae5]" : "bg-[#ecfeff] text-[#065f46] caret-[#065f46]"} font-mono text-[12px] leading-5`
+                              : `${isDark ? "bg-[#151b24] text-[#e5e7eb] caret-[#e5e7eb]" : "bg-transparent text-[#111] caret-[#111]"} text-sm`
+                        }`}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
