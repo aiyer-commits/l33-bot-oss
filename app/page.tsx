@@ -536,7 +536,7 @@ export default function Home() {
   const didInitMessageCountsRef = useRef(false);
   const userPrevScrollWidthRef = useRef<number>(0);
   const userWasPinnedRightRef = useRef<boolean>(false);
-  const didInitialUserPaneSnapRef = useRef(false);
+  const lastCenteredProblemIdRef = useRef<number | null>(null);
   const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
   const codeInputRef = useRef<HTMLTextAreaElement | null>(null);
   const testInputRef = useRef<HTMLTextAreaElement | null>(null);
@@ -814,17 +814,24 @@ export default function Home() {
   const holdOutputMap = useMemo(() => HOLD_OUTPUT_BY_LANGUAGE[effectiveLanguage] ?? HOLD_OUTPUT_BY_LANGUAGE.python, [effectiveLanguage]);
   const assistantMessages = useMemo(() => messages.filter((msg) => msg.role === "assistant"), [messages]);
   const userMessages = useMemo(() => messages.filter((msg) => msg.role === "user"), [messages]);
+  const activeProblemMessageIndex = useMemo(() => {
+    if (!activeProblem) return -1;
+    for (let i = 0; i < assistantMessages.length; i += 1) {
+      if (extractProblemMessageId(assistantMessages[i]) === activeProblem.id) return i;
+    }
+    return -1;
+  }, [assistantMessages, activeProblem]);
 
   useEffect(() => {
-    if (didInitialUserPaneSnapRef.current || userMessages.length === 0) return;
-    didInitialUserPaneSnapRef.current = true;
-    userWasPinnedRightRef.current = true;
+    if (!profile?.activeProblemId || activeProblemMessageIndex < 0) return;
+    if (lastCenteredProblemIdRef.current === profile.activeProblemId) return;
+    lastCenteredProblemIdRef.current = profile.activeProblemId;
+    userWasPinnedRightRef.current = false;
     window.requestAnimationFrame(() => {
-      const el = userScrollRef.current;
-      if (!el) return;
-      el.scrollLeft = el.scrollWidth;
+      scrollPaneToCardIndex(assistantScrollRef, activeProblemMessageIndex);
+      smoothScrollPaneTo(userScrollRef, 0);
     });
-  }, [userMessages.length]);
+  }, [activeProblemMessageIndex, profile?.activeProblemId]);
 
   useEffect(() => {
     const nextAssistantCount = assistantMessages.length;
@@ -849,14 +856,6 @@ export default function Home() {
     prevAssistantCountRef.current = nextAssistantCount;
     prevUserCountRef.current = nextUserCount;
   }, [assistantMessages.length, userMessages.length]);
-
-  const activeProblemMessageIndex = useMemo(() => {
-    if (!activeProblem) return -1;
-    for (let i = assistantMessages.length - 1; i >= 0; i -= 1) {
-      if (extractProblemMessageId(assistantMessages[i]) === activeProblem.id) return i;
-    }
-    return -1;
-  }, [assistantMessages, activeProblem]);
 
   const isDark = theme === "dark";
 
@@ -1603,6 +1602,16 @@ _result
     };
     rafRef.current = window.requestAnimationFrame(tick);
   }
+
+  function scrollPaneToCardIndex(ref: { current: HTMLDivElement | null }, index: number) {
+    const el = ref.current;
+    if (!el) return;
+    const cards = getPaneCards(el);
+    const targetCard = cards[index];
+    if (!targetCard) return;
+    smoothScrollPaneTo(ref, targetLeftForCenteredCard(el, targetCard));
+  }
+
   function scrollPaneStep(
     ref: { current: HTMLDivElement | null },
     direction: "next" | "prev",
