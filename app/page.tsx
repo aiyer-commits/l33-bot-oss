@@ -22,6 +22,7 @@ type TargetField = "chat" | "code" | "test";
 type ComposerMode = "chat" | "code" | "test";
 type ThemeMode = "light" | "dark";
 type PyodideStatus = "idle" | "loading" | "ready" | "error";
+type TestRunStatus = "idle" | "running" | "done" | "error";
 type PyodideInterface = {
   runPythonAsync: (code: string) => Promise<unknown>;
 };
@@ -473,6 +474,8 @@ export default function Home() {
   const [code, setCode] = useState("");
   const [testInput, setTestInput] = useState("");
   const [pyodideStatus, setPyodideStatus] = useState<PyodideStatus>("idle");
+  const [testRunStatus, setTestRunStatus] = useState<TestRunStatus>("idle");
+  const [testRunOutput, setTestRunOutput] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
   const [sessionId, setSessionId] = useState<string>("");
@@ -898,6 +901,69 @@ export default function Home() {
     }
   }
 
+  async function runPythonTestInput() {
+    if (effectiveLanguage !== "python") {
+      setTestRunStatus("error");
+      setTestRunOutput("Local execution is only available for Python right now.");
+      return;
+    }
+    if (!code.trim()) {
+      setTestRunStatus("error");
+      setTestRunOutput("Write some Python code first.");
+      return;
+    }
+    if (!pyodideRef.current) {
+      setTestRunStatus("error");
+      setTestRunOutput("Download Pyodide first.");
+      return;
+    }
+
+    setTestRunStatus("running");
+    setTestRunOutput("");
+
+    const runner = `
+import io, json, sys, traceback
+_code = ${JSON.stringify(code)}
+_stdin = ${JSON.stringify(testInput)}
+_old_stdin, _old_stdout, _old_stderr = sys.stdin, sys.stdout, sys.stderr
+sys.stdin = io.StringIO(_stdin)
+sys.stdout = io.StringIO()
+sys.stderr = io.StringIO()
+_status = "ok"
+_trace = ""
+_globals = {"__name__": "__main__"}
+try:
+    exec(_code, _globals, _globals)
+except Exception:
+    _status = "error"
+    _trace = traceback.format_exc()
+_result = json.dumps({
+    "status": _status,
+    "stdout": sys.stdout.getvalue(),
+    "stderr": sys.stderr.getvalue(),
+    "traceback": _trace,
+})
+sys.stdin, sys.stdout, sys.stderr = _old_stdin, _old_stdout, _old_stderr
+_result
+`.trim();
+
+    try {
+      const raw = await pyodideRef.current.runPythonAsync(runner);
+      const parsed = JSON.parse(String(raw ?? "{}")) as {
+        status?: string;
+        stdout?: string;
+        stderr?: string;
+        traceback?: string;
+      };
+      const chunks = [parsed.stdout?.trimEnd() ?? "", parsed.stderr?.trimEnd() ?? "", parsed.traceback?.trimEnd() ?? ""].filter(Boolean);
+      setTestRunStatus(parsed.status === "error" ? "error" : "done");
+      setTestRunOutput(chunks.join("\n\n") || "(no output)");
+    } catch (error) {
+      setTestRunStatus("error");
+      setTestRunOutput(error instanceof Error ? error.message : "Local execution failed.");
+    }
+  }
+
   function modeBadgeLabel(mode: ComposerMode) {
     if (mode === "chat") return "T";
     if (mode === "code") return "</>";
@@ -1265,6 +1331,7 @@ export default function Home() {
       return;
     }
     if (composerMode === "test") {
+      void runPythonTestInput();
       return;
     }
     void sendTurn({ sendText: true, sendCode: false });
@@ -1961,10 +2028,42 @@ export default function Home() {
                         </p>
                       ) : null}
                     </div>
+                  ) : composerMode === "test" ? (
+                    <div className="flex h-full min-h-0 flex-col">
+                      <textarea
+                        ref={testInputRef}
+                        value={testInput}
+                        inputMode="none"
+                        spellCheck={false}
+                        onKeyDown={handleComposerKeyDown}
+                        onKeyUp={() => syncCursorFromDom("test")}
+                        onInput={() => syncCursorFromDom("test")}
+                        onChange={(event) => {
+                          setTestInput(event.target.value);
+                        }}
+                        onFocus={() => focusComposer("test")}
+                        onClick={() => syncCursorFromDom("test")}
+                        onSelect={() => syncCursorFromDom("test")}
+                        rows={3}
+                        placeholder="python test input bubble (stdin/custom case)"
+                        className={`${isDark ? "bg-[#0f1724] text-[#d1fae5] caret-[#d1fae5]" : "bg-[#ecfeff] text-[#065f46] caret-[#065f46]"} min-h-0 flex-[0_0_42%] resize-none border-0 px-3 py-2 font-mono text-[12px] leading-5 outline-none`}
+                      />
+                      <div className={`min-h-0 flex-1 border-t px-3 py-2 ${isDark ? "border-white/10 bg-[#0b1220]" : "border-black/10 bg-white/70"}`}>
+                        <div className="mb-1 flex items-center justify-between gap-2">
+                          <span className={`text-[11px] font-semibold uppercase tracking-[0.12em] ${isDark ? "text-white/55" : "text-black/50"}`}>Run output</span>
+                          <span className={`text-[11px] ${testRunStatus === "error" ? (isDark ? "text-[#fca5a5]" : "text-[#b42318]") : isDark ? "text-white/45" : "text-black/45"}`}>
+                            {testRunStatus === "running" ? "Running..." : testRunStatus === "error" ? "Error" : testRunStatus === "done" ? "Done" : "Idle"}
+                          </span>
+                        </div>
+                        <pre className={`no-scrollbar h-[calc(100%-20px)] overflow-auto whitespace-pre-wrap break-words font-mono text-[12px] leading-5 ${isDark ? "text-[#dbeafe]" : "text-[#0b1220]"}`}>
+                          {testRunOutput || "Press Enter or hold Enter to run the current Python code with this input."}
+                        </pre>
+                      </div>
+                    </div>
                   ) : (
                     <textarea
-                      ref={composerMode === "code" ? codeInputRef : composerMode === "test" ? testInputRef : chatInputRef}
-                      value={composerMode === "code" ? code : composerMode === "test" ? testInput : draft}
+                      ref={composerMode === "code" ? codeInputRef : chatInputRef}
+                      value={composerMode === "code" ? code : draft}
                       inputMode="none"
                       spellCheck={composerMode === "chat"}
                       onKeyDown={handleComposerKeyDown}
@@ -1972,26 +2071,17 @@ export default function Home() {
                       onInput={() => syncCursorFromDom(composerMode)}
                       onChange={(event) => {
                         if (composerMode === "code") setCode(event.target.value);
-                        else if (composerMode === "test") setTestInput(event.target.value);
                         else setDraft(event.target.value);
                       }}
                       onFocus={() => focusComposer(composerMode)}
                       onClick={() => syncCursorFromDom(composerMode)}
                       onSelect={() => syncCursorFromDom(composerMode)}
-                      rows={composerMode === "code" ? 1 : composerMode === "test" ? 3 : 2}
-                      placeholder={
-                        composerMode === "code"
-                          ? `${effectiveLanguage} bubble (hold enter to submit)`
-                          : composerMode === "test"
-                            ? "python test input bubble (stdin/custom case)"
-                            : "message bubble"
-                      }
+                      rows={composerMode === "code" ? 1 : 2}
+                      placeholder={composerMode === "code" ? `${effectiveLanguage} bubble (hold enter to submit)` : "message bubble"}
                       className={`h-full w-full resize-none border-0 px-3 py-2 outline-none ${
                         composerMode === "code"
                           ? "overflow-y-auto bg-[#0e1117] font-mono text-[12px] leading-5 text-[#e5e7eb] caret-[#e5e7eb]"
-                          : composerMode === "test"
-                            ? `${isDark ? "bg-[#0f1724] text-[#d1fae5] caret-[#d1fae5]" : "bg-[#ecfeff] text-[#065f46] caret-[#065f46]"} font-mono text-[12px] leading-5`
-                            : `${isDark ? "bg-[#151b24] text-[#e5e7eb] caret-[#e5e7eb]" : "bg-transparent text-[#111] caret-[#111]"} text-sm`
+                          : `${isDark ? "bg-[#151b24] text-[#e5e7eb] caret-[#e5e7eb]" : "bg-transparent text-[#111] caret-[#111]"} text-sm`
                       }`}
                     />
                   )}
