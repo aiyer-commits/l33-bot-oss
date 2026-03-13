@@ -534,6 +534,7 @@ export default function Home() {
   const didInitMessageCountsRef = useRef(false);
   const userPrevScrollWidthRef = useRef<number>(0);
   const userWasPinnedRightRef = useRef<boolean>(false);
+  const didInitialUserPaneSnapRef = useRef(false);
   const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
   const codeInputRef = useRef<HTMLTextAreaElement | null>(null);
   const testInputRef = useRef<HTMLTextAreaElement | null>(null);
@@ -811,6 +812,17 @@ export default function Home() {
   const holdOutputMap = useMemo(() => HOLD_OUTPUT_BY_LANGUAGE[effectiveLanguage] ?? HOLD_OUTPUT_BY_LANGUAGE.python, [effectiveLanguage]);
   const assistantMessages = useMemo(() => messages.filter((msg) => msg.role === "assistant"), [messages]);
   const userMessages = useMemo(() => messages.filter((msg) => msg.role === "user"), [messages]);
+
+  useEffect(() => {
+    if (didInitialUserPaneSnapRef.current || userMessages.length === 0) return;
+    didInitialUserPaneSnapRef.current = true;
+    userWasPinnedRightRef.current = true;
+    window.requestAnimationFrame(() => {
+      const el = userScrollRef.current;
+      if (!el) return;
+      el.scrollLeft = el.scrollWidth;
+    });
+  }, [userMessages.length]);
 
   useEffect(() => {
     const nextAssistantCount = assistantMessages.length;
@@ -1938,7 +1950,7 @@ _result
                     <article
                     key={`${message.createdAt}-u-${index}`}
                     className={`flex h-full min-h-full max-w-[96%] shrink-0 self-stretch flex-col rounded-xl rounded-br-none px-3 py-2 text-sm shadow-sm ${
-                      isDark ? "border border-[#8bb6e8]/55 bg-[#c9def7] text-[#0b1220]" : "bg-[#eff6ff] text-[#0b1220]"
+                      isDark ? "border border-[#7aa8dd]/60 bg-[#b7d1ef] text-[#0b1220]" : "bg-[#eff6ff] text-[#0b1220]"
                     }`}
                   >
                       <div className="no-scrollbar h-full min-h-0 flex-1 overflow-auto">
