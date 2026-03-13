@@ -1923,11 +1923,11 @@ _result
                 <div className="flex h-full items-stretch gap-2 pr-12">
                   {userMessages.map((message, index) => (
                     <article
-                      key={`${message.createdAt}-u-${index}`}
-                      className={`flex h-full min-h-full max-w-[96%] shrink-0 self-stretch flex-col rounded-xl rounded-br-none px-3 py-2 text-sm shadow-sm ${
-                        isDark ? "bg-[#dbeafe] text-[#0b1220]" : "bg-[#eff6ff] text-[#0b1220]"
-                      }`}
-                    >
+                    key={`${message.createdAt}-u-${index}`}
+                    className={`flex h-full min-h-full max-w-[96%] shrink-0 self-stretch flex-col rounded-xl rounded-br-none px-3 py-2 text-sm shadow-sm ${
+                      isDark ? "border border-[#8bb6e8]/55 bg-[#c9def7] text-[#0b1220]" : "bg-[#eff6ff] text-[#0b1220]"
+                    }`}
+                  >
                       <div className="no-scrollbar h-full min-h-0 flex-1 overflow-auto">
                         {message.kind === "code" ? (
                           <pre className="whitespace-pre-wrap font-mono text-[12px] leading-5">{message.content}</pre>
