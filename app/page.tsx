@@ -10,6 +10,7 @@ const CHAT_KEY = "l33tsp33k.chat.v2";
 const CODE_KEY = "l33tsp33k.code.v2";
 const TEXT_KEY = "l33tsp33k.text.v2";
 const TEST_KEY = "l33tsp33k.test.v1";
+const COMPOSER_STATE_KEY = "l33tsp33k.composer-state.v1";
 const ANON_ID_KEY = "l33tsp33k.anon-id.v1";
 const THEME_KEY = "l33tsp33k.theme.v1";
 const LANGUAGE_KEY = "l33tsp33k.language.v1";
@@ -44,6 +45,11 @@ type CurriculumProblem = {
   category: string;
   position: number;
   statement?: string;
+};
+type ProblemComposerState = {
+  draft: string;
+  code: string;
+  testInput: string;
 };
 
 type KeySpec = { token: string; units?: number };
@@ -297,6 +303,37 @@ function extractProblemMessageId(message: ChatMessage): number | null {
   return null;
 }
 
+function emptyProblemComposerState(): ProblemComposerState {
+  return { draft: "", code: "", testInput: "" };
+}
+
+function readComposerStateMap(raw: string | null): Record<string, ProblemComposerState> {
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw) as Record<string, Partial<ProblemComposerState>>;
+    if (!parsed || typeof parsed !== "object") return {};
+    return Object.fromEntries(
+      Object.entries(parsed).map(([key, value]) => [
+        key,
+        {
+          draft: typeof value?.draft === "string" ? value.draft : "",
+          code: typeof value?.code === "string" ? value.code : "",
+          testInput: typeof value?.testInput === "string" ? value.testInput : "",
+        },
+      ]),
+    );
+  } catch {
+    return {};
+  }
+}
+
+function composerStateForProblem(
+  map: Record<string, ProblemComposerState>,
+  problemId: number,
+): ProblemComposerState {
+  return map[String(problemId)] ?? emptyProblemComposerState();
+}
+
 function updateProblem(
   existing: LocalProfile["problems"][number],
   data: ChatApiResponse["assessment"],
@@ -537,6 +574,7 @@ export default function Home() {
   const userPrevScrollWidthRef = useRef<number>(0);
   const userWasPinnedRightRef = useRef<boolean>(false);
   const lastCenteredProblemIdRef = useRef<number | null>(null);
+  const lastLoadedComposerProblemIdRef = useRef<number | null>(null);
   const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
   const codeInputRef = useRef<HTMLTextAreaElement | null>(null);
   const testInputRef = useRef<HTMLTextAreaElement | null>(null);
@@ -548,6 +586,7 @@ export default function Home() {
   useEffect(() => {
     const profileRaw = localStorage.getItem(PROFILE_KEY);
     const chatRaw = localStorage.getItem(CHAT_KEY);
+    const composerStateRaw = localStorage.getItem(COMPOSER_STATE_KEY);
     const textRaw = localStorage.getItem(TEXT_KEY);
     const codeRaw = localStorage.getItem(CODE_KEY);
     const testRaw = localStorage.getItem(TEST_KEY);
@@ -585,9 +624,20 @@ export default function Home() {
       setMessages(bootstrapIntro(loadedProfile.activeProblemId));
     }
 
-    if (typeof textRaw === "string") setDraft(textRaw);
-    if (typeof codeRaw === "string") setCode(codeRaw);
-    if (typeof testRaw === "string") setTestInput(testRaw);
+    const composerStateMap = readComposerStateMap(composerStateRaw);
+    const currentComposerState = composerStateForProblem(composerStateMap, loadedProfile.activeProblemId);
+    const restoredComposerState =
+      currentComposerState.draft || currentComposerState.code || currentComposerState.testInput
+        ? currentComposerState
+        : {
+            draft: typeof textRaw === "string" ? textRaw : "",
+            code: typeof codeRaw === "string" ? codeRaw : "",
+            testInput: typeof testRaw === "string" ? testRaw : "",
+          };
+    setDraft(restoredComposerState.draft);
+    setCode(restoredComposerState.code);
+    setTestInput(restoredComposerState.testInput);
+    lastLoadedComposerProblemIdRef.current = loadedProfile.activeProblemId;
     if (themeRaw === "dark" || themeRaw === "light") setTheme(themeRaw);
     setSelectedLanguage(normalizeLanguage(languageRaw));
     const hydrateCurriculum = async () => {
@@ -634,16 +684,15 @@ export default function Home() {
   }, [profile, messages]);
 
   useEffect(() => {
-    localStorage.setItem(TEXT_KEY, draft);
-  }, [draft]);
-
-  useEffect(() => {
-    localStorage.setItem(CODE_KEY, code);
-  }, [code]);
-
-  useEffect(() => {
-    localStorage.setItem(TEST_KEY, testInput);
-  }, [testInput]);
+    if (!profile) return;
+    const composerStateMap = readComposerStateMap(localStorage.getItem(COMPOSER_STATE_KEY));
+    composerStateMap[String(profile.activeProblemId)] = {
+      draft,
+      code,
+      testInput,
+    };
+    localStorage.setItem(COMPOSER_STATE_KEY, JSON.stringify(composerStateMap));
+  }, [profile, draft, code, testInput]);
 
   useEffect(() => {
     localStorage.setItem(THEME_KEY, theme);
@@ -652,6 +701,22 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem(LANGUAGE_KEY, selectedLanguage);
   }, [selectedLanguage]);
+
+  useEffect(() => {
+    if (!profile) return;
+    if (lastLoadedComposerProblemIdRef.current === profile.activeProblemId) return;
+    const composerState = composerStateForProblem(
+      readComposerStateMap(localStorage.getItem(COMPOSER_STATE_KEY)),
+      profile.activeProblemId,
+    );
+    lastLoadedComposerProblemIdRef.current = profile.activeProblemId;
+    setDraft(composerState.draft);
+    setCode(composerState.code);
+    setTestInput(composerState.testInput);
+    setChatCursor({ start: 0, end: 0 });
+    setCodeCursor({ start: 0, end: 0 });
+    setTestCursor({ start: 0, end: 0 });
+  }, [profile]);
 
   useEffect(() => {
     if (selectedLanguage !== "python" && composerMode === "test") {
