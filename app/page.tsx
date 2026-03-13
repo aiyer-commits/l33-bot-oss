@@ -1228,6 +1228,13 @@ _result
       userWasPinnedRightRef.current = false;
     }
     setMessages(nextMessages);
+    if (userWasPinnedRightRef.current) {
+      window.requestAnimationFrame(() => {
+        const el = userScrollRef.current;
+        if (!el) return;
+        smoothScrollPaneTo(userScrollRef, el.scrollWidth);
+      });
+    }
     setError("");
     setIsSending(true);
 
