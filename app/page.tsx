@@ -1853,139 +1853,141 @@ export default function Home() {
           </section>
 
           <section className="relative min-h-0 overflow-hidden">
-            <div ref={userScrollRef} className="no-scrollbar h-full overflow-x-auto overflow-y-hidden px-3 py-3">
-              <div className="flex h-full items-stretch gap-2 pr-12">
-                {userMessages.map((message, index) => (
-                  <article
-                    key={`${message.createdAt}-u-${index}`}
-                    className={`flex h-full min-h-full max-w-[96%] shrink-0 self-stretch flex-col rounded-xl rounded-br-none px-3 py-2 text-sm shadow-sm ${
-                      isDark ? "bg-[#dbeafe] text-[#0b1220]" : "bg-[#eff6ff] text-[#0b1220]"
-                    }`}
-                  >
-                    <div className="no-scrollbar h-full min-h-0 flex-1 overflow-auto">
-                      {message.kind === "code" ? (
-                        <pre className="whitespace-pre-wrap font-mono text-[12px] leading-5">{message.content}</pre>
-                      ) : (
-                        <p className="whitespace-pre-wrap leading-5">{message.content}</p>
-                      )}
-                    </div>
-                  </article>
-                ))}
+            <div className="flex h-full items-stretch gap-2 px-3 py-3">
+              <div ref={userScrollRef} className="no-scrollbar min-w-0 flex-1 overflow-x-auto overflow-y-hidden">
+                <div className="flex h-full items-stretch gap-2 pr-12">
+                  {userMessages.map((message, index) => (
+                    <article
+                      key={`${message.createdAt}-u-${index}`}
+                      className={`flex h-full min-h-full max-w-[96%] shrink-0 self-stretch flex-col rounded-xl rounded-br-none px-3 py-2 text-sm shadow-sm ${
+                        isDark ? "bg-[#dbeafe] text-[#0b1220]" : "bg-[#eff6ff] text-[#0b1220]"
+                      }`}
+                    >
+                      <div className="no-scrollbar h-full min-h-0 flex-1 overflow-auto">
+                        {message.kind === "code" ? (
+                          <pre className="whitespace-pre-wrap font-mono text-[12px] leading-5">{message.content}</pre>
+                        ) : (
+                          <p className="whitespace-pre-wrap leading-5">{message.content}</p>
+                        )}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
 
-                <div className="relative ml-auto h-full w-[94%] min-w-[94%] shrink-0 pl-8 pr-10">
-                  <div className="absolute left-0 top-1/2 flex -translate-y-1/2 flex-col gap-1">
+              <div className="relative h-full w-[94%] min-w-[94%] shrink-0 pl-8 pr-10">
+                <div className="absolute left-0 top-1/2 flex -translate-y-1/2 flex-col gap-1">
+                  <button
+                    type="button"
+                    onClick={() => focusCoachingMode(coachingMode === "interviewer" ? "tutor" : "interviewer")}
+                    className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold ${
+                      coachingMode === "tutor" ? "bg-[#0f766e] text-white" : "bg-[#6b3db8] text-white"
+                    }`}
+                    title={coachingMode === "tutor" ? "Coaching mode: tutor" : "Coaching mode: interviewer"}
+                  >
+                    <span className="text-[8px] leading-none">{coachingModeBadgeLabel(coachingMode)}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => focusComposer("chat")}
+                    className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold ${
+                      composerMode === "chat" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
+                    }`}
+                    title="Chat composer"
+                  >
+                    <span className="text-[11px]">T</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => focusComposer("code")}
+                    className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold ${
+                      composerMode === "code" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
+                    }`}
+                    title="Code composer"
+                  >
+                    <span className="text-[8px] leading-none">{modeBadgeLabel("code")}</span>
+                  </button>
+                  {effectiveLanguage === "python" ? (
                     <button
                       type="button"
-                      onClick={() => focusCoachingMode(coachingMode === "interviewer" ? "tutor" : "interviewer")}
-                      className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold ${
-                        coachingMode === "tutor" ? "bg-[#0f766e] text-white" : "bg-[#6b3db8] text-white"
+                      onClick={() => focusComposer("test")}
+                      className={`flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold ${
+                        composerMode === "test" ? "bg-[#0f766e] text-white" : "bg-[#35524d] text-[#d1fae5]"
                       }`}
-                      title={coachingMode === "tutor" ? "Coaching mode: tutor" : "Coaching mode: interviewer"}
+                      title="Test input composer"
                     >
-                      <span className="text-[8px] leading-none">{coachingModeBadgeLabel(coachingMode)}</span>
+                      in
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => focusComposer("chat")}
-                      className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold ${
-                        composerMode === "chat" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
-                      }`}
-                      title="Chat composer"
-                    >
-                      <span className="text-[11px]">T</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => focusComposer("code")}
-                      className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold ${
-                        composerMode === "code" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
-                      }`}
-                      title="Code composer"
-                    >
-                      <span className="text-[8px] leading-none">{modeBadgeLabel("code")}</span>
-                    </button>
-                    {effectiveLanguage === "python" ? (
+                  ) : null}
+                </div>
+                <div
+                  className={`relative overflow-hidden rounded-2xl rounded-br-none border ${
+                    composerMode === "code"
+                      ? "border-white/20 bg-[#0e1117]"
+                      : composerMode === "test"
+                        ? isDark
+                          ? "border-[#34d399]/40 bg-[#0f1724]"
+                          : "border-[#34d399]/50 bg-[#ecfeff]"
+                      : isDark
+                        ? "border-white/20 bg-[#151b24]"
+                        : "border-black/15 bg-white"
+                  } h-full`}
+                >
+                  {composerMode === "test" && effectiveLanguage === "python" && pyodideStatus !== "ready" ? (
+                    <div className="flex h-full flex-col items-start justify-center gap-2 px-3 py-2">
+                      <p className={`text-[12px] ${isDark ? "text-[#d1fae5]" : "text-[#065f46]"}`}>
+                        Local test mode uses Pyodide.
+                      </p>
                       <button
                         type="button"
-                        onClick={() => focusComposer("test")}
-                        className={`flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold ${
-                          composerMode === "test" ? "bg-[#0f766e] text-white" : "bg-[#35524d] text-[#d1fae5]"
+                        onClick={() => void downloadPyodide()}
+                        disabled={pyodideStatus === "loading"}
+                        className={`h-7 rounded-md border px-2 text-[11px] font-semibold ${
+                          isDark ? "border-[#34d399]/50 bg-[#052e2b] text-[#d1fae5]" : "border-[#10b981]/40 bg-[#d1fae5] text-[#065f46]"
                         }`}
-                        title="Test input composer"
                       >
-                        in
+                        {pyodideStatus === "loading" ? "Downloading Pyodide..." : "Download Pyodide"}
                       </button>
-                    ) : null}
-                  </div>
-                  <div
-                    className={`relative overflow-hidden rounded-2xl rounded-br-none border ${
-                      composerMode === "code"
-                        ? "border-white/20 bg-[#0e1117]"
-                        : composerMode === "test"
-                          ? isDark
-                            ? "border-[#34d399]/40 bg-[#0f1724]"
-                            : "border-[#34d399]/50 bg-[#ecfeff]"
-                        : isDark
-                          ? "border-white/20 bg-[#151b24]"
-                          : "border-black/15 bg-white"
-                    } h-full`}
-                  >
-                    {composerMode === "test" && effectiveLanguage === "python" && pyodideStatus !== "ready" ? (
-                      <div className="flex h-full flex-col items-start justify-center gap-2 px-3 py-2">
-                        <p className={`text-[12px] ${isDark ? "text-[#d1fae5]" : "text-[#065f46]"}`}>
-                          Local test mode uses Pyodide.
+                      {pyodideStatus === "error" ? (
+                        <p className={`text-[11px] ${isDark ? "text-[#fca5a5]" : "text-[#b42318]"}`}>
+                          Could not load Pyodide. Try again.
                         </p>
-                        <button
-                          type="button"
-                          onClick={() => void downloadPyodide()}
-                          disabled={pyodideStatus === "loading"}
-                          className={`h-7 rounded-md border px-2 text-[11px] font-semibold ${
-                            isDark ? "border-[#34d399]/50 bg-[#052e2b] text-[#d1fae5]" : "border-[#10b981]/40 bg-[#d1fae5] text-[#065f46]"
-                          }`}
-                        >
-                          {pyodideStatus === "loading" ? "Downloading Pyodide..." : "Download Pyodide"}
-                        </button>
-                        {pyodideStatus === "error" ? (
-                          <p className={`text-[11px] ${isDark ? "text-[#fca5a5]" : "text-[#b42318]"}`}>
-                            Could not load Pyodide. Try again.
-                          </p>
-                        ) : null}
-                      </div>
-                    ) : (
-                      <textarea
-                        ref={composerMode === "code" ? codeInputRef : composerMode === "test" ? testInputRef : chatInputRef}
-                        value={composerMode === "code" ? code : composerMode === "test" ? testInput : draft}
-                        inputMode="none"
-                        spellCheck={composerMode === "chat"}
-                        onKeyDown={handleComposerKeyDown}
-                        onKeyUp={() => syncCursorFromDom(composerMode)}
-                        onInput={() => syncCursorFromDom(composerMode)}
-                        onChange={(event) => {
-                          if (composerMode === "code") setCode(event.target.value);
-                          else if (composerMode === "test") setTestInput(event.target.value);
-                          else setDraft(event.target.value);
-                        }}
-                        onFocus={() => focusComposer(composerMode)}
-                        onClick={() => syncCursorFromDom(composerMode)}
-                        onSelect={() => syncCursorFromDom(composerMode)}
-                        rows={composerMode === "code" ? 1 : composerMode === "test" ? 3 : 2}
-                        placeholder={
-                          composerMode === "code"
-                            ? `${effectiveLanguage} bubble (hold enter to submit)`
-                            : composerMode === "test"
-                              ? "python test input bubble (stdin/custom case)"
-                              : "message bubble"
-                        }
-                        className={`h-full w-full resize-none border-0 px-3 py-2 outline-none ${
-                          composerMode === "code"
-                            ? "overflow-y-auto bg-[#0e1117] font-mono text-[12px] leading-5 text-[#e5e7eb] caret-[#e5e7eb]"
-                            : composerMode === "test"
-                              ? `${isDark ? "bg-[#0f1724] text-[#d1fae5] caret-[#d1fae5]" : "bg-[#ecfeff] text-[#065f46] caret-[#065f46]"} font-mono text-[12px] leading-5`
-                              : `${isDark ? "bg-[#151b24] text-[#e5e7eb] caret-[#e5e7eb]" : "bg-transparent text-[#111] caret-[#111]"} text-sm`
-                        }`}
-                      />
-                    )}
-                  </div>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <textarea
+                      ref={composerMode === "code" ? codeInputRef : composerMode === "test" ? testInputRef : chatInputRef}
+                      value={composerMode === "code" ? code : composerMode === "test" ? testInput : draft}
+                      inputMode="none"
+                      spellCheck={composerMode === "chat"}
+                      onKeyDown={handleComposerKeyDown}
+                      onKeyUp={() => syncCursorFromDom(composerMode)}
+                      onInput={() => syncCursorFromDom(composerMode)}
+                      onChange={(event) => {
+                        if (composerMode === "code") setCode(event.target.value);
+                        else if (composerMode === "test") setTestInput(event.target.value);
+                        else setDraft(event.target.value);
+                      }}
+                      onFocus={() => focusComposer(composerMode)}
+                      onClick={() => syncCursorFromDom(composerMode)}
+                      onSelect={() => syncCursorFromDom(composerMode)}
+                      rows={composerMode === "code" ? 1 : composerMode === "test" ? 3 : 2}
+                      placeholder={
+                        composerMode === "code"
+                          ? `${effectiveLanguage} bubble (hold enter to submit)`
+                          : composerMode === "test"
+                            ? "python test input bubble (stdin/custom case)"
+                            : "message bubble"
+                      }
+                      className={`h-full w-full resize-none border-0 px-3 py-2 outline-none ${
+                        composerMode === "code"
+                          ? "overflow-y-auto bg-[#0e1117] font-mono text-[12px] leading-5 text-[#e5e7eb] caret-[#e5e7eb]"
+                          : composerMode === "test"
+                            ? `${isDark ? "bg-[#0f1724] text-[#d1fae5] caret-[#d1fae5]" : "bg-[#ecfeff] text-[#065f46] caret-[#065f46]"} font-mono text-[12px] leading-5`
+                            : `${isDark ? "bg-[#151b24] text-[#e5e7eb] caret-[#e5e7eb]" : "bg-transparent text-[#111] caret-[#111]"} text-sm`
+                      }`}
+                    />
+                  )}
                 </div>
               </div>
             </div>
