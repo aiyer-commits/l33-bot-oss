@@ -274,7 +274,7 @@ function normalizeMessages(raw: unknown): ChatMessage[] {
 function bootstrapIntro(problemId: number): ChatMessage[] {
   const problem = getProblemById(problemId);
   if (!problem) return [asMessage("assistant", "Session started. Problem data is missing.", "text")];
-  return [asMessage("assistant", "Use this flow: read the problem above, write in any lower input bubble, then press Enter to submit. Use Shift+Enter for a new line. Use the mode pills to switch between chat, code, and test, and match the language picker to your solution language. Ask for a hint or explanation anytime.", "text"), ...buildProblemMessages(problem.id)];
+  return [asMessage("assistant", "Use this flow: read the problem above, then use the lower input bubbles. In chat and test, press Enter to submit and Shift+Enter for a new line. In code, press Enter for a new line and Shift+Enter to submit. On the touch keyboard, tap Enter for a new line and hold Enter to submit. Use the mode pills to switch inputs and match the language picker to your solution language.", "text"), ...buildProblemMessages(problem.id)];
 }
 
 function buildProblemMessages(problemId: number): ChatMessage[] {
@@ -1106,13 +1106,19 @@ _result
       return;
     }
 
-    if (event.key === "Enter" && !event.shiftKey) {
+    if (target !== "code" && event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       submitCurrentComposer();
       return;
     }
 
     if (target === "code" && event.key === "Enter" && event.shiftKey) {
+      event.preventDefault();
+      submitCurrentComposer();
+      return;
+    }
+
+    if (target === "code" && event.key === "Enter") {
       event.preventDefault();
       const result = applySmartEnterForLanguage(source, cursor, effectiveLanguage);
       setCode(result.value);
