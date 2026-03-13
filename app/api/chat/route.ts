@@ -76,6 +76,7 @@ function systemInstructionFor(coachingMode: 'interviewer' | 'tutor') {
       'Avoid repeating a previous probing question when the learner is still confused.',
       'The latest active problem in the prompt is authoritative for this conversation.',
       'Do not change problems or curriculums during standard chat. Keep moveToProblemId fixed to the current active problem and moveToCurriculumKey fixed to the current curriculum.',
+      'Set composerSuggestion.mode to the best next UI input: chat for discussion, test cases, explanations, or edge cases; code for implementation edits; test for running custom input.',
       'Prefer concise responses and actionable next step.',
     ].join(' ');
   }
@@ -88,6 +89,7 @@ function systemInstructionFor(coachingMode: 'interviewer' | 'tutor') {
     'If the user is confused, keep the response short and probe the missing concept.',
     'The latest active problem in the prompt is authoritative for this conversation.',
     'Do not change problems or curriculums during standard chat. Keep moveToProblemId fixed to the current active problem and moveToCurriculumKey fixed to the current curriculum.',
+    'Set composerSuggestion.mode to the best next UI input: chat for discussion, test cases, explanations, or edge cases; code for implementation edits; test for running custom input.',
     'Prefer concise responses and actionable next step.',
   ].join(' ');
 }
@@ -96,9 +98,18 @@ function responseSchema() {
   return {
     type: 'object',
     additionalProperties: false,
-    required: ['assistantMessage', 'assessment', 'quickActions'],
+    required: ['assistantMessage', 'composerSuggestion', 'assessment', 'quickActions'],
     properties: {
       assistantMessage: { type: 'string' },
+      composerSuggestion: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['mode', 'reason'],
+        properties: {
+          mode: { type: ['string', 'null'], enum: ['chat', 'code', 'test', null] },
+          reason: { type: 'string' },
+        },
+      },
       assessment: {
         type: 'object',
         additionalProperties: false,

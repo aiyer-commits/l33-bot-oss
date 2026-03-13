@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Delete } from "lucide-react";
 import { clampConfidence, createInitialProfile, getProblemById } from "@/lib/leetcode75";
-import type { ChatApiResponse, ChatMessage, CoachingMode, LocalProfile, ProgrammingLanguage } from "@/lib/types";
+import type { ChatApiResponse, ChatMessage, CoachingMode, LocalProfile, ProgrammingLanguage, SuggestedComposerMode } from "@/lib/types";
 
 const PROFILE_KEY = "l33tsp33k.profile.v2";
 const CHAT_KEY = "l33tsp33k.chat.v2";
@@ -493,6 +493,8 @@ export default function Home() {
   const [expandedCurriculumProblemId, setExpandedCurriculumProblemId] = useState<number | null>(null);
 
   const [composerMode, setComposerMode] = useState<ComposerMode>("code");
+  const [suggestedComposerMode, setSuggestedComposerMode] = useState<SuggestedComposerMode | null>(null);
+  const [suggestedComposerReason, setSuggestedComposerReason] = useState("");
   const [shiftOn, setShiftOn] = useState(false);
   const [capsOn, setCapsOn] = useState(false);
 
@@ -977,8 +979,18 @@ _result
     return mode === "tutor" ? "help" : "int";
   }
 
+  function composerModeLabel(mode: ComposerMode | SuggestedComposerMode) {
+    if (mode === "chat") return "Chat";
+    if (mode === "code") return "Code";
+    return "Test";
+  }
+
   function focusComposer(mode: ComposerMode) {
     setComposerMode(mode);
+    if (suggestedComposerMode === mode) {
+      setSuggestedComposerMode(null);
+      setSuggestedComposerReason("");
+    }
     requestAnimationFrame(() => {
       if (mode === "chat") chatInputRef.current?.focus();
       if (mode === "code") codeInputRef.current?.focus();
@@ -1293,6 +1305,8 @@ _result
         setActiveCurriculumKey(payload.activeCurriculumKey);
         setCurriculumTab(payload.activeCurriculumKey);
       }
+      setSuggestedComposerMode(payload.composerSuggestion?.mode ?? null);
+      setSuggestedComposerReason(payload.composerSuggestion?.reason ?? "");
       if (payload.activeProblemId && payload.activeProblemId !== profile.activeProblemId) {
         setProfile((prev) => (prev ? { ...prev, activeProblemId: payload.activeProblemId! } : prev));
       }
@@ -1982,7 +1996,7 @@ _result
                     onClick={() => focusComposer("chat")}
                     className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold ${
                       composerMode === "chat" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
-                    }`}
+                    } ${suggestedComposerMode === "chat" ? (isDark ? "ring-2 ring-[#7aa2ff]/70" : "ring-2 ring-[#3b82f6]/45") : ""}`}
                     title="Chat composer"
                   >
                     <span className="text-[11px]">T</span>
@@ -1992,7 +2006,7 @@ _result
                     onClick={() => focusComposer("code")}
                     className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold ${
                       composerMode === "code" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
-                    }`}
+                    } ${suggestedComposerMode === "code" ? (isDark ? "ring-2 ring-[#7aa2ff]/70" : "ring-2 ring-[#3b82f6]/45") : ""}`}
                     title="Code composer"
                   >
                     <span className="text-[8px] leading-none">{modeBadgeLabel("code")}</span>
@@ -2003,7 +2017,7 @@ _result
                       onClick={() => focusComposer("test")}
                       className={`flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold ${
                         composerMode === "test" ? "bg-[#0f766e] text-white" : "bg-[#35524d] text-[#d1fae5]"
-                      }`}
+                      } ${suggestedComposerMode === "test" ? (isDark ? "ring-2 ring-[#7aa2ff]/70" : "ring-2 ring-[#3b82f6]/45") : ""}`}
                       title="Test input composer"
                     >
                       in
@@ -2023,6 +2037,14 @@ _result
                         : "border-black/15 bg-white"
                   } h-full`}
                 >
+                  {suggestedComposerMode && suggestedComposerMode !== composerMode ? (
+                    <div className={`absolute inset-x-2 top-2 z-10 rounded-md border px-2 py-1 text-[11px] leading-4 ${
+                      isDark ? "border-[#7aa2ff]/45 bg-[#0f1724]/92 text-[#dbeafe]" : "border-[#3b82f6]/30 bg-white/95 text-[#1849a9]"
+                    }`}>
+                      <span className="font-semibold">{`Try ${composerModeLabel(suggestedComposerMode)}`}</span>
+                      {suggestedComposerReason ? <span className={`${isDark ? "text-white/72" : "text-black/70"}`}>{` - ${suggestedComposerReason}`}</span> : null}
+                    </div>
+                  ) : null}
                   {composerMode === "test" && effectiveLanguage === "python" && pyodideStatus !== "ready" ? (
                     <div className="flex h-full flex-col items-start justify-center gap-2 px-3 py-2">
                       <p className={`text-[12px] ${isDark ? "text-[#d1fae5]" : "text-[#065f46]"}`}>

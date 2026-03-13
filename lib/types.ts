@@ -43,6 +43,7 @@ export type ChatMessage = {
 
 export type ProgrammingLanguage = "python" | "javascript" | "typescript" | "java" | "cpp" | "go" | "rust" | "sql";
 export type CoachingMode = "interviewer" | "tutor";
+export type SuggestedComposerMode = "chat" | "code" | "test";
 
 export type LanguageState = {
   selected: ProgrammingLanguage;
@@ -67,6 +68,10 @@ export type ChatApiResponse = {
   sessionId?: string;
   activeProblemId?: number;
   activeCurriculumKey?: string;
+  composerSuggestion?: {
+    mode: SuggestedComposerMode | null;
+    reason: string;
+  };
   assessment: {
     status: Exclude<ProblemLearningStatus, "unseen">;
     confidence: number;
