@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Delete } from "lucide-react";
 import { clampConfidence, createInitialProfile, getProblemById } from "@/lib/leetcode75";
-import type { ChatApiResponse, ChatMessage, LocalProfile, ProgrammingLanguage } from "@/lib/types";
+import type { ChatApiResponse, ChatMessage, CoachingMode, LocalProfile, ProgrammingLanguage } from "@/lib/types";
 
 const PROFILE_KEY = "l33tsp33k.profile.v2";
 const CHAT_KEY = "l33tsp33k.chat.v2";
@@ -219,6 +219,26 @@ function sanitizeHtmlForRender(raw: string) {
     .replace(/\son\w+\s*=\s*"[^"]*"/gi, "")
     .replace(/\son\w+\s*=\s*'[^']*'/gi, "")
     .replace(/javascript:/gi, "");
+}
+
+function splitAssistantBubbleContent(content: string) {
+  const normalized = content.trim();
+  if (!normalized) {
+    return { primary: "", note: "", nextStep: "" };
+  }
+
+  const nextMatch = normalized.match(/\nNext:\s*([\s\S]+)$/);
+  const nextStep = nextMatch?.[1]?.trim() ?? "";
+  const withoutNext = nextMatch ? normalized.slice(0, nextMatch.index).trimEnd() : normalized;
+
+  const blocks = withoutNext.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
+  if (blocks.length <= 1) {
+    return { primary: withoutNext, note: "", nextStep };
+  }
+
+  const note = blocks[blocks.length - 1] ?? "";
+  const primary = blocks.slice(0, -1).join("\n\n").trim();
+  return { primary: primary || withoutNext, note, nextStep };
 }
 
 function asMessage(role: "assistant" | "user", content: string, kind: "text" | "code"): ChatMessage {
@@ -462,6 +482,7 @@ export default function Home() {
   const [selectedLanguage, setSelectedLanguage] = useState<ProgrammingLanguage>("python");
   const [hasPhysicalKeyboard, setHasPhysicalKeyboard] = useState(false);
   const [showTouchKeyboard, setShowTouchKeyboard] = useState(true);
+  const [coachingMode, setCoachingMode] = useState<CoachingMode>("interviewer");
   const [isCurriculumDrawerOpen, setIsCurriculumDrawerOpen] = useState(false);
   const [curriculumTab, setCurriculumTab] = useState("l33");
   const [curriculums, setCurriculums] = useState<CurriculumMeta[]>([]);
@@ -785,10 +806,6 @@ export default function Home() {
   }, [profile]);
   const showKeyboard = !hasPhysicalKeyboard || showTouchKeyboard;
   const effectiveLanguage = useMemo<ProgrammingLanguage>(() => selectedLanguage, [selectedLanguage]);
-  const availableComposerModes = useMemo<ComposerMode[]>(
-    () => (effectiveLanguage === "python" ? ["chat", "code", "test"] : ["chat", "code"]),
-    [effectiveLanguage],
-  );
   const keyboardLayout = useMemo(() => buildKeyboardLayout(effectiveLanguage), [effectiveLanguage]);
   const tapOutputMap = useMemo(() => TAP_OUTPUT_BY_LANGUAGE[effectiveLanguage] ?? TAP_OUTPUT_BY_LANGUAGE.python, [effectiveLanguage]);
   const holdOutputMap = useMemo(() => HOLD_OUTPUT_BY_LANGUAGE[effectiveLanguage] ?? HOLD_OUTPUT_BY_LANGUAGE.python, [effectiveLanguage]);
@@ -881,16 +898,14 @@ export default function Home() {
     }
   }
 
-  function cycleComposerMode() {
-    const currentIndex = availableComposerModes.indexOf(composerMode);
-    const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % availableComposerModes.length;
-    focusComposer(availableComposerModes[nextIndex]);
-  }
-
   function modeBadgeLabel(mode: ComposerMode) {
     if (mode === "chat") return "T";
     if (mode === "code") return "</>";
     return "in";
+  }
+
+  function coachingModeBadgeLabel(mode: CoachingMode) {
+    return mode === "tutor" ? "help" : "int";
   }
 
   function focusComposer(mode: ComposerMode) {
@@ -900,6 +915,10 @@ export default function Home() {
       if (mode === "code") codeInputRef.current?.focus();
       if (mode === "test") testInputRef.current?.focus();
     });
+  }
+
+  function focusCoachingMode(mode: CoachingMode) {
+    setCoachingMode(mode);
   }
 
   function syncCursorFromDom(target: TargetField) {
@@ -1165,6 +1184,7 @@ export default function Home() {
             effective: effectiveLanguage,
             mode: "explicit",
           },
+          coachingMode,
           activeProblemId: profile.activeProblemId,
           profile,
           conversation: nextMessages,
@@ -1755,26 +1775,48 @@ export default function Home() {
             <div ref={assistantScrollRef} className="no-scrollbar h-full overflow-x-auto overflow-y-hidden px-3 py-3">
               <div className="flex h-full items-stretch gap-2 pr-12">
                 {assistantMessages.map((message, index) => (
-                  <article
-                    key={`${message.createdAt}-a-${index}`}
-                    ref={index === activeProblemMessageIndex ? (node) => {
-                      activeProblemMessageRef.current = node;
-                    } : undefined}
-                    className={`flex h-full min-h-full max-w-[96%] shrink-0 self-stretch flex-col rounded-xl rounded-tl-none px-3 py-2 text-sm shadow-sm ${isDark ? "bg-[#151b24]" : "bg-white"}`}
-                  >
-                    <div className="no-scrollbar h-full min-h-0 flex-1 overflow-auto">
-                      {message.kind === "code" ? (
-                        <pre className="whitespace-pre-wrap font-mono text-[12px] leading-5">{message.content}</pre>
-                      ) : looksLikeHtmlMarkup(message.content) ? (
-                        <div
-                          className="space-y-2 text-[13px] leading-5 [&_code]:rounded [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[12px] [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:rounded-md [&_pre]:p-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
-                          dangerouslySetInnerHTML={{ __html: sanitizeHtmlForRender(message.content) }}
-                        />
-                      ) : (
-                        <p className="whitespace-pre-wrap leading-5">{message.content}</p>
-                      )}
-                    </div>
-                  </article>
+                  (() => {
+                    const sections = message.kind === "text" && !looksLikeHtmlMarkup(message.content) ? splitAssistantBubbleContent(message.content) : null;
+                    const metaTone = isDark
+                      ? "border-white/10 bg-white/[0.04] text-white/58"
+                      : "border-black/10 bg-black/[0.03] text-black/55";
+
+                    return (
+                      <article
+                        key={`${message.createdAt}-a-${index}`}
+                        ref={index === activeProblemMessageIndex ? (node) => {
+                          activeProblemMessageRef.current = node;
+                        } : undefined}
+                        className={`flex h-full min-h-full max-w-[96%] shrink-0 self-stretch flex-col rounded-xl rounded-tl-none px-3 py-2 text-sm shadow-sm ${isDark ? "bg-[#151b24]" : "bg-white"}`}
+                      >
+                        <div className="no-scrollbar h-full min-h-0 flex-1 overflow-auto">
+                          {message.kind === "code" ? (
+                            <pre className="whitespace-pre-wrap font-mono text-[12px] leading-5">{message.content}</pre>
+                          ) : looksLikeHtmlMarkup(message.content) ? (
+                            <div
+                              className="space-y-2 text-[13px] leading-5 [&_code]:rounded [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[12px] [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:rounded-md [&_pre]:p-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+                              dangerouslySetInnerHTML={{ __html: sanitizeHtmlForRender(message.content) }}
+                            />
+                          ) : (
+                            <div className="space-y-2">
+                              <p className="whitespace-pre-wrap leading-5">{sections?.primary ?? message.content}</p>
+                              {sections && (sections.note || sections.nextStep) ? (
+                                <div className={`rounded-lg border px-2.5 py-2 text-[12px] leading-5 ${metaTone}`}>
+                                  {sections.note ? <p className="whitespace-pre-wrap break-words">{sections.note}</p> : null}
+                                  {sections.nextStep ? (
+                                    <p className={`whitespace-pre-wrap break-words ${sections.note ? "mt-1.5" : ""}`}>
+                                      <span className={`mr-1 font-semibold ${isDark ? "text-white/72" : "text-black/68"}`}>Next</span>
+                                      {sections.nextStep}
+                                    </p>
+                                  ) : null}
+                                </div>
+                              ) : null}
+                            </div>
+                          )}
+                        </div>
+                      </article>
+                    );
+                  })()
                 ))}
               </div>
             </div>
@@ -1831,18 +1873,50 @@ export default function Home() {
                 ))}
 
                 <div className="relative ml-auto h-full w-[94%] min-w-[94%] shrink-0 pl-8 pr-10">
-                  <button
-                    type="button"
-                    onClick={cycleComposerMode}
-                    className={`absolute left-0 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-[11px] font-bold ${
-                      composerMode === "code" ? "bg-[#2259f3] text-white" : composerMode === "test" ? "bg-[#0f766e] text-white" : "bg-[#1f334f] text-white"
-                    }`}
-                    title={`Mode: ${composerMode} (tap to cycle)`}
-                  >
-                    <span className={composerMode === "chat" ? "text-[11px]" : composerMode === "code" ? "text-[8px] leading-none" : "text-[10px] leading-none"}>
-                      {modeBadgeLabel(composerMode)}
-                    </span>
-                  </button>
+                  <div className="absolute left-0 top-1/2 flex -translate-y-1/2 flex-col gap-1">
+                    <button
+                      type="button"
+                      onClick={() => focusCoachingMode(coachingMode === "interviewer" ? "tutor" : "interviewer")}
+                      className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold ${
+                        coachingMode === "tutor" ? "bg-[#0f766e] text-white" : "bg-[#6b3db8] text-white"
+                      }`}
+                      title={coachingMode === "tutor" ? "Coaching mode: tutor" : "Coaching mode: interviewer"}
+                    >
+                      <span className="text-[8px] leading-none">{coachingModeBadgeLabel(coachingMode)}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => focusComposer("chat")}
+                      className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold ${
+                        composerMode === "chat" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
+                      }`}
+                      title="Chat composer"
+                    >
+                      <span className="text-[11px]">T</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => focusComposer("code")}
+                      className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold ${
+                        composerMode === "code" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
+                      }`}
+                      title="Code composer"
+                    >
+                      <span className="text-[8px] leading-none">{modeBadgeLabel("code")}</span>
+                    </button>
+                    {effectiveLanguage === "python" ? (
+                      <button
+                        type="button"
+                        onClick={() => focusComposer("test")}
+                        className={`flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold ${
+                          composerMode === "test" ? "bg-[#0f766e] text-white" : "bg-[#35524d] text-[#d1fae5]"
+                        }`}
+                        title="Test input composer"
+                      >
+                        in
+                      </button>
+                    ) : null}
+                  </div>
                   <div
                     className={`relative overflow-hidden rounded-2xl rounded-br-none border ${
                       composerMode === "code"

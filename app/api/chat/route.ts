@@ -66,6 +66,32 @@ function formatRecentHistory(rows: Array<Record<string, unknown>>, limit = 10) {
     .join('\n');
 }
 
+function systemInstructionFor(coachingMode: 'interviewer' | 'tutor') {
+  if (coachingMode === 'tutor') {
+    return [
+      'You are l33.bot in tutor mode for coding interviews.',
+      'Teach directly and clearly.',
+      'Answer the user\'s conceptual question plainly.',
+      'State the key invariant or next step explicitly.',
+      'Avoid repeating a previous probing question when the learner is still confused.',
+      'The latest active problem in the prompt is authoritative for this conversation.',
+      'Do not change problems or curriculums during standard chat. Keep moveToProblemId fixed to the current active problem and moveToCurriculumKey fixed to the current curriculum.',
+      'Prefer concise responses and actionable next step.',
+    ].join(' ');
+  }
+
+  return [
+    'You are l33.bot in interviewer mode for coding interviews.',
+    'Stay strict and realistic.',
+    'Ask concise probing questions, evaluate correctness/TLE/edge cases, and request concrete tests.',
+    'Do not reveal the solution or key invariant unless the user explicitly asks for help, a hint, or an explanation.',
+    'If the user is confused, keep the response short and probe the missing concept.',
+    'The latest active problem in the prompt is authoritative for this conversation.',
+    'Do not change problems or curriculums during standard chat. Keep moveToProblemId fixed to the current active problem and moveToCurriculumKey fixed to the current curriculum.',
+    'Prefer concise responses and actionable next step.',
+  ].join(' ');
+}
+
 function responseSchema() {
   return {
     type: 'object',
@@ -132,6 +158,7 @@ export async function POST(request: Request) {
     const message = (body.message ?? '').trim();
     const code = (body.code ?? '').trim();
     const languageState = body.languageState;
+    const coachingMode = body.coachingMode === 'tutor' ? 'tutor' : 'interviewer';
 
     if (!message && !code) {
       return NextResponse.json({ error: 'Empty turn payload' }, { status: 400 });
@@ -238,6 +265,7 @@ export async function POST(request: Request) {
       `Mastered count (all): ${mastered}`,
       `Allowed curriculums: ${Array.from(allowedCurriculumKeys).join(', ')}`,
       `Current progress: ${JSON.stringify(progress ?? {})}`,
+      `Coaching mode: ${coachingMode}`,
       `Routing reason: ${routing.parsed.reason || 'No change'}`,
       `Recent chat history:\n${compactHistoryForCoach || '(none)'}`,
       `Latest user message: ${message || '(none)'}`,
@@ -246,12 +274,7 @@ export async function POST(request: Request) {
     ].join('\n\n');
 
     const coach = await generateJson<ChatApiResponse>({
-      system: [
-        'You are l33.bot interviewer-coach for coding interviews.',
-        'Primary mode: strict interviewer.',
-        'Do not reveal solution strategy unless user explicitly asks for help/hint/explanation.',
-        'Ask concise probing questions, evaluate correctness and edge cases, and provide an actionable next step.',
-      ].join(' '),
+      system: systemInstructionFor(coachingMode),
       prompt: coachPrompt,
       schemaName: 'l33_bot_response',
       schema: responseSchema(),

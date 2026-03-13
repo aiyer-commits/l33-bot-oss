@@ -42,6 +42,7 @@ export type ChatMessage = {
 };
 
 export type ProgrammingLanguage = "python" | "javascript" | "typescript" | "java" | "cpp" | "go" | "rust" | "sql";
+export type CoachingMode = "interviewer" | "tutor";
 
 export type LanguageState = {
   selected: ProgrammingLanguage;
@@ -53,6 +54,7 @@ export type ChatApiRequest = {
   message: string;
   code: string;
   languageState?: LanguageState;
+  coachingMode?: CoachingMode;
   activeProblemId?: number;
   profile?: LocalProfile;
   conversation?: ChatMessage[];
