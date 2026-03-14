@@ -1,7 +1,18 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, BriefcaseBusiness, Delete, GraduationCap } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  Braces,
+  BriefcaseBusiness,
+  Delete,
+  FlaskConical,
+  GraduationCap,
+  MessageSquareText,
+} from "lucide-react";
 import { clampConfidence, createInitialProfile, getProblemById } from "@/lib/leetcode75";
 import type { ChatApiResponse, ChatMessage, CoachingMode, LocalProfile, ProgrammingLanguage, SuggestedComposerMode } from "@/lib/types";
 
@@ -1033,12 +1044,6 @@ _result
     }
   }
 
-  function modeBadgeLabel(mode: ComposerMode) {
-    if (mode === "chat") return "T";
-    if (mode === "code") return "</>";
-    return "in";
-  }
-
   function composerModeLabel(mode: ComposerMode | SuggestedComposerMode) {
     if (mode === "chat") return "Chat";
     if (mode === "code") return "Code";
@@ -2049,48 +2054,50 @@ _result
                 </div>
               </div>
 
-              <div className="relative h-full w-[94%] min-w-[94%] shrink-0 pl-8 pr-10">
-                <div className="absolute left-0 top-1/2 flex -translate-y-1/2 flex-col gap-1">
+              <div className="relative h-full w-[94%] min-w-[94%] shrink-0 pr-[5.25rem]">
+                <div className={`absolute right-2 top-1/2 z-10 flex -translate-y-1/2 flex-col gap-2 rounded-[22px] border p-2 shadow-[0_14px_30px_rgba(15,23,42,0.28)] backdrop-blur-xl ${
+                  isDark ? "border-white/12 bg-[#0b1220]/88" : "border-black/10 bg-white/88"
+                }`}>
                   <button
                     type="button"
                     onClick={() => focusCoachingMode(coachingMode === "interviewer" ? "tutor" : "interviewer")}
-                    className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold ${
+                    className={`flex h-11 w-11 items-center justify-center rounded-2xl border transition ${
                       coachingMode === "tutor" ? "bg-[#0f766e] text-white" : "bg-[#6b3db8] text-white"
                     }`}
                     title={coachingMode === "tutor" ? "Coaching mode: tutor" : "Coaching mode: interviewer"}
                   >
-                    {coachingMode === "tutor" ? <GraduationCap className="h-3.5 w-3.5" /> : <BriefcaseBusiness className="h-3.5 w-3.5" />}
+                    {coachingMode === "tutor" ? <GraduationCap className="h-5 w-5" /> : <BriefcaseBusiness className="h-5 w-5" />}
                   </button>
                   <button
                     type="button"
                     onClick={() => focusComposer("chat")}
-                    className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold ${
+                    className={`flex h-11 w-11 items-center justify-center rounded-2xl border transition ${
                       composerMode === "chat" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
                     } ${suggestedComposerMode === "chat" ? (isDark ? "ring-2 ring-[#7aa2ff]/70" : "ring-2 ring-[#3b82f6]/45") : ""}`}
                     title="Chat composer"
                   >
-                    <span className="text-[11px]">T</span>
+                    <MessageSquareText className="h-5 w-5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => focusComposer("code")}
-                    className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold ${
+                    className={`flex h-11 w-11 items-center justify-center rounded-2xl border transition ${
                       composerMode === "code" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
                     } ${suggestedComposerMode === "code" ? (isDark ? "ring-2 ring-[#7aa2ff]/70" : "ring-2 ring-[#3b82f6]/45") : ""}`}
                     title="Code composer"
                   >
-                    <span className="text-[8px] leading-none">{modeBadgeLabel("code")}</span>
+                    <Braces className="h-5 w-5" />
                   </button>
                   {effectiveLanguage === "python" ? (
                     <button
                       type="button"
                       onClick={() => focusComposer("test")}
-                      className={`flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold ${
+                      className={`flex h-11 w-11 items-center justify-center rounded-2xl border transition ${
                         composerMode === "test" ? "bg-[#0f766e] text-white" : "bg-[#35524d] text-[#d1fae5]"
                       } ${suggestedComposerMode === "test" ? (isDark ? "ring-2 ring-[#7aa2ff]/70" : "ring-2 ring-[#3b82f6]/45") : ""}`}
                       title="Test input composer"
                     >
-                      in
+                      <FlaskConical className="h-5 w-5" />
                     </button>
                   ) : null}
                 </div>
