@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Delete } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, BriefcaseBusiness, Delete, GraduationCap } from "lucide-react";
 import { clampConfidence, createInitialProfile, getProblemById } from "@/lib/leetcode75";
 import type { ChatApiResponse, ChatMessage, CoachingMode, LocalProfile, ProgrammingLanguage, SuggestedComposerMode } from "@/lib/types";
 
@@ -1039,10 +1039,6 @@ _result
     return "in";
   }
 
-  function coachingModeBadgeLabel(mode: CoachingMode) {
-    return mode === "tutor" ? "help" : "int";
-  }
-
   function composerModeLabel(mode: ComposerMode | SuggestedComposerMode) {
     if (mode === "chat") return "Chat";
     if (mode === "code") return "Code";
@@ -2063,7 +2059,7 @@ _result
                     }`}
                     title={coachingMode === "tutor" ? "Coaching mode: tutor" : "Coaching mode: interviewer"}
                   >
-                    <span className="text-[8px] leading-none">{coachingModeBadgeLabel(coachingMode)}</span>
+                    {coachingMode === "tutor" ? <GraduationCap className="h-3.5 w-3.5" /> : <BriefcaseBusiness className="h-3.5 w-3.5" />}
                   </button>
                   <button
                     type="button"
