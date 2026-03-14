@@ -2021,7 +2021,7 @@ _result
                 onPointerUp={() => endFabHold("assistant", "next")}
                 onPointerCancel={() => endFabHold("assistant", "next")}
                 onPointerLeave={() => endFabHold("assistant", "next")}
-                className={`absolute bottom-2 right-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow ${
+                className={`absolute bottom-2 right-[5.75rem] h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow ${
                   assistantFabFlash ? "l33-fab-flash" : ""
                 }`}
                 title="Next assistant message (hold to end)"
@@ -2226,7 +2226,7 @@ _result
                 onPointerUp={() => endFabHold("user", "next")}
                 onPointerCancel={() => endFabHold("user", "next")}
                 onPointerLeave={() => endFabHold("user", "next")}
-                className={`absolute bottom-2 right-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow ${
+                className={`absolute bottom-2 right-[5.75rem] h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow ${
                   userFabFlash ? "l33-fab-flash" : ""
                 }`}
                 title="Next user message (hold to end)"
