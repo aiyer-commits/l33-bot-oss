@@ -2061,43 +2061,57 @@ _result
                   <button
                     type="button"
                     onClick={() => focusCoachingMode(coachingMode === "interviewer" ? "tutor" : "interviewer")}
-                    className={`flex h-11 w-11 items-center justify-center rounded-2xl border transition ${
-                      coachingMode === "tutor" ? "bg-[#0f766e] text-white" : "bg-[#6b3db8] text-white"
+                    className={`flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm transition ${
+                      coachingMode === "tutor"
+                        ? "border-[#6ee7b7]/45 bg-[#0f766e] text-[#ecfdf5]"
+                        : "border-[#c4b5fd]/40 bg-[#6b3db8] text-[#f3e8ff]"
                     }`}
                     title={coachingMode === "tutor" ? "Coaching mode: tutor" : "Coaching mode: interviewer"}
                   >
-                    {coachingMode === "tutor" ? <GraduationCap className="h-5 w-5" /> : <BriefcaseBusiness className="h-5 w-5" />}
+                    {coachingMode === "tutor" ? <GraduationCap className="h-5.5 w-5.5" strokeWidth={2.4} /> : <BriefcaseBusiness className="h-5.5 w-5.5" strokeWidth={2.4} />}
                   </button>
                   <button
                     type="button"
                     onClick={() => focusComposer("chat")}
-                    className={`flex h-11 w-11 items-center justify-center rounded-2xl border transition ${
-                      composerMode === "chat" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
+                    className={`flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm transition ${
+                      composerMode === "chat"
+                        ? "border-[#93c5fd]/45 bg-[#2259f3] text-[#eff6ff]"
+                        : isDark
+                          ? "border-[#60a5fa]/28 bg-[#132033] text-[#7dd3fc]"
+                          : "border-[#60a5fa]/28 bg-[#e8f1ff] text-[#1d4ed8]"
                     } ${suggestedComposerMode === "chat" ? (isDark ? "ring-2 ring-[#7aa2ff]/70" : "ring-2 ring-[#3b82f6]/45") : ""}`}
                     title="Chat composer"
                   >
-                    <MessageSquareText className="h-5 w-5" />
+                    <MessageSquareText className="h-5.5 w-5.5" strokeWidth={2.4} />
                   </button>
                   <button
                     type="button"
                     onClick={() => focusComposer("code")}
-                    className={`flex h-11 w-11 items-center justify-center rounded-2xl border transition ${
-                      composerMode === "code" ? "bg-[#2259f3] text-white" : "bg-[#1f334f] text-white"
+                    className={`flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm transition ${
+                      composerMode === "code"
+                        ? "border-[#67e8f9]/45 bg-[#0f4c81] text-[#ecfeff]"
+                        : isDark
+                          ? "border-[#22d3ee]/25 bg-[#10222e] text-[#67e8f9]"
+                          : "border-[#22d3ee]/30 bg-[#ecfeff] text-[#0f766e]"
                     } ${suggestedComposerMode === "code" ? (isDark ? "ring-2 ring-[#7aa2ff]/70" : "ring-2 ring-[#3b82f6]/45") : ""}`}
                     title="Code composer"
                   >
-                    <Braces className="h-5 w-5" />
+                    <Braces className="h-5.5 w-5.5" strokeWidth={2.4} />
                   </button>
                   {effectiveLanguage === "python" ? (
                     <button
                       type="button"
                       onClick={() => focusComposer("test")}
-                      className={`flex h-11 w-11 items-center justify-center rounded-2xl border transition ${
-                        composerMode === "test" ? "bg-[#0f766e] text-white" : "bg-[#35524d] text-[#d1fae5]"
+                      className={`flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm transition ${
+                        composerMode === "test"
+                          ? "border-[#86efac]/45 bg-[#0f766e] text-[#ecfdf5]"
+                          : isDark
+                            ? "border-[#34d399]/25 bg-[#10251f] text-[#6ee7b7]"
+                            : "border-[#10b981]/28 bg-[#ecfdf5] text-[#047857]"
                       } ${suggestedComposerMode === "test" ? (isDark ? "ring-2 ring-[#7aa2ff]/70" : "ring-2 ring-[#3b82f6]/45") : ""}`}
                       title="Test input composer"
                     >
-                      <FlaskConical className="h-5 w-5" />
+                      <FlaskConical className="h-5.5 w-5.5" strokeWidth={2.4} />
                     </button>
                   ) : null}
                 </div>
