@@ -12,8 +12,10 @@ import {
   FlaskConical,
   GraduationCap,
   MessageSquareText,
+  Puzzle,
 } from "lucide-react";
 import { clampConfidence, createInitialProfile, getProblemById } from "@/lib/leetcode75";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { ChatApiResponse, ChatMessage, CoachingMode, LocalProfile, ProgrammingLanguage, SuggestedComposerMode } from "@/lib/types";
 
 const PROFILE_KEY = "l33tsp33k.profile.v2";
@@ -557,6 +559,7 @@ export default function Home() {
   const [userFabFlash, setUserFabFlash] = useState(false);
   const [assistantActiveIndex, setAssistantActiveIndex] = useState(0);
   const [userActiveIndex, setUserActiveIndex] = useState(0);
+  const [activeDockTooltip, setActiveDockTooltip] = useState<string | null>(null);
 
   const activeProblemMessageRef = useRef<HTMLElement | null>(null);
   const headerRef = useRef<HTMLElement | null>(null);
@@ -593,6 +596,7 @@ export default function Home() {
   const pyodideLoadPromiseRef = useRef<Promise<PyodideInterface> | null>(null);
   const fuzzyKeyMapRef = useRef<Map<string, FuzzyKeyMeta>>(new Map());
   const activeFuzzyPointerRef = useRef<{ pointerId: number; token: string; rowIndex: number; x: number; y: number } | null>(null);
+  const dockTooltipTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     const profileRaw = localStorage.getItem(PROFILE_KEY);
@@ -884,6 +888,14 @@ export default function Home() {
     return getProblemById(profile.activeProblemId) ?? null;
   }, [profile]);
   const showKeyboard = !hasPhysicalKeyboard || showTouchKeyboard;
+
+  useEffect(() => {
+    return () => {
+      if (dockTooltipTimeoutRef.current != null) {
+        window.clearTimeout(dockTooltipTimeoutRef.current);
+      }
+    };
+  }, []);
   const effectiveLanguage = useMemo<ProgrammingLanguage>(() => selectedLanguage, [selectedLanguage]);
   const keyboardLayout = useMemo(() => buildKeyboardLayout(effectiveLanguage), [effectiveLanguage]);
   const tapOutputMap = useMemo(() => TAP_OUTPUT_BY_LANGUAGE[effectiveLanguage] ?? TAP_OUTPUT_BY_LANGUAGE.python, [effectiveLanguage]);
@@ -1774,6 +1786,16 @@ _result
     return "bg-[#ef4444]";
   }
 
+  function flashDockTooltip(key: string) {
+    setActiveDockTooltip(key);
+    if (dockTooltipTimeoutRef.current != null) {
+      window.clearTimeout(dockTooltipTimeoutRef.current);
+    }
+    dockTooltipTimeoutRef.current = window.setTimeout(() => {
+      setActiveDockTooltip((current) => (current === key ? null : current));
+    }, 1100);
+  }
+
   if (!profile || !activeProblem) {
     return <main className={`min-h-screen p-6 ${isDark ? "bg-[#0a0d12] text-[#e5e7eb]" : "bg-[#f3f2ec] text-[#111]"}`}>Loading...</main>;
   }
@@ -1789,10 +1811,13 @@ _result
             <button
               type="button"
               onClick={openCurriculumDrawer}
-              className="max-w-full truncate text-left text-[13px] font-semibold leading-4 underline-offset-2 hover:underline"
+              className={`inline-flex max-w-full items-center gap-1.5 text-left text-[13px] font-semibold leading-4 underline decoration-current underline-offset-2 ${
+                isDark ? "text-white" : "text-black"
+              }`}
               title="Open curriculum and problem drawer"
             >
-              #{activeProblem.id} · {activeProblem.title}
+              <Puzzle size={13} strokeWidth={2.1} className="shrink-0" />
+              <span className="truncate">#{activeProblem.id} · {activeProblem.title}</span>
             </button>
             <div className="mt-0.5 flex items-center gap-1">
               <span className={`h-2 w-2 rounded-full ${difficultyDotColor(activeProblem.difficulty)}`} />
@@ -2055,66 +2080,102 @@ _result
               </div>
 
               <div className="relative h-full w-[94%] min-w-[94%] shrink-0 pr-[5.25rem]">
-                <div className={`absolute right-2 top-1/2 z-10 flex -translate-y-1/2 flex-col gap-2 rounded-[22px] border p-2 shadow-[0_14px_30px_rgba(15,23,42,0.28)] backdrop-blur-xl ${
-                  isDark ? "border-white/12 bg-[#0b1220]/88" : "border-black/10 bg-white/88"
-                }`}>
-                  <button
-                    type="button"
-                    onClick={() => focusCoachingMode(coachingMode === "interviewer" ? "tutor" : "interviewer")}
-                    className={`flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm transition ${
-                      coachingMode === "tutor"
-                        ? "border-[#6ee7b7]/45 bg-[#0f766e] text-[#ecfdf5]"
-                        : "border-[#c4b5fd]/40 bg-[#6b3db8] text-[#f3e8ff]"
-                    }`}
-                    title={coachingMode === "tutor" ? "Coaching mode: tutor" : "Coaching mode: interviewer"}
-                  >
-                    {coachingMode === "tutor" ? <GraduationCap className="h-5.5 w-5.5" strokeWidth={2.4} /> : <BriefcaseBusiness className="h-5.5 w-5.5" strokeWidth={2.4} />}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => focusComposer("chat")}
-                    className={`flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm transition ${
-                      composerMode === "chat"
-                        ? "border-[#93c5fd]/45 bg-[#2259f3] text-[#eff6ff]"
-                        : isDark
-                          ? "border-[#60a5fa]/28 bg-[#132033] text-[#7dd3fc]"
-                          : "border-[#60a5fa]/28 bg-[#e8f1ff] text-[#1d4ed8]"
-                    } ${suggestedComposerMode === "chat" ? (isDark ? "ring-2 ring-[#7aa2ff]/70" : "ring-2 ring-[#3b82f6]/45") : ""}`}
-                    title="Chat composer"
-                  >
-                    <MessageSquareText className="h-5.5 w-5.5" strokeWidth={2.4} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => focusComposer("code")}
-                    className={`flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm transition ${
-                      composerMode === "code"
-                        ? "border-[#67e8f9]/45 bg-[#0f4c81] text-[#ecfeff]"
-                        : isDark
-                          ? "border-[#22d3ee]/25 bg-[#10222e] text-[#67e8f9]"
-                          : "border-[#22d3ee]/30 bg-[#ecfeff] text-[#0f766e]"
-                    } ${suggestedComposerMode === "code" ? (isDark ? "ring-2 ring-[#7aa2ff]/70" : "ring-2 ring-[#3b82f6]/45") : ""}`}
-                    title="Code composer"
-                  >
-                    <Braces className="h-5.5 w-5.5" strokeWidth={2.4} />
-                  </button>
-                  {effectiveLanguage === "python" ? (
-                    <button
-                      type="button"
-                      onClick={() => focusComposer("test")}
-                      className={`flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm transition ${
-                        composerMode === "test"
-                          ? "border-[#86efac]/45 bg-[#0f766e] text-[#ecfdf5]"
-                          : isDark
-                            ? "border-[#34d399]/25 bg-[#10251f] text-[#6ee7b7]"
-                            : "border-[#10b981]/28 bg-[#ecfdf5] text-[#047857]"
-                      } ${suggestedComposerMode === "test" ? (isDark ? "ring-2 ring-[#7aa2ff]/70" : "ring-2 ring-[#3b82f6]/45") : ""}`}
-                      title="Test input composer"
-                    >
-                      <FlaskConical className="h-5.5 w-5.5" strokeWidth={2.4} />
-                    </button>
-                  ) : null}
-                </div>
+                <TooltipProvider>
+                  <div className={`absolute right-2 top-1/2 z-10 flex -translate-y-1/2 flex-col gap-2 rounded-[22px] border p-2 shadow-[0_14px_30px_rgba(15,23,42,0.28)] backdrop-blur-xl ${
+                    isDark ? "border-white/12 bg-[#0b1220]/88" : "border-black/10 bg-white/88"
+                  }`}>
+                    <Tooltip open={activeDockTooltip === "coaching"}>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          aria-label={coachingMode === "interviewer" ? "Switch to tutor mode" : "Switch to interviewer mode"}
+                          onClick={() => {
+                            flashDockTooltip("coaching");
+                            focusCoachingMode(coachingMode === "interviewer" ? "tutor" : "interviewer");
+                          }}
+                          className={`flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm transition ${
+                            coachingMode === "tutor"
+                              ? "border-[#6ee7b7]/45 bg-[#0f766e] text-[#ecfdf5]"
+                              : "border-[#c4b5fd]/40 bg-[#6b3db8] text-[#f3e8ff]"
+                          }`}
+                        >
+                          {coachingMode === "tutor" ? <GraduationCap className="h-5.5 w-5.5" strokeWidth={2.4} /> : <BriefcaseBusiness className="h-5.5 w-5.5" strokeWidth={2.4} />}
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="left">
+                        {coachingMode === "interviewer" ? "Switch to tutor mode" : "Switch to interviewer mode"}
+                      </TooltipContent>
+                    </Tooltip>
+                    <Tooltip open={activeDockTooltip === "chat"}>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          aria-label="Open chat input"
+                          onClick={() => {
+                            flashDockTooltip("chat");
+                            focusComposer("chat");
+                          }}
+                          className={`flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm transition ${
+                            composerMode === "chat"
+                              ? "border-[#93c5fd]/45 bg-[#2259f3] text-[#eff6ff]"
+                              : isDark
+                                ? "border-[#60a5fa]/28 bg-[#132033] text-[#7dd3fc]"
+                                : "border-[#60a5fa]/28 bg-[#e8f1ff] text-[#1d4ed8]"
+                          } ${suggestedComposerMode === "chat" ? (isDark ? "ring-2 ring-[#7aa2ff]/70" : "ring-2 ring-[#3b82f6]/45") : ""}`}
+                        >
+                          <MessageSquareText className="h-5.5 w-5.5" strokeWidth={2.4} />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="left">Open chat input</TooltipContent>
+                    </Tooltip>
+                    <Tooltip open={activeDockTooltip === "code"}>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          aria-label="Open code input"
+                          onClick={() => {
+                            flashDockTooltip("code");
+                            focusComposer("code");
+                          }}
+                          className={`flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm transition ${
+                            composerMode === "code"
+                              ? "border-[#67e8f9]/45 bg-[#0f4c81] text-[#ecfeff]"
+                              : isDark
+                                ? "border-[#22d3ee]/25 bg-[#10222e] text-[#67e8f9]"
+                                : "border-[#22d3ee]/30 bg-[#ecfeff] text-[#0f766e]"
+                          } ${suggestedComposerMode === "code" ? (isDark ? "ring-2 ring-[#7aa2ff]/70" : "ring-2 ring-[#3b82f6]/45") : ""}`}
+                        >
+                          <Braces className="h-5.5 w-5.5" strokeWidth={2.4} />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="left">Open code input</TooltipContent>
+                    </Tooltip>
+                    {effectiveLanguage === "python" ? (
+                      <Tooltip open={activeDockTooltip === "test"}>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            aria-label="Open test input"
+                            onClick={() => {
+                              flashDockTooltip("test");
+                              focusComposer("test");
+                            }}
+                            className={`flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm transition ${
+                              composerMode === "test"
+                                ? "border-[#86efac]/45 bg-[#0f766e] text-[#ecfdf5]"
+                                : isDark
+                                  ? "border-[#34d399]/25 bg-[#10251f] text-[#6ee7b7]"
+                                  : "border-[#10b981]/28 bg-[#ecfdf5] text-[#047857]"
+                            } ${suggestedComposerMode === "test" ? (isDark ? "ring-2 ring-[#7aa2ff]/70" : "ring-2 ring-[#3b82f6]/45") : ""}`}
+                          >
+                            <FlaskConical className="h-5.5 w-5.5" strokeWidth={2.4} />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="left">Open test input</TooltipContent>
+                      </Tooltip>
+                    ) : null}
+                  </div>
+                </TooltipProvider>
                 <div
                   className={`relative overflow-hidden rounded-2xl rounded-br-none border ${
                     composerMode === "code"

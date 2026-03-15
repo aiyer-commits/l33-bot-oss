@@ -25,35 +25,40 @@ export async function ensureLearnerProfile(key: LearnerKey): Promise<LearnerProf
     throw new Error('Either userId or anonId is required');
   }
 
-  const existing = (key.userId
-    ? await sql`SELECT learner_id, user_id, anon_id, email, active_curriculum_key, active_problem_id FROM learner_profiles WHERE user_id = ${key.userId} LIMIT 1`
-    : await sql`SELECT learner_id, user_id, anon_id, email, active_curriculum_key, active_problem_id FROM learner_profiles WHERE anon_id = ${key.anonId ?? ''} LIMIT 1`) as LearnerProfileRow[];
-
-  if (existing.length > 0) return existing[0];
-
   const learnerId = randomUUID();
   const anonId = key.userId ? null : key.anonId ?? randomUUID();
+  const ensured = (key.userId
+    ? await sql`
+        INSERT INTO learner_profiles (learner_id, user_id, anon_id, email, active_curriculum_key, active_problem_id)
+        VALUES (${learnerId}, ${key.userId}, NULL, ${key.email ?? null}, 'l33', 1)
+        ON CONFLICT (user_id)
+        DO UPDATE SET email = COALESCE(EXCLUDED.email, learner_profiles.email)
+        RETURNING learner_id, user_id, anon_id, email, active_curriculum_key, active_problem_id
+      `
+    : await sql`
+        INSERT INTO learner_profiles (learner_id, user_id, anon_id, email, active_curriculum_key, active_problem_id)
+        VALUES (${learnerId}, NULL, ${anonId}, ${key.email ?? null}, 'l33', 1)
+        ON CONFLICT (anon_id)
+        DO UPDATE SET email = COALESCE(EXCLUDED.email, learner_profiles.email)
+        RETURNING learner_id, user_id, anon_id, email, active_curriculum_key, active_problem_id
+      `) as LearnerProfileRow[];
 
-  const inserted = (await sql`
-    INSERT INTO learner_profiles (learner_id, user_id, anon_id, email, active_curriculum_key, active_problem_id)
-    VALUES (${learnerId}, ${key.userId ?? null}, ${anonId}, ${key.email ?? null}, 'l33', 1)
-    RETURNING learner_id, user_id, anon_id, email, active_curriculum_key, active_problem_id
-  `) as LearnerProfileRow[];
+  const profile = ensured[0];
 
   await sql`
     INSERT INTO problem_progress (learner_id, problem_id, status, confidence, attempts)
-    SELECT ${learnerId}, p.id, 'unseen', 0, 0
+    SELECT ${profile.learner_id}, p.id, 'unseen', 0, 0
     FROM problems p
     ON CONFLICT (learner_id, problem_id) DO NOTHING
   `;
 
   await sql`
     INSERT INTO credit_balances (learner_id, balance_femtodollars)
-    VALUES (${learnerId}, ${INITIAL_FREE_CREDITS.toString()})
+    VALUES (${profile.learner_id}, ${INITIAL_FREE_CREDITS.toString()})
     ON CONFLICT (learner_id) DO NOTHING
   `;
 
-  return inserted[0];
+  return profile;
 }
 
 export async function getProblemById(problemId: number) {

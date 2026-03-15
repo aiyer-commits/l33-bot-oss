@@ -26,6 +26,25 @@ type RoutingDecision = {
   reason: string;
 };
 
+type ChatLogLevel = 'info' | 'error';
+
+function logChatEvent(level: ChatLogLevel, event: string, fields: Record<string, unknown>) {
+  const payload = JSON.stringify({
+    scope: 'api.chat',
+    event,
+    ...fields,
+  });
+  if (level === 'error') {
+    console.error(payload);
+    return;
+  }
+  console.info(payload);
+}
+
+function errorMessage(error: unknown) {
+  return error instanceof Error ? error.message : 'Unexpected error';
+}
+
 function decodeHtmlEntities(value: string) {
   return value
     .replace(/&nbsp;/gi, ' ')
@@ -162,6 +181,12 @@ function asChatMessage(role: 'assistant' | 'user', content: string, kind: 'text'
 }
 
 export async function POST(request: Request) {
+  const requestId = crypto.randomUUID();
+  let sessionId: string | null = null;
+  let learnerId: string | null = null;
+  let activeCurriculumKey: string | null = null;
+  let activeProblemId: number | null = null;
+
   try {
     assertProviderEnv();
 
@@ -171,7 +196,24 @@ export async function POST(request: Request) {
     const languageState = body.languageState;
     const coachingMode = body.coachingMode === 'tutor' ? 'tutor' : 'interviewer';
 
+    logChatEvent('info', 'turn_started', {
+      requestId,
+      hasMessage: Boolean(message),
+      hasCode: Boolean(code),
+      messageChars: message.length,
+      codeChars: code.length,
+      coachingMode,
+      sessionId: body.sessionId ?? null,
+      anonIdPresent: Boolean(body.anonId),
+      language: languageState?.effective ?? null,
+    });
+
     if (!message && !code) {
+      logChatEvent('info', 'turn_rejected', {
+        requestId,
+        status: 400,
+        reason: 'empty_turn_payload',
+      });
       return NextResponse.json({ error: 'Empty turn payload' }, { status: 400 });
     }
 
@@ -180,10 +222,11 @@ export async function POST(request: Request) {
       email: null,
       anonId: body.anonId ?? null,
     });
+    learnerId = learner.learner_id;
     const availableCurriculums = await listCurriculums(true);
     const allowedCurriculumKeys = new Set(availableCurriculums.map((c) => String(c.key)));
 
-    let activeCurriculumKey = learner.active_curriculum_key;
+    activeCurriculumKey = learner.active_curriculum_key;
     if (!allowedCurriculumKeys.has(activeCurriculumKey)) {
       activeCurriculumKey = 'l33';
       await setActiveCurriculum(learner.learner_id, activeCurriculumKey);
@@ -191,6 +234,13 @@ export async function POST(request: Request) {
 
     let activeCurriculumProblemIds = await getCurriculumProblemIds(activeCurriculumKey);
     if (activeCurriculumProblemIds.length === 0) {
+      logChatEvent('error', 'turn_rejected', {
+        requestId,
+        learnerId,
+        status: 500,
+        reason: 'empty_curriculum_problem_set',
+        activeCurriculumKey,
+      });
       return NextResponse.json({ error: `Curriculum ${activeCurriculumKey} has no mapped problems` }, { status: 500 });
     }
 
@@ -200,7 +250,7 @@ export async function POST(request: Request) {
       await setActiveProblem(learner.learner_id, currentActiveProblemId);
     }
 
-    const sessionId = await getOrCreateSession(learner.learner_id, body.sessionId ?? null);
+    sessionId = await getOrCreateSession(learner.learner_id, body.sessionId ?? null);
     const outboundUserMessages: ChatMessage[] = [];
     if (message) outboundUserMessages.push(asChatMessage('user', message, 'text'));
     if (code) outboundUserMessages.push(asChatMessage('user', code, 'code'));
@@ -243,9 +293,20 @@ export async function POST(request: Request) {
       activeCurriculumKey = requestedCurriculumKey;
       await setActiveCurriculum(learner.learner_id, activeCurriculumKey);
       activeCurriculumProblemIds = await getCurriculumProblemIds(activeCurriculumKey);
+      if (activeCurriculumProblemIds.length === 0) {
+        logChatEvent('error', 'turn_rejected', {
+          requestId,
+          learnerId,
+          sessionId,
+          status: 500,
+          reason: 'requested_curriculum_problem_set_empty',
+          activeCurriculumKey,
+        });
+        return NextResponse.json({ error: `Curriculum ${activeCurriculumKey} has no mapped problems` }, { status: 500 });
+      }
     }
 
-    let activeProblemId = Number.isFinite(routing.parsed.activeProblemId) ? routing.parsed.activeProblemId : currentActiveProblemId;
+    activeProblemId = Number.isFinite(routing.parsed.activeProblemId) ? routing.parsed.activeProblemId : currentActiveProblemId;
     if (!activeCurriculumProblemIds.includes(activeProblemId)) {
       const suggested = await getCurriculumProgressSummary(learner.learner_id, activeCurriculumKey);
       activeProblemId = suggested.nextProblemId ?? (await getFirstProblemForCurriculum(activeCurriculumKey)) ?? currentActiveProblemId;
@@ -256,6 +317,15 @@ export async function POST(request: Request) {
 
     const activeProblem = await getProblemById(activeProblemId);
     if (!activeProblem) {
+      logChatEvent('error', 'turn_rejected', {
+        requestId,
+        learnerId,
+        sessionId,
+        status: 500,
+        reason: 'active_problem_not_found',
+        activeProblemId,
+        activeCurriculumKey,
+      });
       return NextResponse.json({ error: 'Active problem not found in DB' }, { status: 500 });
     }
 
@@ -357,9 +427,35 @@ export async function POST(request: Request) {
       usage: { chargedFemtodollars: '0', chargedDollars: 0 },
     };
 
+    logChatEvent('info', 'turn_completed', {
+      requestId,
+      learnerId,
+      sessionId,
+      activeProblemId: moveToProblemId,
+      activeCurriculumKey,
+      coachingMode,
+      language: languageState?.effective ?? null,
+      inputTokens: coach.usage.inputTokens + routing.usage.inputTokens,
+      outputTokens: coach.usage.outputTokens + routing.usage.outputTokens,
+      cachedTokens: coach.usage.cachedTokens + routing.usage.cachedTokens,
+      reasoningTokens: coach.usage.reasoningTokens + routing.usage.reasoningTokens,
+      chargedFemtodollars: '0',
+      confidence: coach.parsed.assessment.confidence,
+      status: coach.parsed.assessment.status,
+      markedMastered: coach.parsed.assessment.markMastered,
+      providerRequestId: coach.usage.providerRequestId ?? null,
+    });
+
     return NextResponse.json(out);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unexpected chat failure';
-    return NextResponse.json({ error: message }, { status: 500 });
+    logChatEvent('error', 'turn_failed', {
+      requestId,
+      learnerId,
+      sessionId,
+      activeProblemId,
+      activeCurriculumKey,
+      error: errorMessage(error),
+    });
+    return NextResponse.json({ error: errorMessage(error) }, { status: 500 });
   }
 }
