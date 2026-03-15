@@ -2103,7 +2103,7 @@ _result
                         </button>
                       </TooltipTrigger>
                       <TooltipContent side="left">
-                        {coachingMode === "interviewer" ? "Switch to tutor mode" : "Switch to interviewer mode"}
+                        {coachingMode === "tutor" ? "Tutor mode" : "Interviewer mode"}
                       </TooltipContent>
                     </Tooltip>
                     <Tooltip open={activeDockTooltip === "chat"}>
@@ -2126,7 +2126,7 @@ _result
                           <MessageSquareText className="h-5.5 w-5.5" strokeWidth={2.4} />
                         </button>
                       </TooltipTrigger>
-                      <TooltipContent side="left">Open chat input</TooltipContent>
+                      <TooltipContent side="left">Chat input</TooltipContent>
                     </Tooltip>
                     <Tooltip open={activeDockTooltip === "code"}>
                       <TooltipTrigger asChild>
@@ -2148,7 +2148,7 @@ _result
                           <Braces className="h-5.5 w-5.5" strokeWidth={2.4} />
                         </button>
                       </TooltipTrigger>
-                      <TooltipContent side="left">Open code input</TooltipContent>
+                      <TooltipContent side="left">Code input</TooltipContent>
                     </Tooltip>
                     {effectiveLanguage === "python" ? (
                       <Tooltip open={activeDockTooltip === "test"}>
@@ -2171,7 +2171,7 @@ _result
                             <FlaskConical className="h-5.5 w-5.5" strokeWidth={2.4} />
                           </button>
                         </TooltipTrigger>
-                        <TooltipContent side="left">Open test input</TooltipContent>
+                        <TooltipContent side="left">Test input</TooltipContent>
                       </Tooltip>
                     ) : null}
                   </div>
