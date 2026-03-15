@@ -1,4 +1,4 @@
-# l33tsp33k OSS
+# l33.bot OSS
 
 Open-source coding interview practice app with:
 - Next.js frontend
