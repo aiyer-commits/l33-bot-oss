@@ -164,7 +164,7 @@ function buildKeyboardLayout(language: ProgrammingLanguage): KeyboardRow[] {
     { heightUnits: 1.0, keys: ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"].map((token) => ({ token })) },
     { offsetUnits: 0.5, heightUnits: 1.0, keys: ["a", "s", "d", "f", "g", "h", "j", "k", "l"].map((token) => ({ token })) },
     { heightUnits: 1.0, keys: [{ token: "SHIFT", units: 1.5 }, ...["z", "x", "c", "v", "b", "n", "m"].map((token) => ({ token })), { token: "BACKSPACE", units: 1.5 }] },
-    { heightUnits: 1.08, keys: [{ token: "TAB", units: 1.8 }, { token: "ARROWS", units: 1.8 }, { token: "SPACE", units: 4 }, { token: "ENTER", units: 3.6 }] },
+    { heightUnits: 1.08, keys: [{ token: "TAB", units: 1.8 }, { token: "ARROWS", units: 1.8 }, { token: "SPACE", units: 5.8 }, { token: "ENTER", units: 1.8 }] },
   ];
 }
 
@@ -1455,6 +1455,7 @@ _result
     if (token === "RIGHT") return "";
     if (token === "ARROWS") return "";
     if (token === "BACKSPACE") return "";
+    if (token === "@" && effectiveLanguage === "python") return "@lru";
     if (tapOutputMap[token]) return tapOutputMap[token].trim().slice(0, 8);
     if (token === "CLEAR") return "clear";
     return token;
