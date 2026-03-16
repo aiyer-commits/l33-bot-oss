@@ -545,6 +545,7 @@ export default function Home() {
   const [composerMode, setComposerMode] = useState<ComposerMode>("code");
   const [suggestedComposerMode, setSuggestedComposerMode] = useState<SuggestedComposerMode | null>(null);
   const [suggestedComposerReason, setSuggestedComposerReason] = useState("");
+  const [suggestionDismissed, setSuggestionDismissed] = useState(false);
   const [shiftOn, setShiftOn] = useState(false);
   const [capsOn, setCapsOn] = useState(false);
 
@@ -589,6 +590,7 @@ export default function Home() {
   const userWasPinnedRightRef = useRef<boolean>(false);
   const lastCenteredProblemIdRef = useRef<number | null>(null);
   const lastLoadedComposerProblemIdRef = useRef<number | null>(null);
+  const composerStateMapRef = useRef<Record<string, ProblemComposerState>>({});
   const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
   const codeInputRef = useRef<HTMLTextAreaElement | null>(null);
   const testInputRef = useRef<HTMLTextAreaElement | null>(null);
@@ -640,6 +642,7 @@ export default function Home() {
     }
 
     const composerStateMap = readComposerStateMap(composerStateRaw);
+    composerStateMapRef.current = composerStateMap;
     const currentComposerState = composerStateForProblem(composerStateMap, loadedProfile.activeProblemId);
     const restoredComposerState =
       currentComposerState.draft || currentComposerState.code || currentComposerState.testInput
@@ -699,15 +702,10 @@ export default function Home() {
   }, [profile, messages]);
 
   useEffect(() => {
-    if (!profile) return;
-    const composerStateMap = readComposerStateMap(localStorage.getItem(COMPOSER_STATE_KEY));
-    composerStateMap[String(profile.activeProblemId)] = {
-      draft,
-      code,
-      testInput,
-    };
-    localStorage.setItem(COMPOSER_STATE_KEY, JSON.stringify(composerStateMap));
-  }, [profile, draft, code, testInput]);
+    const loadedProblemId = lastLoadedComposerProblemIdRef.current;
+    if (loadedProblemId == null) return;
+    persistComposerState(loadedProblemId, snapshotComposerState());
+  }, [draft, code, testInput]);
 
   useEffect(() => {
     localStorage.setItem(THEME_KEY, theme);
@@ -719,19 +717,18 @@ export default function Home() {
 
   useEffect(() => {
     if (!profile) return;
+    if (lastLoadedComposerProblemIdRef.current == null) {
+      restoreComposerState(profile.activeProblemId);
+      return;
+    }
     if (lastLoadedComposerProblemIdRef.current === profile.activeProblemId) return;
-    const composerState = composerStateForProblem(
-      readComposerStateMap(localStorage.getItem(COMPOSER_STATE_KEY)),
-      profile.activeProblemId,
-    );
-    lastLoadedComposerProblemIdRef.current = profile.activeProblemId;
-    setDraft(composerState.draft);
-    setCode(composerState.code);
-    setTestInput(composerState.testInput);
-    setChatCursor({ start: 0, end: 0 });
-    setCodeCursor({ start: 0, end: 0 });
-    setTestCursor({ start: 0, end: 0 });
+    persistComposerState(lastLoadedComposerProblemIdRef.current, snapshotComposerState());
+    restoreComposerState(profile.activeProblemId);
   }, [profile]);
+
+  useEffect(() => {
+    setSuggestionDismissed(false);
+  }, [suggestedComposerMode, suggestedComposerReason, composerMode]);
 
   useEffect(() => {
     if (selectedLanguage !== "python" && composerMode === "test") {
@@ -887,6 +884,35 @@ export default function Home() {
     if (!profile) return null;
     return getProblemById(profile.activeProblemId) ?? null;
   }, [profile]);
+  const hasSuggestedComposer = Boolean(suggestedComposerMode && suggestedComposerMode !== composerMode);
+  const showSuggestionBanner = hasSuggestedComposer && !suggestionDismissed;
+
+  function snapshotComposerState(): ProblemComposerState {
+    return {
+      draft,
+      code,
+      testInput,
+    };
+  }
+
+  function persistComposerState(problemId: number, state: ProblemComposerState) {
+    composerStateMapRef.current = {
+      ...composerStateMapRef.current,
+      [String(problemId)]: state,
+    };
+    localStorage.setItem(COMPOSER_STATE_KEY, JSON.stringify(composerStateMapRef.current));
+  }
+
+  function restoreComposerState(problemId: number) {
+    const composerState = composerStateForProblem(composerStateMapRef.current, problemId);
+    lastLoadedComposerProblemIdRef.current = problemId;
+    setDraft(composerState.draft);
+    setCode(composerState.code);
+    setTestInput(composerState.testInput);
+    setChatCursor({ start: 0, end: 0 });
+    setCodeCursor({ start: 0, end: 0 });
+    setTestCursor({ start: 0, end: 0 });
+  }
   const showKeyboard = !hasPhysicalKeyboard || showTouchKeyboard;
 
   useEffect(() => {
@@ -1384,6 +1410,7 @@ _result
       }
       setSuggestedComposerMode(payload.composerSuggestion?.mode ?? null);
       setSuggestedComposerReason(payload.composerSuggestion?.reason ?? "");
+      setSuggestionDismissed(false);
       if (payload.activeProblemId && payload.activeProblemId !== profile.activeProblemId) {
         setProfile((prev) => (prev ? { ...prev, activeProblemId: payload.activeProblemId! } : prev));
       }
@@ -2190,14 +2217,50 @@ _result
                         : "border-black/15 bg-white"
                   } h-full`}
                 >
-                  {suggestedComposerMode && suggestedComposerMode !== composerMode ? (
-                    <div className={`absolute inset-x-2 top-2 z-10 rounded-md border px-2 py-1 text-[11px] leading-4 ${
-                      isDark ? "border-[#7aa2ff]/45 bg-[#0f1724]/92 text-[#dbeafe]" : "border-[#3b82f6]/30 bg-white/95 text-[#1849a9]"
-                    }`}>
-                      <span className="font-semibold">{`Try ${composerModeLabel(suggestedComposerMode)}`}</span>
-                      {suggestedComposerReason ? <span className={`${isDark ? "text-white/72" : "text-black/70"}`}>{` - ${suggestedComposerReason}`}</span> : null}
+                  {showSuggestionBanner ? (
+                    <div className="absolute inset-x-2 top-2 z-10 flex items-start gap-1">
+                      <button
+                        type="button"
+                        onClick={() => focusComposer(suggestedComposerMode!)}
+                        className={`min-w-0 flex-1 rounded-md border px-2 py-1 text-left text-[11px] leading-4 transition ${
+                          isDark ? "border-[#7aa2ff]/45 bg-[#0f1724]/92 text-[#dbeafe]" : "border-[#3b82f6]/30 bg-white/95 text-[#1849a9]"
+                        }`}
+                        title={`Switch to ${composerModeLabel(suggestedComposerMode!)}`}
+                      >
+                        <span className="font-semibold">{`Try ${composerModeLabel(suggestedComposerMode!)}`}</span>
+                        {suggestedComposerReason ? <span className={`${isDark ? "text-white/72" : "text-black/70"}`}>{` - ${suggestedComposerReason}`}</span> : null}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSuggestionDismissed(true)}
+                        className={`inline-flex h-7 shrink-0 items-center rounded-md border px-2 text-[10px] font-medium transition ${
+                          isDark
+                            ? "border-[#7aa2ff]/35 bg-[#0f1724]/92 text-white/70 hover:border-[#7aa2ff]/60 hover:text-white"
+                            : "border-[#3b82f6]/25 bg-white/95 text-black/60 hover:border-[#3b82f6]/40 hover:text-black/85"
+                        }`}
+                        aria-label="Hide suggestion"
+                        title="Hide suggestion"
+                      >
+                        hide
+                      </button>
                     </div>
                   ) : null}
+                  {hasSuggestedComposer && suggestionDismissed ? (
+                    <button
+                      type="button"
+                      onClick={() => setSuggestionDismissed(false)}
+                      className={`absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full border transition ${
+                        isDark
+                          ? "border-[#7aa2ff]/45 bg-[#0f1724]/92 text-[#dbeafe] hover:border-[#7aa2ff]/70 hover:bg-[#132034]/96"
+                          : "border-[#3b82f6]/30 bg-white/95 text-[#1849a9] hover:border-[#3b82f6]/45 hover:bg-white"
+                      }`}
+                      title={`Show ${composerModeLabel(suggestedComposerMode!)} suggestion`}
+                      aria-label={`Show ${composerModeLabel(suggestedComposerMode!)} suggestion`}
+                    >
+                      <MessageSquareText className="h-4 w-4" strokeWidth={2.2} />
+                    </button>
+                  ) : null}
+                  <div className={`h-full ${showSuggestionBanner ? "pt-12" : ""}`}>
                   {composerMode === "test" && effectiveLanguage === "python" && pyodideStatus !== "ready" ? (
                     <div className="flex h-full flex-col items-start justify-center gap-2 px-3 py-2">
                       <p className={`text-[12px] ${isDark ? "text-[#d1fae5]" : "text-[#065f46]"}`}>
@@ -2263,6 +2326,7 @@ _result
                       }`}
                     />
                   )}
+                  </div>
                 </div>
               </div>
             </div>
