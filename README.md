@@ -77,7 +77,12 @@ npm run db:bootstrap
 - `npm run db:migrate` - apply schema
 - `npm run db:seed:catalog` - seed catalog/curriculums
 - `npm run db:bootstrap` - migrate + seed
+- `npm run data:gen:ime` - rebuild versioned Japanese/Chinese IME packs
 - `npm run check` - lint + build + typecheck
+
+## Third-Party IME Assets
+
+This OSS build includes generated IME assets derived from upstream open-source projects for Japanese and Chinese input. See [THIRD_PARTY_NOTICES.md](/home/ai/Development/l33-bot-oss/THIRD_PARTY_NOTICES.md) for the exact inventory and license notices.
 
 ## Docker (Optional)
 

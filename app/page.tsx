@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Hangul from "hangul-js";
 import {
   ArrowDown,
   ArrowLeft,
@@ -14,9 +15,10 @@ import {
   MessageSquareText,
   Puzzle,
 } from "lucide-react";
+import * as wanakana from "wanakana";
 import { clampConfidence, createInitialProfile, getProblemById } from "@/lib/leetcode75";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import type { ChatApiResponse, ChatMessage, CoachingMode, LocalProfile, ProgrammingLanguage, SuggestedComposerMode } from "@/lib/types";
+import type { ChatApiResponse, ChatMessage, CoachingMode, LocalProfile, NaturalLanguage, ProgrammingLanguage, SuggestedComposerMode } from "@/lib/types";
 
 const PROFILE_KEY = "l33tsp33k.profile.v2";
 const CHAT_KEY = "l33tsp33k.chat.v2";
@@ -27,6 +29,7 @@ const COMPOSER_STATE_KEY = "l33tsp33k.composer-state.v1";
 const ANON_ID_KEY = "l33tsp33k.anon-id.v1";
 const THEME_KEY = "l33tsp33k.theme.v1";
 const LANGUAGE_KEY = "l33tsp33k.language.v1";
+const NATURAL_LANGUAGE_KEY = "l33tsp33k.natural-language.v1";
 const HOLD_DELAY_MS = 320;
 const REPEAT_DELAY_MS = 260;
 const REPEAT_INTERVAL_MS = 42;
@@ -68,7 +71,27 @@ type ProblemComposerState = {
 type KeySpec = { token: string; units?: number };
 type KeyboardRow = { offsetUnits?: number; heightUnits?: number; keys: KeySpec[] };
 type FuzzyKeyMeta = { token: string; rowIndex: number; keyIndex: number; el: HTMLButtonElement };
+type ImePack = { source: string; generatedAt: string; candidates: Record<string, string[]> };
+type ImePackLanguage = "japanese" | "chinese";
+type ImeManifest = {
+  generatedAt: string;
+  packs: Record<ImePackLanguage, string>;
+};
+type ImeSegment = { start: number; end: number; query: string };
 const BASE_KEY_HEIGHT = "clamp(44px, 9.6vw, 58px)";
+type KeyboardLayoutId =
+  | "qwerty"
+  | "azerty"
+  | "qwertz"
+  | "spanish"
+  | "portuguese"
+  | "hindi-inscript"
+  | "bengali-inscript"
+  | "japanese-kana"
+  | "korean-dubeolsik"
+  | "turkish-q"
+  | "russian-jcuken"
+  | "arabic-101";
 
 const LANGUAGE_OPTIONS: Array<{ value: ProgrammingLanguage; label: string }> = [
   { value: "python", label: "Py" },
@@ -79,6 +102,29 @@ const LANGUAGE_OPTIONS: Array<{ value: ProgrammingLanguage; label: string }> = [
   { value: "go", label: "Go" },
   { value: "rust", label: "Rust" },
   { value: "sql", label: "SQL" },
+];
+
+const NATURAL_LANGUAGE_OPTIONS: Array<{ value: NaturalLanguage; label: string }> = [
+  { value: "english", label: "EN" },
+  { value: "indonesian", label: "ID" },
+  { value: "spanish", label: "ES" },
+  { value: "french", label: "FR" },
+  { value: "german", label: "DE" },
+  { value: "portuguese", label: "PT" },
+  { value: "italian", label: "IT" },
+  { value: "dutch", label: "NL" },
+  { value: "polish", label: "PL" },
+  { value: "turkish", label: "TR" },
+  { value: "filipino", label: "FIL" },
+  { value: "vietnamese", label: "VI" },
+  { value: "hindi", label: "HI" },
+  { value: "bengali", label: "BN" },
+  { value: "urdu", label: "UR" },
+  { value: "arabic", label: "AR" },
+  { value: "russian", label: "RU" },
+  { value: "japanese", label: "JA" },
+  { value: "korean", label: "KO" },
+  { value: "chinese", label: "ZH" },
 ];
 
 const SYMBOL_ROWS_BY_LANGUAGE: Record<ProgrammingLanguage, string[][]> = {
@@ -154,16 +200,106 @@ const HOLD_OUTPUT_BY_LANGUAGE: Record<ProgrammingLanguage, Record<string, string
   sql: { "&": "AND ", "|": "OR ", "!": "NOT ", "<": "<=", ">": ">=", "1": "TRUE", "0": "FALSE" },
 };
 
-function buildKeyboardLayout(language: ProgrammingLanguage): KeyboardRow[] {
+const TEXT_ROWS_BY_LAYOUT: Record<KeyboardLayoutId, KeyboardRow[]> = {
+  qwerty: [
+    { heightUnits: 1.0, keys: ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"].map((token) => ({ token })) },
+    { offsetUnits: 0.5, heightUnits: 1.0, keys: ["a", "s", "d", "f", "g", "h", "j", "k", "l"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: [{ token: "SHIFT", units: 1.5 }, ...["z", "x", "c", "v", "b", "n", "m"].map((token) => ({ token })), { token: "BACKSPACE", units: 1.5 }] },
+  ],
+  azerty: [
+    { heightUnits: 1.0, keys: ["a", "z", "e", "r", "t", "y", "u", "i", "o", "p"].map((token) => ({ token })) },
+    { offsetUnits: 0.25, heightUnits: 1.0, keys: ["q", "s", "d", "f", "g", "h", "j", "k", "l", "m"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: [{ token: "SHIFT", units: 1.25 }, ...["w", "x", "c", "v", "b", "n"].map((token) => ({ token })), { token: "BACKSPACE", units: 1.25 }] },
+  ],
+  qwertz: [
+    { heightUnits: 1.0, keys: ["q", "w", "e", "r", "t", "z", "u", "i", "o", "p"].map((token) => ({ token })) },
+    { offsetUnits: 0.5, heightUnits: 1.0, keys: ["a", "s", "d", "f", "g", "h", "j", "k", "l"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: [{ token: "SHIFT", units: 1.5 }, ...["y", "x", "c", "v", "b", "n", "m"].map((token) => ({ token })), { token: "BACKSPACE", units: 1.5 }] },
+  ],
+  spanish: [
+    { heightUnits: 1.0, keys: ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"].map((token) => ({ token })) },
+    { offsetUnits: 0.25, heightUnits: 1.0, keys: ["a", "s", "d", "f", "g", "h", "j", "k", "l", "ñ"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: [{ token: "SHIFT", units: 1.25 }, ...["z", "x", "c", "v", "b", "n", "m"].map((token) => ({ token })), { token: "BACKSPACE", units: 1.25 }] },
+  ],
+  portuguese: [
+    { heightUnits: 1.0, keys: ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"].map((token) => ({ token })) },
+    { offsetUnits: 0.25, heightUnits: 1.0, keys: ["a", "s", "d", "f", "g", "h", "j", "k", "l", "ç"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: [{ token: "SHIFT", units: 1.25 }, ...["z", "x", "c", "v", "b", "n", "m"].map((token) => ({ token })), { token: "BACKSPACE", units: 1.25 }] },
+  ],
+  "hindi-inscript": [
+    { heightUnits: 1.0, keys: ["ौ", "ै", "ा", "ी", "ू", "ब", "ह", "ग", "द", "ज"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: ["ो", "े", "्", "ि", "ु", "प", "र", "क", "त", "च"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: [{ token: "SHIFT", units: 1.1 }, ...["ं", "म", "न", "व", "ल", "स", "य", "।", "़"].map((token) => ({ token })), { token: "BACKSPACE", units: 1.1 }] },
+  ],
+  "bengali-inscript": [
+    { heightUnits: 1.0, keys: ["ৌ", "ৈ", "া", "ী", "ূ", "ব", "হ", "গ", "দ", "জ"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: ["ো", "ে", "্", "ি", "ু", "প", "র", "ক", "ত", "চ"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: [{ token: "SHIFT", units: 1.1 }, ...["ং", "ম", "ন", "ব", "ল", "স", "য", "।", "়"].map((token) => ({ token })), { token: "BACKSPACE", units: 1.1 }] },
+  ],
+  "japanese-kana": [
+    { heightUnits: 1.0, keys: ["た", "て", "い", "す", "か", "ん", "な", "に", "ら", "せ"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: ["ち", "と", "し", "は", "き", "く", "ま", "の", "り", "れ"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: [{ token: "SHIFT", units: 1.1 }, ...["つ", "さ", "そ", "ひ", "こ", "み", "も", "ね", "る"].map((token) => ({ token })), { token: "BACKSPACE", units: 1.1 }] },
+  ],
+  "korean-dubeolsik": [
+    { heightUnits: 1.0, keys: ["ㅂ", "ㅈ", "ㄷ", "ㄱ", "ㅅ", "ㅛ", "ㅕ", "ㅑ", "ㅐ", "ㅔ"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: ["ㅁ", "ㄴ", "ㅇ", "ㄹ", "ㅎ", "ㅗ", "ㅓ", "ㅏ", "ㅣ"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: [{ token: "SHIFT", units: 1.5 }, ...["ㅋ", "ㅌ", "ㅊ", "ㅍ", "ㅠ", "ㅜ", "ㅡ"].map((token) => ({ token })), { token: "BACKSPACE", units: 1.5 }] },
+  ],
+  "turkish-q": [
+    { heightUnits: 1.0, keys: ["q", "w", "e", "r", "t", "y", "u", "ı", "o", "p"].map((token) => ({ token })) },
+    { offsetUnits: 0.25, heightUnits: 1.0, keys: ["a", "s", "d", "f", "g", "h", "j", "k", "l", "ş"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: [{ token: "SHIFT", units: 1.1 }, ...["z", "x", "c", "v", "b", "n", "m", "ö", "ç"].map((token) => ({ token })), { token: "BACKSPACE", units: 1.1 }] },
+  ],
+  "russian-jcuken": [
+    { heightUnits: 1.0, keys: ["й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: ["ф", "ы", "в", "а", "п", "р", "о", "л", "д", "ж"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: [{ token: "SHIFT", units: 1.1 }, ...["я", "ч", "с", "м", "и", "т", "ь", "б", "ю"].map((token) => ({ token })), { token: "BACKSPACE", units: 1.1 }] },
+  ],
+  "arabic-101": [
+    { heightUnits: 1.0, keys: ["ض", "ص", "ث", "ق", "ف", "غ", "ع", "ه", "خ", "ح"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: ["ش", "س", "ي", "ب", "ل", "ا", "ت", "ن", "م", "ك"].map((token) => ({ token })) },
+    { heightUnits: 1.0, keys: [{ token: "SHIFT", units: 1.1 }, ...["ئ", "ء", "ؤ", "ر", "لا", "ى", "ة", "و", "ز"].map((token) => ({ token })), { token: "BACKSPACE", units: 1.1 }] },
+  ],
+};
+
+const NATURAL_LANGUAGE_LAYOUT_MAP: Record<NaturalLanguage, KeyboardLayoutId> = {
+  english: "qwerty",
+  indonesian: "qwerty",
+  spanish: "spanish",
+  french: "azerty",
+  german: "qwertz",
+  portuguese: "portuguese",
+  italian: "qwerty",
+  dutch: "qwerty",
+  polish: "qwerty",
+  turkish: "turkish-q",
+  filipino: "qwerty",
+  vietnamese: "qwerty",
+  hindi: "hindi-inscript",
+  bengali: "bengali-inscript",
+  urdu: "arabic-101",
+  arabic: "arabic-101",
+  russian: "russian-jcuken",
+  japanese: "japanese-kana",
+  korean: "korean-dubeolsik",
+  chinese: "qwerty",
+};
+
+function textRowsForNaturalLanguage(language: NaturalLanguage): KeyboardRow[] {
+  const layoutId = NATURAL_LANGUAGE_LAYOUT_MAP[language] ?? "qwerty";
+  return TEXT_ROWS_BY_LAYOUT[layoutId] ?? TEXT_ROWS_BY_LAYOUT.qwerty;
+}
+
+function buildKeyboardLayout(language: ProgrammingLanguage, naturalLanguage: NaturalLanguage): KeyboardRow[] {
   const symbolRows = SYMBOL_ROWS_BY_LANGUAGE[language] ?? SYMBOL_ROWS_BY_LANGUAGE.python;
+  const textRows = textRowsForNaturalLanguage(naturalLanguage);
   return [
     { heightUnits: 0.92, keys: symbolRows[0].map((token) => ({ token })) },
     { heightUnits: 0.92, keys: symbolRows[1].map((token) => ({ token })) },
     { heightUnits: 0.92, keys: symbolRows[2].map((token) => ({ token })) },
     { heightUnits: 0.92, keys: symbolRows[3].map((token) => ({ token })) },
-    { heightUnits: 1.0, keys: ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"].map((token) => ({ token })) },
-    { offsetUnits: 0.5, heightUnits: 1.0, keys: ["a", "s", "d", "f", "g", "h", "j", "k", "l"].map((token) => ({ token })) },
-    { heightUnits: 1.0, keys: [{ token: "SHIFT", units: 1.5 }, ...["z", "x", "c", "v", "b", "n", "m"].map((token) => ({ token })), { token: "BACKSPACE", units: 1.5 }] },
+    ...textRows,
     { heightUnits: 1.08, keys: [{ token: "TAB", units: 1.8 }, { token: "ARROWS", units: 1.8 }, { token: "SPACE", units: 5.8 }, { token: "ENTER", units: 1.8 }] },
   ];
 }
@@ -492,6 +628,113 @@ function normalizeLanguage(value: string | null | undefined): ProgrammingLanguag
   return "python";
 }
 
+function normalizeNaturalLanguage(value: string | null | undefined): NaturalLanguage {
+  const normalized = String(value ?? "").toLowerCase();
+  if (
+    normalized === "english" ||
+    normalized === "indonesian" ||
+    normalized === "spanish" ||
+    normalized === "french" ||
+    normalized === "german" ||
+    normalized === "portuguese" ||
+    normalized === "italian" ||
+    normalized === "dutch" ||
+    normalized === "polish" ||
+    normalized === "turkish" ||
+    normalized === "filipino" ||
+    normalized === "vietnamese" ||
+    normalized === "hindi" ||
+    normalized === "bengali" ||
+    normalized === "urdu" ||
+    normalized === "arabic" ||
+    normalized === "russian" ||
+    normalized === "japanese" ||
+    normalized === "korean" ||
+    normalized === "chinese"
+  ) {
+    return normalized;
+  }
+  if (normalized.startsWith("es")) return "spanish";
+  if (normalized.startsWith("fr")) return "french";
+  if (normalized.startsWith("de")) return "german";
+  if (normalized.startsWith("pt")) return "portuguese";
+  if (normalized.startsWith("it")) return "italian";
+  if (normalized.startsWith("nl")) return "dutch";
+  if (normalized.startsWith("pl")) return "polish";
+  if (normalized.startsWith("tr")) return "turkish";
+  if (normalized.startsWith("id")) return "indonesian";
+  if (normalized.startsWith("fil") || normalized.startsWith("tl")) return "filipino";
+  if (normalized.startsWith("vi")) return "vietnamese";
+  if (normalized.startsWith("hi")) return "hindi";
+  if (normalized.startsWith("bn")) return "bengali";
+  if (normalized.startsWith("ur")) return "urdu";
+  if (normalized.startsWith("ar")) return "arabic";
+  if (normalized.startsWith("ru")) return "russian";
+  if (normalized.startsWith("ja")) return "japanese";
+  if (normalized.startsWith("ko")) return "korean";
+  if (normalized.startsWith("zh")) return "chinese";
+  return "english";
+}
+
+function replaceRange(source: string, start: number, end: number, insert: string): { value: string; cursor: Cursor } {
+  const value = `${source.slice(0, start)}${insert}${source.slice(end)}`;
+  const pos = start + insert.length;
+  return { value, cursor: { start: pos, end: pos } };
+}
+
+function isHangulCodepoint(token: string) {
+  return /^[\u1100-\u11ff\u3130-\u318f\uac00-\ud7af]+$/u.test(token);
+}
+
+function findHangulSegment(source: string, cursor: Cursor) {
+  if (cursor.start !== cursor.end) return null;
+  const isHangulChar = (char: string | undefined) => Boolean(char && /[\u1100-\u11ff\u3130-\u318f\uac00-\ud7af]/u.test(char));
+  let start = cursor.start;
+  let end = cursor.end;
+  while (start > 0 && isHangulChar(source[start - 1])) start -= 1;
+  while (end < source.length && isHangulChar(source[end])) end += 1;
+  if (start === end) return null;
+  return { start, end, text: source.slice(start, end) };
+}
+
+function applyKoreanInsert(source: string, cursor: Cursor, token: string): { value: string; cursor: Cursor } {
+  const segment = findHangulSegment(source, cursor);
+  if (!segment) return applyInsert(source, cursor, token);
+  const assembled = Hangul.assemble([...Hangul.disassemble(segment.text), token]);
+  return replaceRange(source, segment.start, segment.end, assembled);
+}
+
+function applyKoreanBackspace(source: string, cursor: Cursor): { value: string; cursor: Cursor } {
+  if (cursor.start !== cursor.end) return applyBackspace(source, cursor);
+  const segment = findHangulSegment(source, cursor);
+  if (!segment) return applyBackspace(source, cursor);
+  const disassembled = Hangul.disassemble(segment.text);
+  if (disassembled.length <= 1) return replaceRange(source, segment.start, segment.end, "");
+  const assembled = Hangul.assemble(disassembled.slice(0, -1));
+  return replaceRange(source, segment.start, segment.end, assembled);
+}
+
+function extractChineseImeSegment(source: string, cursor: Cursor): ImeSegment | null {
+  if (cursor.start !== cursor.end) return null;
+  let start = cursor.start;
+  let end = cursor.end;
+  while (start > 0 && /[a-z]/i.test(source[start - 1] ?? "")) start -= 1;
+  while (end < source.length && /[a-z]/i.test(source[end] ?? "")) end += 1;
+  const query = source.slice(start, end).toLowerCase();
+  return query ? { start, end, query } : null;
+}
+
+function extractJapaneseImeSegment(source: string, cursor: Cursor): ImeSegment | null {
+  if (cursor.start !== cursor.end) return null;
+  const isKana = (char: string | undefined) => Boolean(char && /^[\p{Script=Hiragana}\p{Script=Katakana}ー]+$/u.test(char));
+  let start = cursor.start;
+  let end = cursor.end;
+  while (start > 0 && isKana(source[start - 1])) start -= 1;
+  while (end < source.length && isKana(source[end])) end += 1;
+  const query = wanakana.toHiragana(source.slice(start, end));
+  return query ? { start, end, query } : null;
+}
+
 function applySmartEnterForLanguage(source: string, cursor: Cursor, language: ProgrammingLanguage): { value: string; cursor: Cursor } {
   const resolved = language;
   const currentLine = lineBounds(source, cursor.start);
@@ -530,6 +773,7 @@ export default function Home() {
   const [theme, setTheme] = useState<ThemeMode>("light");
   const [activeCurriculumKey, setActiveCurriculumKey] = useState("l33");
   const [selectedLanguage, setSelectedLanguage] = useState<ProgrammingLanguage>("python");
+  const [naturalLanguage, setNaturalLanguage] = useState<NaturalLanguage>("english");
   const [hasPhysicalKeyboard, setHasPhysicalKeyboard] = useState(false);
   const [showTouchKeyboard, setShowTouchKeyboard] = useState(true);
   const [coachingMode, setCoachingMode] = useState<CoachingMode>("interviewer");
@@ -561,6 +805,11 @@ export default function Home() {
   const [assistantActiveIndex, setAssistantActiveIndex] = useState(0);
   const [userActiveIndex, setUserActiveIndex] = useState(0);
   const [activeDockTooltip, setActiveDockTooltip] = useState<string | null>(null);
+  const [imePreview, setImePreview] = useState("");
+  const [imePacks, setImePacks] = useState<Partial<Record<ImePackLanguage, ImePack>>>({});
+  const [imeLoading, setImeLoading] = useState<Partial<Record<ImePackLanguage, boolean>>>({});
+  const [imeLoadError, setImeLoadError] = useState<Partial<Record<ImePackLanguage, string>>>({});
+  const [imeManifest, setImeManifest] = useState<ImeManifest | null>(null);
 
   const activeProblemMessageRef = useRef<HTMLElement | null>(null);
   const headerRef = useRef<HTMLElement | null>(null);
@@ -599,6 +848,8 @@ export default function Home() {
   const fuzzyKeyMapRef = useRef<Map<string, FuzzyKeyMeta>>(new Map());
   const activeFuzzyPointerRef = useRef<{ pointerId: number; token: string; rowIndex: number; x: number; y: number } | null>(null);
   const dockTooltipTimeoutRef = useRef<number | null>(null);
+  const imeLoadPromiseRef = useRef<Partial<Record<ImePackLanguage, Promise<void>>>>({});
+  const imeManifestPromiseRef = useRef<Promise<ImeManifest> | null>(null);
 
   useEffect(() => {
     const profileRaw = localStorage.getItem(PROFILE_KEY);
@@ -609,6 +860,7 @@ export default function Home() {
     const testRaw = localStorage.getItem(TEST_KEY);
     const themeRaw = localStorage.getItem(THEME_KEY);
     const languageRaw = localStorage.getItem(LANGUAGE_KEY);
+    const naturalLanguageRaw = localStorage.getItem(NATURAL_LANGUAGE_KEY);
 
     let loadedProfile: LocalProfile;
     if (profileRaw) {
@@ -658,6 +910,7 @@ export default function Home() {
     lastLoadedComposerProblemIdRef.current = loadedProfile.activeProblemId;
     if (themeRaw === "dark" || themeRaw === "light") setTheme(themeRaw);
     setSelectedLanguage(normalizeLanguage(languageRaw));
+    setNaturalLanguage(naturalLanguageRaw != null ? normalizeNaturalLanguage(naturalLanguageRaw) : normalizeNaturalLanguage(navigator.language));
     const hydrateCurriculum = async () => {
       try {
         const response = await fetch(`/api/curriculum?anonId=${encodeURIComponent(localAnonId ?? "")}`);
@@ -714,6 +967,10 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem(LANGUAGE_KEY, selectedLanguage);
   }, [selectedLanguage]);
+
+  useEffect(() => {
+    localStorage.setItem(NATURAL_LANGUAGE_KEY, naturalLanguage);
+  }, [naturalLanguage]);
 
   useEffect(() => {
     if (!profile) return;
@@ -916,6 +1173,45 @@ export default function Home() {
   const showKeyboard = !hasPhysicalKeyboard || showTouchKeyboard;
 
   useEffect(() => {
+    if (naturalLanguage !== "japanese" && naturalLanguage !== "chinese") return;
+    if (imePacks[naturalLanguage]) return;
+    if (imeLoadPromiseRef.current[naturalLanguage]) return;
+    const packLanguage = naturalLanguage;
+    const loadPromise = (async () => {
+      setImeLoading((prev) => ({ ...prev, [packLanguage]: true }));
+      setImeLoadError((prev) => ({ ...prev, [packLanguage]: "" }));
+      try {
+        const manifest =
+          imeManifest ??
+          (await (() => {
+            if (!imeManifestPromiseRef.current) {
+              imeManifestPromiseRef.current = fetch("/ime/manifest.json", { cache: "no-store" }).then(async (response) => {
+                if (!response.ok) throw new Error("Failed to load IME manifest.");
+                return (await response.json()) as ImeManifest;
+              });
+            }
+            return imeManifestPromiseRef.current;
+          })());
+        setImeManifest(manifest);
+        const response = await fetch(`/ime/${manifest.packs[packLanguage]}`, { cache: "force-cache" });
+        if (!response.ok) throw new Error(`Failed to load ${packLanguage} input pack.`);
+        const pack = (await response.json()) as ImePack;
+        setImePacks((prev) => ({ ...prev, [packLanguage]: pack }));
+      } catch (error) {
+        if (!imeManifest) imeManifestPromiseRef.current = null;
+        setImeLoadError((prev) => ({
+          ...prev,
+          [packLanguage]: error instanceof Error ? error.message : `Failed to load ${packLanguage} input pack.`,
+        }));
+      } finally {
+        setImeLoading((prev) => ({ ...prev, [packLanguage]: false }));
+        delete imeLoadPromiseRef.current[packLanguage];
+      }
+    })();
+    imeLoadPromiseRef.current[packLanguage] = loadPromise;
+  }, [imeManifest, imePacks, naturalLanguage]);
+
+  useEffect(() => {
     return () => {
       if (dockTooltipTimeoutRef.current != null) {
         window.clearTimeout(dockTooltipTimeoutRef.current);
@@ -923,11 +1219,29 @@ export default function Home() {
     };
   }, []);
   const effectiveLanguage = useMemo<ProgrammingLanguage>(() => selectedLanguage, [selectedLanguage]);
-  const keyboardLayout = useMemo(() => buildKeyboardLayout(effectiveLanguage), [effectiveLanguage]);
+  const keyboardLayout = useMemo(() => buildKeyboardLayout(effectiveLanguage, naturalLanguage), [effectiveLanguage, naturalLanguage]);
   const tapOutputMap = useMemo(() => TAP_OUTPUT_BY_LANGUAGE[effectiveLanguage] ?? TAP_OUTPUT_BY_LANGUAGE.python, [effectiveLanguage]);
   const holdOutputMap = useMemo(() => HOLD_OUTPUT_BY_LANGUAGE[effectiveLanguage] ?? HOLD_OUTPUT_BY_LANGUAGE.python, [effectiveLanguage]);
   const assistantMessages = useMemo(() => messages.filter((msg) => msg.role === "assistant"), [messages]);
   const userMessages = useMemo(() => messages.filter((msg) => msg.role === "user"), [messages]);
+  const activeImePackLanguage = naturalLanguage === "japanese" || naturalLanguage === "chinese" ? naturalLanguage : null;
+  const activeImeCursor = composerMode === "chat" ? chatCursor : composerMode === "code" ? codeCursor : testCursor;
+  const activeImeValue = composerMode === "chat" ? draft : composerMode === "code" ? code : testInput;
+  const activeImeSegment = useMemo(() => {
+    if (naturalLanguage === "chinese") return extractChineseImeSegment(activeImeValue, activeImeCursor);
+    if (naturalLanguage === "japanese") return extractJapaneseImeSegment(activeImeValue, activeImeCursor);
+    return null;
+  }, [activeImeCursor, activeImeValue, naturalLanguage]);
+  const activeImeCandidates = useMemo(() => {
+    if (!activeImePackLanguage || !activeImeSegment) return [];
+    const pack = imePacks[activeImePackLanguage];
+    if (!pack) return [];
+    return pack.candidates[activeImeSegment.query] ?? [];
+  }, [activeImePackLanguage, activeImeSegment, imePacks]);
+
+  useEffect(() => {
+    setImePreview(activeImeSegment?.query ?? "");
+  }, [activeImeSegment]);
   const activeProblemMessageIndex = useMemo(() => {
     if (!activeProblem) return -1;
     for (let i = 0; i < assistantMessages.length; i += 1) {
@@ -1126,6 +1440,19 @@ _result
     });
   }
 
+  function commitImeCandidate(candidate: string) {
+    if (!activeImeSegment) return false;
+    const target: TargetField = composerMode;
+    const source = target === "chat" ? draft : target === "code" ? code : testInput;
+    const result = replaceRange(source, activeImeSegment.start, activeImeSegment.end, candidate);
+    if (target === "chat") setDraft(result.value);
+    else if (target === "code") setCode(result.value);
+    else setTestInput(result.value);
+    setImePreview("");
+    setCursorOnDom(target, result.cursor);
+    return true;
+  }
+
   function pressKey(token: string) {
     if (typeof navigator !== "undefined" && "vibrate" in navigator) {
       navigator.vibrate(6);
@@ -1155,9 +1482,13 @@ _result
     let result: { value: string; cursor: Cursor } = { value: source, cursor };
 
     let consumeShiftAfterPress = false;
+    const useIme = true;
+    const isKoreanTextMode = useIme && naturalLanguage === "korean";
+    const isJapaneseTextMode = useIme && naturalLanguage === "japanese";
+    const isChineseTextMode = useIme && naturalLanguage === "chinese";
 
     if (token === "BACKSPACE") {
-      result = applyBackspace(source, cursor);
+      result = isKoreanTextMode ? applyKoreanBackspace(source, cursor) : applyBackspace(source, cursor);
     } else if (token === "LEFT") {
       const pos = clampPos(cursor.start - 1, source.length);
       result = { value: source, cursor: { start: pos, end: pos } };
@@ -1167,8 +1498,16 @@ _result
     } else if (token === "UP" || token === "DOWN") {
       result = { value: source, cursor: moveVertical(source, cursor, token) };
     } else if (token === "SPACE") {
+      if ((isJapaneseTextMode || isChineseTextMode) && activeImeCandidates.length > 0 && activeImeSegment) {
+        commitImeCandidate(activeImeCandidates[0] ?? "");
+        return;
+      }
       result = applyInsert(source, cursor, " ");
     } else if (token === "ENTER") {
+      if ((isJapaneseTextMode || isChineseTextMode) && activeImeCandidates.length > 0 && activeImeSegment) {
+        commitImeCandidate(activeImeCandidates[0] ?? "");
+        return;
+      }
       result = target === "code" ? applySmartEnterForLanguage(source, cursor, effectiveLanguage) : applyInsert(source, cursor, "\n");
     } else if (token === "TAB") {
       if (target === "code") {
@@ -1185,8 +1524,13 @@ _result
       const isLetter = /^[a-z]$/i.test(token);
       if (isLetter) {
         const upper = capsOn ? !shiftOn : shiftOn;
-        result = applyInsert(source, cursor, upper ? token.toUpperCase() : token.toLowerCase());
+        const nextToken = isChineseTextMode ? token.toLowerCase() : upper ? token.toUpperCase() : token.toLowerCase();
+        result = applyInsert(source, cursor, nextToken);
         if (shiftOn) consumeShiftAfterPress = true;
+      } else if (isKoreanTextMode && isHangulCodepoint(token)) {
+        result = applyKoreanInsert(source, cursor, token);
+      } else if (isJapaneseTextMode && wanakana.isKana(token)) {
+        result = applyInsert(source, cursor, token);
       } else {
         result = applyInsert(source, cursor, token);
         if (shiftOn) consumeShiftAfterPress = true;
@@ -1199,6 +1543,10 @@ _result
       setCode(result.value);
     } else {
       setTestInput(result.value);
+    }
+
+    if (!isKoreanTextMode && !isJapaneseTextMode && !isChineseTextMode) {
+      setImePreview("");
     }
 
     if (consumeShiftAfterPress) {
@@ -1383,6 +1731,7 @@ _result
         body: JSON.stringify({
           message: includeText ? textToSend : "",
           code: includeCode ? codeToSend : "",
+          naturalLanguage,
           languageState: {
             selected: selectedLanguage,
             effective: effectiveLanguage,
@@ -1871,6 +2220,18 @@ _result
               title="Preferred coding language"
             >
               {LANGUAGE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <select
+              value={naturalLanguage}
+              onChange={(event) => setNaturalLanguage(normalizeNaturalLanguage(event.target.value))}
+              className={`h-7 rounded-md border px-1 text-[11px] font-medium ${isDark ? "border-white/20 bg-white/5 text-white" : "border-black/15 bg-white/70 text-black"}`}
+              title="Preferred conversation language"
+            >
+              {NATURAL_LANGUAGE_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -2366,6 +2727,41 @@ _result
 
       {showKeyboard ? (
       <section className={`z-30 border-t px-2 pt-1 pb-2 backdrop-blur ${isDark ? "border-white/15 bg-[#121720]" : "border-black/10 bg-[#eceae2]"}`}>
+        {(naturalLanguage === "japanese" || naturalLanguage === "korean" || naturalLanguage === "chinese") ? (
+          <div className={`mb-1 rounded-md border px-2 py-1 text-[11px] ${
+            isDark ? "border-white/12 bg-[#0c1118] text-white/80" : "border-black/10 bg-white/80 text-black/75"
+          }`}>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold">{naturalLanguage === "korean" ? "Hangul" : naturalLanguage === "japanese" ? "Japanese" : "Chinese"} input</span>
+              {imePreview ? <span className={`${isDark ? "text-white/60" : "text-black/55"}`}>{imePreview}</span> : null}
+              {activeImePackLanguage && imeLoading[activeImePackLanguage] ? (
+                <span className={`${isDark ? "text-white/50" : "text-black/45"}`}>loading candidates…</span>
+              ) : null}
+              {activeImePackLanguage && imeLoadError[activeImePackLanguage] ? (
+                <span className="text-[#b45309]">{imeLoadError[activeImePackLanguage]}</span>
+              ) : null}
+            </div>
+            {activeImeCandidates.length > 0 ? (
+              <div className="mt-2 flex gap-1 overflow-x-auto pb-0.5">
+                {activeImeCandidates.slice(0, 8).map((candidate, index) => (
+                  <button
+                    key={`${candidate}-${index}`}
+                    type="button"
+                    onClick={() => commitImeCandidate(candidate)}
+                    className={`shrink-0 rounded-md border px-2 py-1 text-[11px] ${
+                      isDark
+                        ? "border-white/12 bg-[#161d28] text-white hover:bg-[#1d2634]"
+                        : "border-black/10 bg-white text-black hover:bg-[#f4f1e8]"
+                    }`}
+                  >
+                    <span className={`${isDark ? "text-white/45" : "text-black/40"}`}>{index + 1}.</span>{" "}
+                    <span>{candidate}</span>
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
         <div className="w-full [text-size-adjust:100%]">
           <div className="space-y-px">
             {keyboardLayout.map((row, rowIndex) => {

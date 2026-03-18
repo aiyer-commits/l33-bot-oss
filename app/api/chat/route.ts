@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import type { ChatApiRequest, ChatApiResponse, ChatMessage } from '@/lib/types';
+import type { ChatApiRequest, ChatApiResponse, ChatMessage, NaturalLanguage, ProgrammingLanguage } from '@/lib/types';
 import {
   appendMessages,
   countMastered,
@@ -85,32 +85,124 @@ function formatRecentHistory(rows: Array<Record<string, unknown>>, limit = 10) {
     .join('\n');
 }
 
-function systemInstructionFor(coachingMode: 'interviewer' | 'tutor') {
-  if (coachingMode === 'tutor') {
-    return [
-      'You are l33.bot in tutor mode for coding interviews.',
-      'Teach directly and clearly.',
-      'Answer the user\'s conceptual question plainly.',
-      'State the key invariant or next step explicitly.',
-      'Avoid repeating a previous probing question when the learner is still confused.',
-      'The latest active problem in the prompt is authoritative for this conversation.',
-      'Do not change problems or curriculums during standard chat. Keep moveToProblemId fixed to the current active problem and moveToCurriculumKey fixed to the current curriculum.',
-      'Set composerSuggestion.mode to the best next UI input: chat for discussion, test cases, explanations, or edge cases; code for implementation edits; test for running custom input.',
-      'Prefer concise responses and actionable next step.',
-    ].join(' ');
+function naturalLanguageLabel(language: NaturalLanguage) {
+  switch (language) {
+    case 'indonesian':
+      return 'Indonesian';
+    case 'spanish':
+      return 'Spanish';
+    case 'french':
+      return 'French';
+    case 'german':
+      return 'German';
+    case 'portuguese':
+      return 'Portuguese';
+    case 'italian':
+      return 'Italian';
+    case 'dutch':
+      return 'Dutch';
+    case 'polish':
+      return 'Polish';
+    case 'turkish':
+      return 'Turkish';
+    case 'filipino':
+      return 'Filipino';
+    case 'vietnamese':
+      return 'Vietnamese';
+    case 'hindi':
+      return 'Hindi';
+    case 'bengali':
+      return 'Bengali';
+    case 'urdu':
+      return 'Urdu';
+    case 'arabic':
+      return 'Arabic';
+    case 'russian':
+      return 'Russian';
+    case 'japanese':
+      return 'Japanese';
+    case 'korean':
+      return 'Korean';
+    case 'chinese':
+      return 'Chinese';
+    default:
+      return 'English';
   }
+}
 
-  return [
-    'You are l33.bot in interviewer mode for coding interviews.',
-    'Stay strict and realistic.',
-    'Ask concise probing questions, evaluate correctness/TLE/edge cases, and request concrete tests.',
-    'Do not reveal the solution or key invariant unless the user explicitly asks for help, a hint, or an explanation.',
-    'If the user is confused, keep the response short and probe the missing concept.',
-    'The latest active problem in the prompt is authoritative for this conversation.',
-    'Do not change problems or curriculums during standard chat. Keep moveToProblemId fixed to the current active problem and moveToCurriculumKey fixed to the current curriculum.',
-    'Set composerSuggestion.mode to the best next UI input: chat for discussion, test cases, explanations, or edge cases; code for implementation edits; test for running custom input.',
-    'Prefer concise responses and actionable next step.',
-  ].join(' ');
+function programmingLanguageLabel(language: ProgrammingLanguage) {
+  switch (language) {
+    case 'javascript':
+      return 'JavaScript';
+    case 'typescript':
+      return 'TypeScript';
+    case 'java':
+      return 'Java';
+    case 'cpp':
+      return 'C++';
+    case 'go':
+      return 'Go';
+    case 'rust':
+      return 'Rust';
+    case 'sql':
+      return 'SQL';
+    default:
+      return 'Python';
+  }
+}
+
+function systemInstructionFor(params: {
+  coachingMode: 'interviewer' | 'tutor';
+  naturalLanguage: NaturalLanguage;
+  programmingLanguage: ProgrammingLanguage;
+}) {
+  const { coachingMode, naturalLanguage, programmingLanguage } = params;
+  const responseLanguageInstruction = `Respond in ${naturalLanguageLabel(naturalLanguage)} for all natural-language output.`;
+  const programmingLanguageInstruction = `When discussing code, assume the programming language is ${programmingLanguageLabel(programmingLanguage)}.`;
+  const codeTranslationInstruction =
+    naturalLanguage === 'english'
+      ? null
+      : `Keep code in ${programmingLanguageLabel(programmingLanguage)} syntax. Do not translate code keywords, identifiers, or syntax unless the user explicitly asks.`;
+
+  const coreInstructions =
+    coachingMode === 'tutor'
+      ? [
+          'You are l33.bot in tutor mode for coding interviews.',
+          'Teach directly and clearly.',
+          'Answer the user\'s conceptual question plainly.',
+          'State the key invariant or next step explicitly.',
+          'Ground every reply primarily in the latest user turn; use older history only as secondary context.',
+          'Do not repeat a misunderstanding that the learner already resolved unless the latest turn clearly shows it again.',
+          'When the latest turn contains code, switch into concrete code-review mode first: name the exact bugs or logic errors actually present in that code before discussing problem interpretation.',
+          'Avoid repeating a previous probing question when the learner is still confused.',
+          'If the learner is writing test cases in test mode, treat it as language-agnostic pseudocode and reasoning, not strict executable syntax.',
+          'Focus on whether the test walkthrough is valid, what it covers, and what bug or edge case it exposes.',
+          'If the learner provides a valid test walkthrough, acknowledge what it proves and do not demand an actual run unless execution is necessary to resolve uncertainty.',
+          'The latest active problem in the prompt is authoritative for this conversation.',
+          'Do not change problems or curriculums during standard chat. Keep moveToProblemId fixed to the current active problem and moveToCurriculumKey fixed to the current curriculum.',
+          'Set composerSuggestion.mode to the best next UI input: chat for discussion, test cases, explanations, or edge cases; code for implementation edits; test for running custom input.',
+          'Prefer concise responses and actionable next step.',
+        ]
+      : [
+          'You are l33.bot in interviewer mode for coding interviews.',
+          'Stay strict and realistic.',
+          'Ground every reply primarily in the latest user turn; use older history only as secondary context.',
+          'Do not repeat a misunderstanding that the learner already resolved unless the latest turn clearly shows it again.',
+          'When the latest turn contains code, switch into concrete code-review mode first: name the exact bugs or logic errors actually present in that code before discussing problem interpretation.',
+          'If the learner is writing test cases in test mode, treat it as language-agnostic pseudocode and reasoning, not strict executable syntax.',
+          'Focus on whether the test walkthrough is valid, what it covers, and what bug or edge case it exposes.',
+          'If the learner provides a valid test walkthrough, acknowledge what it proves and do not demand an actual run unless execution is necessary to resolve uncertainty.',
+          'Do not reveal the solution or key invariant unless the user explicitly asks for help, a hint, or an explanation.',
+          'Ask concise probing questions only when the latest turn leaves a real gap.',
+          'The latest active problem in the prompt is authoritative for this conversation.',
+          'Do not change problems or curriculums during standard chat. Keep moveToProblemId fixed to the current active problem and moveToCurriculumKey fixed to the current curriculum.',
+          'Set composerSuggestion.mode to the best next UI input: chat for discussion, test cases, explanations, or edge cases; code for implementation edits; test for running custom input.',
+          'Prefer concise responses and actionable next step.',
+        ];
+
+  return [responseLanguageInstruction, ...coreInstructions, programmingLanguageInstruction, codeTranslationInstruction, responseLanguageInstruction]
+    .filter(Boolean)
+    .join(' ');
 }
 
 function responseSchema() {
@@ -194,6 +286,7 @@ export async function POST(request: Request) {
     const message = (body.message ?? '').trim();
     const code = (body.code ?? '').trim();
     const languageState = body.languageState;
+    const naturalLanguage = body.naturalLanguage ?? 'english';
     const coachingMode = body.coachingMode === 'tutor' ? 'tutor' : 'interviewer';
 
     logChatEvent('info', 'turn_started', {
@@ -206,6 +299,7 @@ export async function POST(request: Request) {
       sessionId: body.sessionId ?? null,
       anonIdPresent: Boolean(body.anonId),
       language: languageState?.effective ?? null,
+      naturalLanguage,
     });
 
     if (!message && !code) {
@@ -351,11 +445,16 @@ export async function POST(request: Request) {
       `Recent chat history:\n${compactHistoryForCoach || '(none)'}`,
       `Latest user message: ${message || '(none)'}`,
       `Latest user code: ${code || '(none)'}`,
+      `Natural language: ${naturalLanguageLabel(naturalLanguage)}`,
       `Language state: ${languageState ? JSON.stringify(languageState) : 'none'}`,
     ].join('\n\n');
 
     const coach = await generateJson<ChatApiResponse>({
-      system: systemInstructionFor(coachingMode),
+      system: systemInstructionFor({
+        coachingMode,
+        naturalLanguage,
+        programmingLanguage: languageState?.effective ?? 'python',
+      }),
       prompt: coachPrompt,
       schemaName: 'l33_bot_response',
       schema: responseSchema(),

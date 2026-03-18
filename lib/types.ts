@@ -42,6 +42,27 @@ export type ChatMessage = {
 };
 
 export type ProgrammingLanguage = "python" | "javascript" | "typescript" | "java" | "cpp" | "go" | "rust" | "sql";
+export type NaturalLanguage =
+  | "english"
+  | "indonesian"
+  | "spanish"
+  | "french"
+  | "german"
+  | "portuguese"
+  | "italian"
+  | "dutch"
+  | "polish"
+  | "turkish"
+  | "filipino"
+  | "vietnamese"
+  | "hindi"
+  | "bengali"
+  | "urdu"
+  | "arabic"
+  | "russian"
+  | "japanese"
+  | "korean"
+  | "chinese";
 export type CoachingMode = "interviewer" | "tutor";
 export type SuggestedComposerMode = "chat" | "code" | "test";
 
@@ -54,6 +75,7 @@ export type LanguageState = {
 export type ChatApiRequest = {
   message: string;
   code: string;
+  naturalLanguage?: NaturalLanguage;
   languageState?: LanguageState;
   coachingMode?: CoachingMode;
   activeProblemId?: number;
