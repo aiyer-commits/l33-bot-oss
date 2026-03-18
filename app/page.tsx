@@ -440,14 +440,8 @@ function bootstrapIntro(problemId: number): ChatMessage[] {
 function buildProblemMessages(problemId: number): ChatMessage[] {
   const problem = getProblemById(problemId);
   if (!problem) return [];
-  const statementSections = splitProblemSections(formatProblemStatement(problem.statement));
-  const messages: ChatMessage[] = [
-    asMessage("assistant", `Problem #${problem.id}: ${problem.title}\n\n${statementSections[0] ?? ""}`.trim(), "text"),
-  ];
-  for (let i = 1; i < statementSections.length; i += 1) {
-    messages.push(asMessage("assistant", statementSections[i], "text"));
-  }
-  return messages;
+  const statement = formatProblemStatement(problem.statement);
+  return [asMessage("assistant", `Problem #${problem.id}: ${problem.title}\n\n${statement}`.trim(), "text")];
 }
 
 function extractProblemMessageId(message: ChatMessage): number | null {
@@ -2410,7 +2404,11 @@ _result
               <div className="flex h-full items-stretch gap-2 pr-12">
                 {assistantMessages.map((message, index) => (
                   (() => {
-                    const sections = message.kind === "text" && !looksLikeHtmlMarkup(message.content) ? splitAssistantBubbleContent(message.content) : null;
+                    const isProblemMessage = extractProblemMessageId(message) != null;
+                    const sections =
+                      !isProblemMessage && message.kind === "text" && !looksLikeHtmlMarkup(message.content)
+                        ? splitAssistantBubbleContent(message.content)
+                        : null;
                     const metaTone = isDark
                       ? "border-white/10 bg-white/[0.04] text-white/58"
                       : "border-black/10 bg-black/[0.03] text-black/55";
@@ -2433,7 +2431,9 @@ _result
                             />
                           ) : (
                             <div className="space-y-2">
-                              <p className="whitespace-pre-wrap leading-5">{sections?.primary ?? message.content}</p>
+                              <p className={`whitespace-pre-wrap break-words ${isProblemMessage ? "text-[13.5px] leading-6" : "leading-5"}`}>
+                                {sections?.primary ?? message.content}
+                              </p>
                               {sections && (sections.note || sections.nextStep) ? (
                                 <div className={`rounded-lg border px-2.5 py-2 text-[12px] leading-5 ${metaTone}`}>
                                   {sections.note ? <p className="whitespace-pre-wrap break-words">{sections.note}</p> : null}
