@@ -897,13 +897,13 @@ export default function Home() {
     const profileRaw = localStorage.getItem(PROFILE_KEY);
     const chatRaw = localStorage.getItem(CHAT_KEY);
     const composerStateRaw = localStorage.getItem(COMPOSER_STATE_KEY);
-    const textRaw = localStorage.getItem(TEXT_KEY);
-    const codeRaw = localStorage.getItem(CODE_KEY);
-    const testRaw = localStorage.getItem(TEST_KEY);
     const threadStateRaw = localStorage.getItem(THREAD_STATE_KEY);
     const themeRaw = localStorage.getItem(THEME_KEY);
     const languageRaw = localStorage.getItem(LANGUAGE_KEY);
     const naturalLanguageRaw = localStorage.getItem(NATURAL_LANGUAGE_KEY);
+    localStorage.removeItem(TEXT_KEY);
+    localStorage.removeItem(CODE_KEY);
+    localStorage.removeItem(TEST_KEY);
 
     let loadedProfile: LocalProfile;
     if (profileRaw) {
@@ -944,15 +944,7 @@ export default function Home() {
 
     const composerStateMap = readComposerStateMap(composerStateRaw);
     composerStateMapRef.current = composerStateMap;
-    const currentComposerState = composerStateForProblem(composerStateMap, loadedProfile.activeProblemId);
-    const restoredComposerState =
-      currentComposerState.draft || currentComposerState.code || currentComposerState.testInput
-        ? currentComposerState
-        : {
-            draft: typeof textRaw === "string" ? textRaw : "",
-            code: typeof codeRaw === "string" ? codeRaw : "",
-            testInput: typeof testRaw === "string" ? testRaw : "",
-          };
+    const restoredComposerState = composerStateForProblem(composerStateMap, loadedProfile.activeProblemId);
     setDraft(restoredComposerState.draft);
     setCode(restoredComposerState.code);
     setTestInput(restoredComposerState.testInput);
