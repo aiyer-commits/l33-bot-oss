@@ -2495,29 +2495,29 @@ _result
           </section>
 
           <section className="relative min-h-0 overflow-hidden">
-            <div className="flex h-full items-stretch gap-2 px-3 py-3">
-              <div ref={userScrollRef} className="no-scrollbar min-w-0 flex-1 overflow-x-auto overflow-y-hidden">
-                <div className="flex h-full items-stretch gap-2 pr-12">
-                  {userMessages.map((message, index) => (
-                    <article
-                    key={`${message.createdAt}-u-${index}`}
-                    className={`flex h-full min-h-full max-w-[96%] shrink-0 self-stretch flex-col rounded-xl rounded-br-none px-3 py-2 text-sm shadow-sm ${
-                      isDark ? "border border-[#7aa8dd]/60 bg-[#b7d1ef] text-[#0b1220]" : "bg-[#eff6ff] text-[#0b1220]"
-                    }`}
-                  >
-                      <div className="no-scrollbar h-full min-h-0 flex-1 overflow-auto">
-                        {message.kind === "code" ? (
-                          <pre className="whitespace-pre-wrap font-mono text-[12px] leading-5">{message.content}</pre>
-                        ) : (
-                          <p className="whitespace-pre-wrap leading-5">{message.content}</p>
-                        )}
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </div>
+            <div className="relative h-full px-3 py-3">
+              <div ref={userScrollRef} className="no-scrollbar h-full overflow-x-auto overflow-y-hidden">
+                <div className="flex h-full items-stretch gap-2">
+                  <div className="flex h-full items-stretch gap-2">
+                    {userMessages.map((message, index) => (
+                      <article
+                        key={`${message.createdAt}-u-${index}`}
+                        className={`flex h-full min-h-full w-[min(76vw,22rem)] max-w-[22rem] shrink-0 self-stretch flex-col rounded-xl rounded-br-none px-3 py-2 text-sm shadow-sm ${
+                          isDark ? "border border-[#7aa8dd]/60 bg-[#b7d1ef] text-[#0b1220]" : "bg-[#eff6ff] text-[#0b1220]"
+                        }`}
+                      >
+                        <div className="no-scrollbar h-full min-h-0 flex-1 overflow-auto">
+                          {message.kind === "code" ? (
+                            <pre className="whitespace-pre-wrap font-mono text-[12px] leading-5">{message.content}</pre>
+                          ) : (
+                            <p className="whitespace-pre-wrap leading-5">{message.content}</p>
+                          )}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
 
-              <div className="relative h-full w-[94%] min-w-[94%] shrink-0 pr-[5.25rem]">
+                  <div className="relative h-full w-[min(76vw,24rem)] min-w-[18rem] shrink-0 pr-[5.25rem]">
                 <TooltipProvider>
                   <div className={`absolute right-2 top-1/2 z-10 flex -translate-y-1/2 flex-col gap-2 rounded-[22px] border p-2 shadow-[0_14px_30px_rgba(15,23,42,0.28)] backdrop-blur-xl ${
                     isDark ? "border-white/12 bg-[#0b1220]/88" : "border-black/10 bg-white/88"
@@ -2738,38 +2738,40 @@ _result
                   )}
                   </div>
                 </div>
+                  </div>
+                </div>
               </div>
+              {userHasPrev ? (
+                <button
+                  type="button"
+                  onPointerDown={() => startFabHold("user", "prev")}
+                  onPointerUp={() => endFabHold("user", "prev")}
+                  onPointerCancel={() => endFabHold("user", "prev")}
+                  onPointerLeave={() => endFabHold("user", "prev")}
+                  className={`absolute bottom-2 left-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow ${
+                    userFabFlash ? "l33-fab-flash" : ""
+                  }`}
+                  title="Previous user message (hold to start)"
+                >
+                  ←
+                </button>
+              ) : null}
+              {userHasMore ? (
+                <button
+                  type="button"
+                  onPointerDown={() => startFabHold("user", "next")}
+                  onPointerUp={() => endFabHold("user", "next")}
+                  onPointerCancel={() => endFabHold("user", "next")}
+                  onPointerLeave={() => endFabHold("user", "next")}
+                  className={`absolute bottom-2 right-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow ${
+                    userFabFlash ? "l33-fab-flash" : ""
+                  }`}
+                  title="Next user message (hold to end)"
+                >
+                  →
+                </button>
+              ) : null}
             </div>
-            {userHasPrev ? (
-              <button
-                type="button"
-                onPointerDown={() => startFabHold("user", "prev")}
-                onPointerUp={() => endFabHold("user", "prev")}
-                onPointerCancel={() => endFabHold("user", "prev")}
-                onPointerLeave={() => endFabHold("user", "prev")}
-                className={`absolute bottom-2 left-2 h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow ${
-                  userFabFlash ? "l33-fab-flash" : ""
-                }`}
-                title="Previous user message (hold to start)"
-              >
-                ←
-              </button>
-            ) : null}
-            {userHasMore ? (
-              <button
-                type="button"
-                onPointerDown={() => startFabHold("user", "next")}
-                onPointerUp={() => endFabHold("user", "next")}
-                onPointerCancel={() => endFabHold("user", "next")}
-                onPointerLeave={() => endFabHold("user", "next")}
-                className={`absolute bottom-2 right-[5.75rem] h-8 w-8 rounded-full bg-[#1f334f] text-sm font-bold text-white shadow ${
-                  userFabFlash ? "l33-fab-flash" : ""
-                }`}
-                title="Next user message (hold to end)"
-              >
-                →
-              </button>
-            ) : null}
           </section>
         </div>
       </section>
