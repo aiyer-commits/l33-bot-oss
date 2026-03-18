@@ -2489,7 +2489,7 @@ _result
           <section className="relative min-h-0 overflow-hidden">
             <div className="relative h-full px-3 py-3">
               <div ref={userScrollRef} className="no-scrollbar h-full overflow-x-auto overflow-y-hidden">
-                <div className="flex h-full items-stretch gap-2">
+                <div className={`flex h-full items-stretch gap-2 ${userMessages.length === 0 ? "min-w-full justify-end" : ""}`}>
                   <div className="flex h-full items-stretch gap-2">
                     {userMessages.map((message, index) => (
                       <article
