@@ -25,6 +25,7 @@ const CHAT_KEY = "l33tsp33k.chat.v2";
 const CODE_KEY = "l33tsp33k.code.v2";
 const TEXT_KEY = "l33tsp33k.text.v2";
 const TEST_KEY = "l33tsp33k.test.v1";
+const THREAD_STATE_KEY = "l33tsp33k.thread-state.v1";
 const COMPOSER_STATE_KEY = "l33tsp33k.composer-state.v1";
 const ANON_ID_KEY = "l33tsp33k.anon-id.v1";
 const THEME_KEY = "l33tsp33k.theme.v1";
@@ -66,6 +67,10 @@ type ProblemComposerState = {
   draft: string;
   code: string;
   testInput: string;
+};
+type ProblemThreadState = {
+  sessionId: string;
+  messages: ChatMessage[];
 };
 
 type KeySpec = { token: string; units?: number };
@@ -450,6 +455,42 @@ function extractProblemMessageId(message: ChatMessage): number | null {
   const currentMatch = message.content.match(/Problem #(\d+):/);
   if (currentMatch) return Number(currentMatch[1]);
   return null;
+}
+
+function composeProblemThreadMessages(problemId: number, threadMessages: ChatMessage[]) {
+  const threadWithoutProblemCards = threadMessages.filter((message) => extractProblemMessageId(message) == null);
+  return [...bootstrapIntro(problemId), ...threadWithoutProblemCards];
+}
+
+function isBootstrapScaffoldMessage(message: ChatMessage) {
+  return (
+    message.role === "assistant" &&
+    message.kind === "text" &&
+    message.content.startsWith("Use this flow:")
+  );
+}
+
+function threadMessagesForPersistence(threadMessages: ChatMessage[]) {
+  return normalizeMessages(threadMessages).filter((message) => extractProblemMessageId(message) == null && !isBootstrapScaffoldMessage(message));
+}
+
+function readThreadStateMap(raw: string | null): Record<string, ProblemThreadState> {
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw) as Record<string, Partial<ProblemThreadState>>;
+    if (!parsed || typeof parsed !== "object") return {};
+    return Object.fromEntries(
+      Object.entries(parsed).map(([key, value]) => [
+        key,
+        {
+          sessionId: typeof value?.sessionId === "string" ? value.sessionId : "",
+          messages: normalizeMessages(value?.messages),
+        },
+      ]),
+    );
+  } catch {
+    return {};
+  }
 }
 
 function emptyProblemComposerState(): ProblemComposerState {
@@ -840,6 +881,7 @@ export default function Home() {
   const lastCenteredProblemIdRef = useRef<number | null>(null);
   const lastLoadedComposerProblemIdRef = useRef<number | null>(null);
   const composerStateMapRef = useRef<Record<string, ProblemComposerState>>({});
+  const threadStateMapRef = useRef<Record<string, ProblemThreadState>>({});
   const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
   const codeInputRef = useRef<HTMLTextAreaElement | null>(null);
   const testInputRef = useRef<HTMLTextAreaElement | null>(null);
@@ -858,6 +900,7 @@ export default function Home() {
     const textRaw = localStorage.getItem(TEXT_KEY);
     const codeRaw = localStorage.getItem(CODE_KEY);
     const testRaw = localStorage.getItem(TEST_KEY);
+    const threadStateRaw = localStorage.getItem(THREAD_STATE_KEY);
     const themeRaw = localStorage.getItem(THEME_KEY);
     const languageRaw = localStorage.getItem(LANGUAGE_KEY);
     const naturalLanguageRaw = localStorage.getItem(NATURAL_LANGUAGE_KEY);
@@ -882,7 +925,13 @@ export default function Home() {
     }
     setAnonId(localAnonId);
 
-    if (chatRaw) {
+    const threadStateMap = readThreadStateMap(threadStateRaw);
+    threadStateMapRef.current = threadStateMap;
+    const restoredThreadState = threadStateMap[String(loadedProfile.activeProblemId)];
+    if (restoredThreadState) {
+      setSessionId(restoredThreadState.sessionId);
+      setMessages(composeProblemThreadMessages(loadedProfile.activeProblemId, restoredThreadState.messages));
+    } else if (chatRaw) {
       try {
         const normalized = normalizeMessages(JSON.parse(chatRaw));
         setMessages(normalized.length ? normalized : bootstrapIntro(loadedProfile.activeProblemId));
@@ -936,6 +985,18 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem(CHAT_KEY, JSON.stringify(messages));
   }, [messages]);
+
+  useEffect(() => {
+    if (!profile?.activeProblemId) return;
+    threadStateMapRef.current = {
+      ...threadStateMapRef.current,
+      [String(profile.activeProblemId)]: {
+        sessionId,
+        messages: threadMessagesForPersistence(messages),
+      },
+    };
+    localStorage.setItem(THREAD_STATE_KEY, JSON.stringify(threadStateMapRef.current));
+  }, [messages, profile?.activeProblemId, sessionId]);
 
   useEffect(() => {
     if (!profile || messages.length === 0) return;
@@ -1659,14 +1720,12 @@ _result
       setCurriculumTab(nextCurriculumKey);
       setExpandedCurriculumProblemId(null);
       setProfile((prev) => (prev ? { ...prev, activeProblemId: nextProblemId } : prev));
+      const localThreadState = threadStateMapRef.current[String(nextProblemId)];
+      setSessionId(localThreadState?.sessionId ?? "");
       setComposerMode("chat");
       setCode("");
       setCodeCursor({ start: 0, end: 0 });
-      setMessages((prev) => {
-        const hasProblemMessages = prev.some((message) => extractProblemMessageId(message) === nextProblemId);
-        if (hasProblemMessages) return prev;
-        return [...prev, ...buildProblemMessages(nextProblemId)];
-      });
+      setMessages(composeProblemThreadMessages(nextProblemId, localThreadState?.messages ?? []));
       setIsCurriculumDrawerOpen(false);
     } catch (err) {
       setCurriculumError(err instanceof Error ? err.message : "Could not switch problem");
