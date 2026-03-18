@@ -921,16 +921,6 @@ export default function Home() {
           setCurriculumTab(payload.activeCurriculumKey);
         }
         if (Array.isArray(payload.curriculums)) setCurriculums(payload.curriculums as CurriculumMeta[]);
-        if (typeof payload.activeProblemId === "number") {
-          setProfile((prev) =>
-            prev
-              ? {
-                  ...prev,
-                  activeProblemId: payload.activeProblemId,
-                }
-              : prev,
-          );
-        }
       } catch {
         // Ignore hydration failures; app still works local-first.
       }
